@@ -1,0 +1,38 @@
+package ch.epfl.javelo.projection;
+
+/**
+ * Permet de vérifier si un couple de coordonnées appartient au territoire suisse
+ *
+ * @author Camille Espieux (324248)
+ *
+ */
+public final class SwissBounds {
+    public final static double MIN_E = 2485000;
+    public final static double MAX_E = 2834000;
+    public final static double MIN_N = 1075000;
+    public final static double MAX_N = 1296000;
+    public final static double WIDTH = MAX_E -MIN_E;
+    public final static double HEIGHT = MAX_N - MIN_N;
+
+    private SwissBounds(){}
+
+    /**
+     * Vérifie si les coordonnées données se trouvent en Suisse ou non.
+     *
+     * @param e
+     *          la coordonnée Est
+     * @param n
+     *          la coordonnée Nord
+     * @return vrai
+     *          si les coordonnées sont en Suisse
+     *         faux
+     *          si non
+     */
+    public static boolean containsEN(double e, double n){
+        if (MIN_E<=e && e<=MAX_E && MIN_N<=n && n<=MAX_N){
+            return true;
+        } else {
+            return false;
+        }
+    }
+}
