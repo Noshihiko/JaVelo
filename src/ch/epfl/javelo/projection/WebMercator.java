@@ -13,19 +13,19 @@ public final class WebMercator {
     private WebMercator(){}
 
     static double x(double lon){
-        return (lon + PI)/(2*PI);
+        return (lon + PI)/(2d*PI);
     }
 
     static double y(double lat){
         double a = tan(lat);
-        return (PI - asinh(a))/(2*PI);
+        return (PI - asinh(a))/(2d*PI);
     }
 
     static double lon(double x){
-        return 2*PI*x - PI;
+        return 2d*PI*x - PI;
     }
 
     static double lat(double y){
-        return atan(sinh(PI -2*PI*y));
+        return atan(sinh(PI -2d*PI*y));
     }
 }
