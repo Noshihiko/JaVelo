@@ -26,6 +26,7 @@ public class PointWebMercatorTest {
         assertEquals(1.0/256,actual3.y(),DELTA);
 
     }
+    
     @Test
     void ofWorksForNormalValues (){
         PointWebMercator actual1 = PointWebMercator.of(0, 256,256);

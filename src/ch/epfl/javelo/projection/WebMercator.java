@@ -2,22 +2,30 @@ package ch.epfl.javelo.projection;
 
 import ch.epfl.javelo.Math2;
 
+import static ch.epfl.javelo.Math2.asinh;
+import static java.lang.Math.PI;
+import static java.lang.Math.tan;
+import static java.lang.Math.atan;
+import static java.lang.Math.sinh;
+
+
 public final class WebMercator {
     private WebMercator(){}
 
     static double x(double lon){
-        return (lon + Math.PI)/2*Math.PI;
+        return (lon + PI)/(2*PI);
     }
 
     static double y(double lat){
-        return (Math.PI - Math2.asinh(Math.tan(lat)))/2*Math.PI;
+        double a = tan(lat);
+        return (PI - asinh(a))/(2*PI);
     }
 
     static double lon(double x){
-        return 2*Math.PI*x - Math.PI;
+        return 2*PI*x - PI;
     }
 
     static double lat(double y){
-        return Math.atan(Math.sinh(Math.PI -2*Math.PI*y));
+        return atan(sinh(PI -2*PI*y));
     }
 }

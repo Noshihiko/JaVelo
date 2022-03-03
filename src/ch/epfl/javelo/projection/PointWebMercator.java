@@ -1,42 +1,31 @@
 package ch.epfl.javelo.projection;
 
 import ch.epfl.javelo.Preconditions;
+import static java.lang.Math.scalb;
 
-import java.nio.channels.Pipe;
 
 public record PointWebMercator(double x, double y) {
     public PointWebMercator {
-        Preconditions.checkArgument(((x>=0 && x<=1) && (y>=0 && y<=1)));
+        Preconditions.checkArgument((x>=0 && x<=1 && y>=0 && y<=1));
     }
 
-    //normalement c'est corrigé, mais a verif
     public static PointWebMercator of(int zoomLevel, double x, double y){
-        x=Math.scalb(x,-zoomLevel);
-        y=Math.scalb(y,-zoomLevel);
+        x=scalb(x,-zoomLevel-8);
+        y=scalb(y,-zoomLevel-8);
         PointWebMercator point = new PointWebMercator(x,y);
-
-        //x = point.xAtZoomLevel(zoomLevel);
-        //y = point.yAtZoomLevel(zoomLevel);
         return point;
     }
 
     public static PointWebMercator ofPointCh(PointCh pointCh){
-        //double lon = Ch1903.lon(pointCh.e(),pointCh.n());
-        //double lat = Ch1903.lat(pointCh.e(),pointCh.n());
-
-        //tu peux simplifier en utilisant pointCh
-        //normalement c'est corrigé, mais a verif
-        double x = pointCh.lon();
-        double y = pointCh.lat();
-        PointWebMercator point = new PointWebMercator(x,y);
+        PointWebMercator point = new PointWebMercator(WebMercator.x(pointCh.lon()),WebMercator.y(pointCh.lat()));
         return point;
     }
 
     public double xAtZoomLevel(int zoomLevel){
-        return Math.scalb(x,zoomLevel+8);
+        return scalb(x,zoomLevel+8);
     }
     public double yAtZoomLevel(int zoomLevel){
-        return Math.scalb(y,zoomLevel+8);
+        return scalb(y,zoomLevel+8);
     }
 
     public double lon(){
@@ -48,12 +37,12 @@ public record PointWebMercator(double x, double y) {
 
     public PointCh toPointCh(){
 
-        //convertir les coordonnées en WM.lon et lat de x et y
-        //normalement c'est corrigé, mais a verif
-        double lon = WebMercator.lon(this.x);
-        double lat = WebMercator.lat(this.y);
-        if (SwissBounds.containsEN(lon,lat)){
-           PointCh point = new PointCh(lon,lat);
+        double lonSB = Ch1903.e(this.lon(),this.lat());
+        double latSB =  Ch1903.n(this.lon(),this.lat());
+        if (SwissBounds.containsEN(lonSB,latSB)){
+            double lonWM = WebMercator.lon(this.x);
+            double latWM = WebMercator.lat(this.y);
+           PointCh point = new PointCh(Ch1903.e(lonWM,latWM),Ch1903.n(lonWM,latWM));
             return point;
         } else {
             return null;

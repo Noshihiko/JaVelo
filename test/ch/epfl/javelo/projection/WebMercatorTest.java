@@ -18,7 +18,7 @@ public final class WebMercatorTest {
     @Test
     void checkY() {
         var actual1 = WebMercator.y(14);
-        var expected1 = 0.4607182559;
+        var expected1 = 0.0737617187;
 
         assertEquals(expected1, actual1, DELTA);
     }
@@ -34,7 +34,7 @@ public final class WebMercatorTest {
     @Test
     void checkLat() {
         var actual1 = WebMercator.lat(33);
-        var expected1 = -90;
+        var expected1 = -1.5707963;
 
         assertEquals(expected1, actual1, DELTA);
     }
