@@ -4,8 +4,6 @@ import java.util.function.DoubleUnaryOperator;
 
 import static ch.epfl.javelo.Math2.interpolate;
 import static ch.epfl.javelo.Preconditions.checkArgument;
-import static java.lang.Math.ceil;
-import static java.lang.Math.floor;
 
 public final class Functions {
     private Functions(){}
@@ -37,16 +35,21 @@ public final class Functions {
             else if (x>=xMax) return samples[samples.length-1];
             else {
                 double distance = xMax / (samples.length - 1);
-                double[] valeurX = new double[samples.length - 1];
+                double[] valeurX = new double[samples.length];
 
                 for (int i=0; i<samples.length; ++i){
                     valeurX[i] = distance*i ;
                 }
 
                 for (int i =0; i<(samples.length-1);++i){
-                    int Y0 = (int) floor(samples[i] / distance);
-                    int Y1 = (int) ceil(samples[i+1] / distance);
-                    return interpolate(samples[Y0], samples[Y1], (valeurX[i]+valeurX[i+1])/distance);
+                    double Y0 = samples[i];
+                    double Y1 = samples[i+1];
+                    if (valeurX[i]<x && valeurX[i+1]>x){
+                        return interpolate(Y0, Y1, (valeurX[i+1]-x)/distance);
+                    } else if (x==valeurX[i]){
+                        return samples[i];
+                    }
+
                 }
             }
             throw new IllegalArgumentException();
