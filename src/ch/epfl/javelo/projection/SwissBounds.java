@@ -4,8 +4,10 @@ package ch.epfl.javelo.projection;
  * Permet de vérifier si un couple de coordonnées appartient au territoire suisse
  *
  * @author Camille Espieux (324248)
+ * @author Chiara Freneix (329552)
  *
  */
+
 public final class SwissBounds {
     public final static double MIN_E = 2485000;
     public final static double MAX_E = 2834000;

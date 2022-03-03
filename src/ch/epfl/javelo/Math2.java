@@ -1,9 +1,14 @@
 package ch.epfl.javelo;
 
+import static ch.epfl.javelo.Preconditions.checkArgument;
+import static java.lang.Math.*;
+
 /**
  * Classe qui s'occupe de gérer des calculs mathématiques.
  *
  * @author Camille Espieux (324248)
+ * @author Chiara Freneix (329552)
+ *
  */
 public final class Math2 {
     private Math2(){}
@@ -20,7 +25,7 @@ public final class Math2 {
      * @return la partie entière par excès de la division de x par y
      */
     public static int ceilDiv(int x, int y){
-        Preconditions.checkArgument(x>=0 && y >0);
+        checkArgument(x>=0 && y >0);
         return (x+y -1)/y ;
     }
 
@@ -33,7 +38,7 @@ public final class Math2 {
      * @return la coordonnée y du point se trouvant sur la droite passant par (0,y0) et (1,y1) et de coordonnée x donnée.
      */
     public static double interpolate(double y0, double y1, double x){
-        return Math.fma((y1-y0),x, y0);
+        return fma((y1-y0),x, y0);
     }
 
     /**
@@ -96,7 +101,7 @@ public final class Math2 {
      * @return le sinus hyperbolique inverse de x
      */
     public static double asinh(double x){
-        return Math.log(x+ Math.sqrt(1+x*x));
+        return log(x+ sqrt(1+x*x));
     }
 
     /**
@@ -138,7 +143,7 @@ public final class Math2 {
      * @return la norme du vecteur u
      */
     public static double norm(double uX, double uY){
-        return Math.sqrt(squaredNorm(uX,uY));
+        return sqrt(squaredNorm(uX,uY));
     }
 
     /**

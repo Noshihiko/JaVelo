@@ -1,12 +1,11 @@
 package ch.epfl.javelo.projection;
 
-import ch.epfl.javelo.Preconditions;
+import static ch.epfl.javelo.Preconditions.checkArgument;
 import static java.lang.Math.scalb;
-
 
 public record PointWebMercator(double x, double y) {
     public PointWebMercator {
-        Preconditions.checkArgument((x>=0 && x<=1 && y>=0 && y<=1));
+        checkArgument((x>=0 && x<=1 && y>=0 && y<=1));
     }
 
     public static PointWebMercator of(int zoomLevel, double x, double y){

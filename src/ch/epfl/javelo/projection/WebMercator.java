@@ -1,13 +1,10 @@
 package ch.epfl.javelo.projection;
 
-import ch.epfl.javelo.Math2;
-
 import static ch.epfl.javelo.Math2.asinh;
 import static java.lang.Math.PI;
 import static java.lang.Math.tan;
 import static java.lang.Math.atan;
 import static java.lang.Math.sinh;
-
 
 public final class WebMercator {
     private WebMercator(){}

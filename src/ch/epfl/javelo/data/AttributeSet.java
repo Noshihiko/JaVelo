@@ -1,12 +1,13 @@
 package ch.epfl.javelo.data;
 
-import ch.epfl.javelo.Preconditions;
 import java.util.StringJoiner;
+
+import static ch.epfl.javelo.Preconditions.checkArgument;
 import static ch.epfl.javelo.data.Attribute.ALL;
 
 public record AttributeSet(long bits) {
     public AttributeSet {
-        Preconditions.checkArgument((bits>>Attribute.COUNT) == 0);
+        checkArgument((bits>>Attribute.COUNT) == 0);
     }
 
     public static AttributeSet of(Attribute... attributes) {
