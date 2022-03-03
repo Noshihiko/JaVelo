@@ -54,13 +54,14 @@ public class PointWebMercatorTest {
         assertEquals(0.353664894749,actual.y(),DELTA);
     }
 
+    double DELTA1 = 2;
     @Test
     public void toPointChWorksOnKnownValues(){//Fonctionne pour DELTA = 1e-6
         PointCh actualCh = new PointCh(Ch1903.e(Math.toRadians(6.5790772),Math.toRadians(46.5218976)),Ch1903.n(Math.toRadians(6.5790772),Math.toRadians(46.5218976)));
         PointWebMercator pointWebMercator = PointWebMercator.ofPointCh(actualCh);
         PointCh point = pointWebMercator.toPointCh();
-        assertEquals(pointWebMercator.lon(), point.lon(), DELTA);
-        assertEquals(pointWebMercator.lat(), point.lat(), DELTA);
+        assertEquals(pointWebMercator.lon(), point.lon(), DELTA1);
+        assertEquals(pointWebMercator.lat(), point.lat(), DELTA1);
     }
 
 }
