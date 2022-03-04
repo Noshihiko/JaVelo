@@ -36,7 +36,7 @@ public class BitsTest {
             Bits.extractUnsigned(0, -1, 31);
         });
         assertThrows(IllegalArgumentException.class, () -> {
-            Bits.extractUnsigned(-1, 1, 30);
+            Bits.extractUnsigned(0, 1, -1);
         });
     }
 
@@ -52,8 +52,8 @@ public class BitsTest {
 
     @Test
     void checkExtractSignedTest1() {
-        var actual1 = Bits.extractSigned(5, 3, 0);
-        var expected1 = 40;
+        var actual1 = Bits.extractSigned(0, 3, 0);
+        var expected1 = 0;
         assertEquals(expected1, actual1, DELTA);
     }
 
