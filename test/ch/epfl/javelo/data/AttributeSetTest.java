@@ -4,10 +4,10 @@ import org.junit.jupiter.api.Test;
 
 import static ch.epfl.javelo.data.Attribute.HIGHWAY_TRACK;
 import static ch.epfl.javelo.data.Attribute.TRACKTYPE_GRADE1;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.*;
 
 public class AttributeSetTest {
+
     @Test
     void attributeSetIllegalArgument() {
         assertThrows(IllegalArgumentException.class, () -> {
@@ -111,7 +111,6 @@ public class AttributeSetTest {
         assertEquals(expected,actual);
     }
 
-
     @Test
     void GoodStringAttributeSet (){
         AttributeSet set = AttributeSet.of(TRACKTYPE_GRADE1, HIGHWAY_TRACK);
@@ -122,6 +121,72 @@ public class AttributeSetTest {
     void returns0ifNoArguments(){
         AttributeSet set = AttributeSet.of();
         assertEquals(0, set.bits());
+    }
+
+    @Test
+    void attributeSetConstructorWorksFine(){
+        AttributeSet set1 = new AttributeSet(0b1000L);
+        AttributeSet set2 = new AttributeSet(0b0001000000000000000000000000000000000000000000000000000000000000L);
+        assertThrows(IllegalArgumentException.class, () -> {
+            new AttributeSet(0b1000000000000000000000000000000000000000000000000000000000000000L);
+        });
+        assertThrows(IllegalArgumentException.class, () -> {
+            new AttributeSet(0b0100000000000000000000000000000000000000000000000000000000000000L);
+        });
+    }
+
+    @Test
+    void ofWorksOnKnownValues(){
+        AttributeSet set1 = AttributeSet.of(Attribute.HIGHWAY_SERVICE,Attribute.HIGHWAY_TRACK);
+        AttributeSet set2 = AttributeSet.of(Attribute.HIGHWAY_SERVICE,Attribute.HIGHWAY_TRACK, Attribute.HIGHWAY_FOOTWAY, Attribute.HIGHWAY_UNCLASSIFIED);
+        AttributeSet set3 = AttributeSet.of(Attribute.RCN_YES,Attribute.LCN_YES );
+        AttributeSet emptySet = AttributeSet.of();
+
+
+        assertEquals(0b0000000000000000000000000000000000000000000000000000000000000011L,set1.bits());
+        assertEquals(0b0000000000000000000000000000000000000000000000000000000000101011L,set2.bits());
+        assertEquals(0,emptySet.bits());
+        assertEquals(0b0000000000000000000000000000000000000000000000000000000000000000L,emptySet.bits());
+        assertEquals(0b0011000000000000000000000000000000000000000000000000000000000000L, set3.bits());
+
+
+    }
+
+    @Test
+    void containsWorksOnKnownValues(){
+        AttributeSet set1 = new AttributeSet(0b0010000000000000000000000000000000000000000000000000000000000000L);
+        AttributeSet set2 = new AttributeSet(0b0010000000000000000000000000000000000000000000000000000111110000L);
+        assertTrue(set1.contains(Attribute.LCN_YES));
+        assertFalse(set1.contains(Attribute.ONEWAY_BICYCLE_NO));
+        assertFalse(set1.contains(Attribute.HIGHWAY_CYCLEWAY));
+        assertTrue(set2.contains(Attribute.LCN_YES));
+        assertTrue(set2.contains(Attribute.HIGHWAY_PATH));
+        assertTrue(set2.contains(Attribute.HIGHWAY_UNCLASSIFIED));
+        assertTrue(set2.contains(Attribute.HIGHWAY_SECONDARY));
+        assertTrue(set2.contains(Attribute.HIGHWAY_TERTIARY));
+        assertTrue(set2.contains(Attribute.HIGHWAY_STEPS));
+        assertFalse(set2.contains(Attribute.ONEWAY_BICYCLE_NO));
+        assertFalse(set2.contains(Attribute.HIGHWAY_CYCLEWAY));
+    }
+
+    @Test
+    void intersectsWorksOnKnownValues(){
+        AttributeSet set1 = new AttributeSet(0b0010000000000000000000000000000000000000000000000000000000000000L);
+        AttributeSet set2 = new AttributeSet(0b0010000000000001111111111111110000000000000000000000000111110000L);
+        AttributeSet set3 = new AttributeSet(0b0000000000000000000000000000000000000000000000000000000000000000L);
+        AttributeSet set4 = new AttributeSet(0b0001111111111110000000000000001111111111111111111111111000001111L);
+        AttributeSet set5 = new AttributeSet(0);
+        assertTrue(set1.intersects(set2));
+        assertFalse(set2.intersects(set3));
+        assertFalse(set3.intersects(set1));
+        assertFalse(set4.intersects(set1));
+        assertFalse(set4.intersects(set2));
+        assertFalse(set4.intersects(set3));
+        assertTrue(set4.intersects(set4));
+        assertFalse(set5.intersects(set1));
+        assertFalse(set5.intersects(set2));
+        assertFalse(set5.intersects(set3));
+        assertFalse(set5.intersects(set4));
     }
 
 }

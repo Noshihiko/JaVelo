@@ -120,7 +120,7 @@ public final class Functions {
                     double Y0 = samples[i];
                     double Y1 = samples[i+1];
                     if (valeurX[i]<x && valeurX[i+1]>x){
-                        return interpolate(Y0, Y1, (valeurX[i+1]-x)/distance);
+                        return interpolate(Y0, Y1, (x-valeurX[i])/distance);
                     } else if (x==valeurX[i]){
                         return samples[i];
                     }

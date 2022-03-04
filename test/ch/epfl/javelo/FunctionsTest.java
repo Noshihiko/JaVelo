@@ -79,5 +79,102 @@ public class FunctionsTest {
             DoubleUnaryOperator a = Functions.sampled(samples, xMax);
         });
     }
+
+
+    @Test
+    void DoubleUnaryOperatorInterpolateTestSimple3(){
+        float samples[] = {0, 2, 0, 2};
+        double xMax = 18;
+        DoubleUnaryOperator a = Functions.sampled(samples, xMax);
+        assertEquals(0, a.applyAsDouble(-2));
+    }
+
+
+    @Test
+    void constantsWorks() {
+        DoubleUnaryOperator f = Functions.constant(1.0);
+
+        assertEquals(1.0, f.applyAsDouble(1.0));
+        assertEquals(1.0, f.applyAsDouble(2.0));
+        assertEquals(1.0, f.applyAsDouble(0));
+        assertEquals(1.0, f.applyAsDouble(-1.0));
+        assertEquals(1.0, f.applyAsDouble(10000.0));
+
+    }
+
+    @Test
+    void sampledWorksOnSimpleFunction() {
+
+        float[] values = new float[10];
+
+        for (int i = 0; i < values.length; i++){
+            values[i] = i;
+        }
+        DoubleUnaryOperator f = Functions.sampled(values, 9);
+
+        assertEquals(1.0, f.applyAsDouble(1.0), DELTA);
+        assertEquals(2.0, f.applyAsDouble(2.0), DELTA);
+        assertEquals(0, f.applyAsDouble(0), DELTA);
+    }
+
+    @Test
+    void sampledWorksOnNormalFunction() {
+
+        float[] values ;
+
+        values = new float[]{1, 4, 2, 8, 7, 25};
+
+        DoubleUnaryOperator f = Functions.sampled(values, 25);
+
+        assertEquals(4.4, f.applyAsDouble(12.0), DELTA);
+        assertEquals(8.0, f.applyAsDouble(15.0), DELTA);
+
+
+    }
+
+    @Test
+    void sampledWorksOnMinMax() {
+
+        float[] values ;
+
+        values = new float[]{1, 4, 2, 8, 7, 25};
+
+        DoubleUnaryOperator f = Functions.sampled(values, 25);
+
+        assertEquals(1, f.applyAsDouble(0.0), DELTA);
+        assertEquals(25, f.applyAsDouble(25.0), DELTA);
+
+
+
+    }
+
+
+    @Test
+    void constant() {
+        assertEquals(17,Functions.constant(17).applyAsDouble(95));
+    }
+
+    @Test
+    void weirdSampled() {
+        float[] samples = {17,-95,69,420,-15};
+        assertEquals(-39,Functions.sampled(samples, 8).applyAsDouble(1));
+        assertEquals(-13,Functions.sampled(samples, 8).applyAsDouble(3));
+        assertEquals(202.5,Functions.sampled(samples, 8).applyAsDouble(7));
+        assertEquals(17,Functions.sampled(samples, 8).applyAsDouble(-17));
+        assertEquals(-15,Functions.sampled(samples, 8).applyAsDouble(17));
+    }
+
+    @Test
+    void simpleSampled() {
+        float[] samples = {17,15,26,2,7};
+        assertEquals(16,Functions.sampled(samples, 8).applyAsDouble(1));
+        assertEquals(20.5,Functions.sampled(samples, 8).applyAsDouble(3));
+        assertEquals(14,Functions.sampled(samples, 8).applyAsDouble(5));
+        assertEquals(4.5,Functions.sampled(samples, 8).applyAsDouble(7));
+        assertEquals(17,Functions.sampled(samples, 8).applyAsDouble(-17));
+        assertEquals(7,Functions.sampled(samples, 8).applyAsDouble(17));
+    }
+
+
 }
 
