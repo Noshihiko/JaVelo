@@ -38,7 +38,7 @@ public record AttributeSet(long bits) {
     }
 
     public String toString() {
-        StringJoiner M = new StringJoiner(", ", "{", "}");
+        StringJoiner M = new StringJoiner(",", "{", "}");
         for (int i=0; i< Attribute.COUNT; ++i) {
             if (this.contains(ALL.get(i))) {
                 M.add(ALL.get(i).keyValue());
