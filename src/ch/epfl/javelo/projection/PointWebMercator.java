@@ -3,6 +3,13 @@ package ch.epfl.javelo.projection;
 import static ch.epfl.javelo.Preconditions.checkArgument;
 import static java.lang.Math.scalb;
 
+/**
+ *
+ *
+ *  @author Camille Espieux (324248)
+ *  @author Chiara Freneix (329552)
+ *
+ */
 public record PointWebMercator(double x, double y) {
     public PointWebMercator {
         checkArgument((x>=0 && x<=1 && y>=0 && y<=1));
