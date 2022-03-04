@@ -23,7 +23,7 @@ public final class WebMercator {
      *          la longitude du point en radians
      * @return  la coordonnée x de la projection d'un point se trouvant à la longitude lon
      */
-    static double x(double lon){
+    public static double x(double lon){
         return (lon + PI)/(2d*PI);
     }
 
@@ -34,7 +34,7 @@ public final class WebMercator {
      *          la latitude du point en radians
      * @return  la coordonnée y de la projection d'un point se trouvant à la latitude lat
      */
-    static double y(double lat){
+    public static double y(double lat){
         double a = tan(lat);
         return (PI - asinh(a))/(2d*PI);
     }
@@ -45,7 +45,7 @@ public final class WebMercator {
      *      coordonnée x du point
      * @return la longitude d'un point dont la projection se trouve à la coordonnée x donnée
      */
-    static double lon(double x){
+    public static double lon(double x){
         return 2d*PI*x - PI;
     }
 
@@ -55,7 +55,7 @@ public final class WebMercator {
      *      coordonnée y du point
      * @return la latitude d'un point dont la projection se trouve à la coordonnée y donnée
      */
-    static double lat(double y){
+    public static double lat(double y){
         return atan(sinh(PI -2d*PI*y));
     }
 }
