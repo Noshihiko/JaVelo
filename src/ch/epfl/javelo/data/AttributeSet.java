@@ -14,7 +14,7 @@ import static ch.epfl.javelo.data.Attribute.ALL;
  */
 public record AttributeSet(long bits) {
     public AttributeSet {
-        checkArgument((bits>>Attribute.COUNT) == 0);
+        checkArgument(( bits>>Attribute.COUNT ) == 0);
     }
 
     /**
