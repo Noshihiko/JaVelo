@@ -39,4 +39,69 @@ public final class WebMercatorTest {
         assertEquals(expected1, actual1, DELTA);
     }
 
+
+    @Test
+    void FindxWithLon() {
+        var lon = 1;
+        var expected = 0.6591549431;
+        var actual = WebMercator.x(lon);
+        assertEquals(expected, actual,9);
+    }
+
+
+    @Test
+    void FindyWithLat() {
+        var lat = 15;
+        var expected = 0.6234719739055;
+        var actual =WebMercator.y(lat);
+        assertEquals(expected, actual,9);
+    }
+
+    @Test
+    void FindLonWithx(){
+        var x = 0.5;
+        var expected = 0;
+        var actual =WebMercator.lon(x);
+        assertEquals(expected, actual);
+    }
+
+    @Test
+    void FindLonWithxButxIsNull(){
+        var x = 0;
+        var expected = - Math.PI;
+        var actual =WebMercator.lon(x);
+        assertEquals(expected, actual);
+    }
+
+    @Test
+    void FindLonWithxButxIsBig(){
+        var x = 100;
+        var expected = 625.1769381;
+        var actual =WebMercator.lon(x);
+        assertEquals(expected, actual,6);
+    }
+
+    @Test
+    void FindLatWithyButyIsNegative(){
+        var y = -0.5;
+        var expected = 1.5670614456731;
+        var actual =WebMercator.lat(y);
+        assertEquals(expected, actual,9);
+    }
+
+    @Test
+    void FindLatWithy() {
+        var y = 0.5;
+        var expected = 0;
+        var actual = WebMercator.lat(y);
+        assertEquals(expected, actual);
+    }
+
+    @Test
+    void FindLatWithyNull() {
+        var y = 0;
+        var expected = 1.4844222297453;
+        var actual = WebMercator.lat(y);
+        assertEquals(expected, actual,9);
+    }
 }

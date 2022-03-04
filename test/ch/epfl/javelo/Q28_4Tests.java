@@ -51,4 +51,22 @@ public class Q28_4Tests {
         float expected3 = 31;
         assertEquals(expected3,actual3,DELTA);
     }
+
+    @Test
+    void ofIntTest1(){
+        int a = 21;
+        assertEquals(336, Q28_4.ofInt(a));
+    }
+
+    @Test
+    void asDoubleTest1(){
+        int a = 37;
+        assertEquals(2.3125, Q28_4.asDouble(a));
+    }
+
+    @Test
+    void asFloatTest1(){
+        int a = 37;
+        assertEquals(2.3125, Q28_4.asDouble(a));
+    }
 }

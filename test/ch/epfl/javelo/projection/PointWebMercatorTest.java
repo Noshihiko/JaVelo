@@ -64,4 +64,80 @@ public class PointWebMercatorTest {
         assertEquals(pointWebMercator.lat(), point.lat(), DELTA1);
     }
 
+
+    @Test
+    void pointWebMercatorConstructorThrowsOnInvalidCoordinates() {
+        assertThrows(IllegalArgumentException.class, () -> {
+            new PointWebMercator(0.5, -0.3);
+        });
+        assertThrows(IllegalArgumentException.class, () -> {
+            new PointWebMercator(0.5, 1.3);
+        });
+        assertThrows(IllegalArgumentException.class, () -> {
+            new PointWebMercator(-0.1, 0.3);
+        });
+        assertThrows(IllegalArgumentException.class, () -> {
+            new PointWebMercator(1.5, 0.9);
+        });
+    }
+
+    @Test
+    void GoodOf() {
+        var expected = new PointWebMercator(0.00048828125,0.00048828125);
+        var actual =  PointWebMercator.of(2, 0.5, 0.5);
+        assertEquals(expected, actual);
+    }
+
+    @Test
+    void GoodOfPointCh() {
+        // var lon = Ch1903.lon(2533132,1152206);
+        // var lat = Ch1903.lat(2533132,1152206);
+        //lon = :0.1146203493124217
+        //lat = 0.811889008461824
+        var expected = new PointWebMercator(WebMercator.x(0.1146203493124217), WebMercator.y(0.811889008461824));
+        var actual = PointWebMercator.ofPointCh(new PointCh(2533132,1152206));
+        assertEquals(expected, actual);
+    }
+
+
+    @Test
+    void GoodxAtZoomLevel(){
+        int zoomLevel = 2;
+        var expected = 512;
+        PointWebMercator a = new PointWebMercator(0.5,0.5);
+        var actual = a.xAtZoomLevel(zoomLevel);
+        assertEquals(expected, actual);
+    }
+
+    @Test
+    void GoodyAtZoomLevel(){
+        int zoomLevel = 2;
+        var expected = 512;
+        PointWebMercator a = new PointWebMercator(0.5,0.5);
+        var actual = a.yAtZoomLevel(zoomLevel);
+        assertEquals(expected, actual);
+    }
+
+    @Test
+    void Goodlon(){
+        PointWebMercator a = new PointWebMercator(0.5182423951719917,0.3536813812215855);
+        var actual = a.lon();
+        var expected =0.1146203493124217;
+        assertEquals(expected, actual,9);
+    }
+
+    @Test
+    void Goodlat(){
+        PointWebMercator a = new PointWebMercator(0.5182423951719917,0.3536813812215855);
+        var actual = a.lat();
+        var expected =0.811889008461824;
+        assertEquals(expected, actual,9);
+    }
+
+    @Test
+    void FindNullPointCh (){
+        PointWebMercator a = new PointWebMercator(0.99999,0.00001);
+        var actual = a.toPointCh();
+        assertEquals(null, actual);
+    }
 }
