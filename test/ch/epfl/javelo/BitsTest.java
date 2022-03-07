@@ -11,7 +11,7 @@ public class BitsTest {
     @Test
     void checkExtractSignedException() {
         assertThrows(IllegalArgumentException.class, () -> {
-            Bits.extractSigned(0, 0, 32);
+            Bits.extractSigned(0, 0, 33);
         });
         assertThrows(IllegalArgumentException.class, () -> {
             Bits.extractSigned(-1, 0, 32);
