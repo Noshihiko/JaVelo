@@ -5,7 +5,6 @@ import java.nio.IntBuffer;
 
 public record GraphNodes(IntBuffer buffer) {
     //à vérifier mais normalement c'est bon
-    //peut etre que c'est pas bon au final vu que j'ai dû rajouter lignes 9-13 :clown:
     private static final int OFFSET_E = 0;
     private static final int OFFSET_N = OFFSET_E + 1;
     private static final int OFFSET_OUT_EDGES = OFFSET_N + 1;
