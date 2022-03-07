@@ -27,7 +27,7 @@ public final class Bits {
      *              si la plage est invalide, c.à.d. si elle n'est pas totalement incluse dans
      *              l'intervalle allant de 0 à 31 (inclus)
      */
-    static int extractSigned(int value, int start, int length) {
+    public static int extractSigned(int value, int start, int length) {
         checkArgument((0<=length) && (0<=start) && ((length+start)<=32));
         if (length==0) return 0;
         int r =value << (32-(length+start));
@@ -50,7 +50,7 @@ public final class Bits {
      *              si la plage est invalide, c.à.d. si elle n'est pas totalement incluse dans
      *              l'intervalle allant de 0 à 32 (inclus)
      */
-    static int extractUnsigned(int value, int start, int length) {
+    public static int extractUnsigned(int value, int start, int length) {
         checkArgument((0<=start) && ((length+start)<=32) && (length < 32) && (0<=length));
         if (length==0) return 0;
         int r =value << (32-(length+start));
