@@ -1,6 +1,6 @@
 package ch.epfl.javelo;
-
 import static java.lang.Math.scalb;
+
 /**
  * Convertit des nombres entre la représentation Q28.4 et d'autres représentations
  *
@@ -10,7 +10,7 @@ import static java.lang.Math.scalb;
  */
 public final class Q28_4 {
     private Q28_4(){}
-
+    final static int nbrBits = 4;
     /**
      * Calcule la valeur Q28.4 correspondant à l'entier donné
      *
@@ -18,7 +18,7 @@ public final class Q28_4 {
      * @return  la valeur Q28.4
      */
     public static int ofInt(int i){
-        return (i<<4);
+        return (i<<nbrBits);
     }
 
     /**
@@ -27,7 +27,7 @@ public final class Q28_4 {
      * @return la valeur de type double
      */
     public static double asDouble(int q28_4){
-        return scalb((double) q28_4, -4);
+        return scalb((double) q28_4, -nbrBits);
     }
 
     /**
@@ -36,6 +36,6 @@ public final class Q28_4 {
      * @return la valeur de type float
      */
     public static float asFloat(int q28_4){
-        return scalb(q28_4,-4);
+        return scalb(q28_4,-nbrBits);
     }
 }

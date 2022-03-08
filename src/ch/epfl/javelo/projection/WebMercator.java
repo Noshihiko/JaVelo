@@ -1,5 +1,4 @@
 package ch.epfl.javelo.projection;
-
 import static ch.epfl.javelo.Math2.asinh;
 import static java.lang.Math.PI;
 import static java.lang.Math.tan;

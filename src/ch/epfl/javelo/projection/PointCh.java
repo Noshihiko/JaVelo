@@ -1,8 +1,7 @@
 package ch.epfl.javelo.projection;
-
+import ch.epfl.javelo.Preconditions;
 import static ch.epfl.javelo.Math2.squaredNorm;
 import static java.lang.Math.sqrt;
-import ch.epfl.javelo.Preconditions;
 
 /**
  * Représente un point dans le système de coordonnées suisse.
@@ -25,9 +24,7 @@ public record PointCh(double e, double n) {
      * @return le carré de la distance en mètres séparant le récepteur de l'argument.
      */
     public double squaredDistanceTo(PointCh that){
-        double x = that.e - e;
-        double y = that.n - n;
-        return squaredNorm(x,y);
+        return squaredNorm((that.e-e),(that.n-n));
     }
 
     /**

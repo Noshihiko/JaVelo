@@ -1,5 +1,4 @@
 package ch.epfl.javelo.projection;
-
 import static ch.epfl.javelo.Preconditions.checkArgument;
 import static java.lang.Math.scalb;
 
@@ -11,6 +10,8 @@ import static java.lang.Math.scalb;
  *
  */
 public record PointWebMercator(double x, double y) {
+    public static final int mapPixel = 8;
+
     public PointWebMercator {
         checkArgument((x>=0 && x<=1 && y>=0 && y<=1));
     }
@@ -27,8 +28,8 @@ public record PointWebMercator(double x, double y) {
      * @return le point dont les coordonnées sont x et y au niveau de zoom zoomLevel
      */
     public static PointWebMercator of(int zoomLevel, double x, double y){
-        x=scalb(x,-zoomLevel-8);
-        y=scalb(y,-zoomLevel-8);
+        x=scalb(x,-zoomLevel-mapPixel);
+        y=scalb(y,-zoomLevel-mapPixel);
         PointWebMercator point = new PointWebMercator(x,y);
         return point;
     }
@@ -53,7 +54,7 @@ public record PointWebMercator(double x, double y) {
      * @return la coordonnée x au niveau de zoom donné
      */
     public double xAtZoomLevel(int zoomLevel){
-        return scalb(x,zoomLevel+8);
+        return scalb(x,zoomLevel+mapPixel);
     }
 
     /**
@@ -64,7 +65,7 @@ public record PointWebMercator(double x, double y) {
      * @return la coordonnée y au niveau de zoom donné
      */
     public double yAtZoomLevel(int zoomLevel){
-        return scalb(y,zoomLevel+8);
+        return scalb(y,zoomLevel+mapPixel);
     }
 
     /**
@@ -94,9 +95,9 @@ public record PointWebMercator(double x, double y) {
      *          si ce point n'est pas dans les limites de la Suisse définies par SwissBounds
      */
     public PointCh toPointCh(){
-
         double lonSB = Ch1903.e(this.lon(),this.lat());
         double latSB =  Ch1903.n(this.lon(),this.lat());
+
         if (SwissBounds.containsEN(lonSB,latSB)){
             double lonWM = WebMercator.lon(this.x);
             double latWM = WebMercator.lat(this.y);

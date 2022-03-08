@@ -1,6 +1,6 @@
 package ch.epfl.javelo;
-
 import static ch.epfl.javelo.Preconditions.checkArgument;
+
 /**
  * Extrait une séquence de bits d'un vecteur de 32 bits
  *
@@ -9,6 +9,8 @@ import static ch.epfl.javelo.Preconditions.checkArgument;
  *
  */
 public final class Bits {
+    static final int lengthBits = 32;
+
     private Bits(){}
 
     /**
@@ -28,10 +30,11 @@ public final class Bits {
      *              l'intervalle allant de 0 à 31 (inclus)
      */
     public static int extractSigned(int value, int start, int length) {
-        checkArgument((0<=length) && (0<=start) && ((length+start)<=32));
+        checkArgument((0<=length) && (0<=start) && ((length+start)<=lengthBits));
         if (length==0) return 0;
-        int r =value << (32-(length+start));
-        return r >> (32-length);
+        int r =value << (lengthBits-(length+start));
+
+        return r >> (lengthBits-length);
     }
 
     /**
@@ -51,9 +54,10 @@ public final class Bits {
      *              l'intervalle allant de 0 à 32 (inclus)
      */
     public static int extractUnsigned(int value, int start, int length) {
-        checkArgument((0<=start) && ((length+start)<=32) && (length < 32) && (0<=length));
+        checkArgument((0<=start) && ((length+start)<=lengthBits) && (length < lengthBits) && (0<=length));
         if (length==0) return 0;
-        int r =value << (32-(length+start));
-        return (r >>> (32-length));
+        int r =value << (lengthBits-(length+start));
+
+        return (r >>> (lengthBits-length));
     }
 }

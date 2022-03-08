@@ -1,5 +1,4 @@
 package ch.epfl.javelo;
-
 import static ch.epfl.javelo.Preconditions.checkArgument;
 import static java.lang.Math.*;
 
@@ -26,7 +25,7 @@ public final class Math2 {
      */
     public static int ceilDiv(int x, int y){
         checkArgument(x>=0 && y >0);
-        return (x+y -1)/y ;
+        return (x+y -1)/y;
     }
 
     /**
@@ -83,7 +82,6 @@ public final class Math2 {
         else if (v<min) return min;
         else if (v>max) return max;
         else return v;
-
     }
 
     /**
@@ -157,5 +155,4 @@ public final class Math2 {
     public static double projectionLength(double aX, double aY, double bX, double bY, double pX, double pY){
         return dotProduct(pX-aX,pY-aY,bX-aX,bY-aY)/norm(bX-aX,bY-aY);
     }
-
 }
