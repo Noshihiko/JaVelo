@@ -57,15 +57,10 @@ public final class Math2 {
      *          sinon v.
      */
     public static int clamp(int min, int v, int max){
-        if(min>max){
-            throw new IllegalArgumentException();
-        } else if (v<min){
-            return min;
-        } else if (v>max){
-            return max;
-        } else {
-            return v;
-        }
+        if(min>max) throw new IllegalArgumentException();
+        else if (v<min) return min;
+        else if (v>max) return max;
+        else return v;
     }
 
     /**
