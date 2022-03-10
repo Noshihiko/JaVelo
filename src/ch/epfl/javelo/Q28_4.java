@@ -26,8 +26,8 @@ public final class Q28_4 {
      * @param q28_4
      * @return la valeur de type double
      */
-    public static double asDouble(int q28_4){
-        return scalb(q28_4,-4);
+    public static double asDouble(int q28_4) {
+        return scalb((double) q28_4, -4);
     }
 
     /**
