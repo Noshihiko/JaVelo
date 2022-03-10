@@ -4,7 +4,7 @@ package ch.epfl.javelo;
 // pas destiné à être exécuté. Son seul but est de vérifier, autant que
 // possible, que les noms et les types des différentes entités à définir
 // pour cette étape du projet sont corrects.
-
+/*
 final class SignatureChecks_3 {
     private SignatureChecks_3() {}
 
@@ -39,6 +39,7 @@ final class SignatureChecks_3 {
         v07 = v12.toString();
     }
 
+
     void checkGraphEdges() throws Exception {
         v13 = new ch.epfl.javelo.data.GraphEdges(v09, v02, v14);
         v03 = v13.attributesIndex(v03);
@@ -71,4 +72,8 @@ final class SignatureChecks_3 {
     ch.epfl.javelo.data.GraphEdges v13;
     java.nio.ShortBuffer v14;
     float[] v15;
+
+
 }
+
+ */

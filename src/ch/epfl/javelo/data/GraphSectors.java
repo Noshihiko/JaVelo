@@ -1,5 +1,6 @@
 package ch.epfl.javelo.data;
 
+import ch.epfl.javelo.Math2;
 import ch.epfl.javelo.projection.PointCh;
 import ch.epfl.javelo.projection.SwissBounds;
 import java.nio.ByteBuffer;
@@ -15,7 +16,11 @@ import java.util.*;
  *         Mémoire tampon contenant la valeur des attributs de la totalité des secteurs
  */
 public record GraphSectors(ByteBuffer buffer) {
-    public static final int nbrSector = 128;
+    private final static int NUMBER_SECTOR = 128;
+    private final static int FIRST_NODE=4;
+    private final static int NUMBER_NODES=2;
+    private final static int LENGTH_SECTOR=FIRST_NODE+NUMBER_NODES;
+
 
     /**
      * Représente un secteur
@@ -44,25 +49,28 @@ public record GraphSectors(ByteBuffer buffer) {
         //liste de sectors intersect dans le carré
         List<Sector> sectorsIntersect = new ArrayList<>();
 
-        double xSector = (SwissBounds.MAX_E - SwissBounds.MIN_E)/nbrSector;
-        double ySector = (SwissBounds.MAX_N - SwissBounds.MIN_N)/nbrSector;
+        //calcul de la largeur et la hauteur pour un secteur(ils font tous la même taille)
+        double xSector = (SwissBounds.MAX_E - SwissBounds.MIN_E)/NUMBER_SECTOR;
+        double ySector = (SwissBounds.MAX_N - SwissBounds.MIN_N)/NUMBER_SECTOR;
 
-        double xBordGauche = center.e() - distance;
-        double xBordDroit = center.e() + distance;
-        double yBordBas = center.n() - distance;
-        double yBordHaut = center.n() - distance;
+        //calcul du carré centré au PointCh center
+        double xBordGauche = Math2.clamp(SwissBounds.MIN_E,(center.e() - distance),SwissBounds.MAX_E);
+        double xBordDroit = Math2.clamp(SwissBounds.MIN_E,(center.e() + distance),SwissBounds.MAX_E);
+        double yBordBas = Math2.clamp(SwissBounds.MIN_N,(center.n() - distance),SwissBounds.MAX_N);
+        double yBordHaut = Math2.clamp(SwissBounds.MIN_N,(center.n() + distance),SwissBounds.MAX_N);
 
+        //numéro des secteurs entre 0 et 127
         int xMin = (int)((xBordGauche - SwissBounds.MIN_E)/xSector);
         int xMax = (int) ((xBordDroit - SwissBounds.MIN_E)/xSector);
         int yMin = (int) ((yBordBas - SwissBounds.MIN_N)/ySector);
         int yMax = (int) ((yBordHaut - SwissBounds.MIN_N)/ySector);
 
-        for (int i = yMin; i<=yMax; ++i){
+        //boucle pour chercher les sectors en xMin, xMax, yMin et yMax contenus dans le carré créé plus haut
+        for (int i = yMin; i<= yMax; ++i){
             for (int j = xMin; j<= xMax; ++j){
-                int secteur = j*nbrSector +i;
-                byte secteurBit = buffer.get(secteur);
-                // +1 ou +6?
-                sectorsIntersect.add(new Sector(buffer.getInt(secteur),buffer.getInt(secteur+6)));
+                int secteur = i*NUMBER_SECTOR +j;
+                sectorsIntersect.add(new Sector(buffer.getInt(secteur*LENGTH_SECTOR),
+                        buffer.getInt(secteur*LENGTH_SECTOR)+Short.toUnsignedInt(buffer.getShort(secteur*LENGTH_SECTOR+FIRST_NODE))));
             }
         }
         return sectorsIntersect;

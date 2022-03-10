@@ -1,12 +1,9 @@
 package ch.epfl.javelo.data;
-import ch.epfl.javelo.Bits;
-import ch.epfl.javelo.Q28_4;
 
 import java.nio.IntBuffer;
 
 import static ch.epfl.javelo.Bits.extractUnsigned;
 import static ch.epfl.javelo.Q28_4.asDouble;
-import static ch.epfl.javelo.Q28_4.ofInt;
 
 /**
  * Représente le tableau de tous les nœuds du graphe JaVelo
