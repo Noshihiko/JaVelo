@@ -36,7 +36,7 @@ public class GraphSectorsTest {
         expected2.add(new GraphSectors.Sector(buffer.getInt(129 * 6), buffer.getShort(129 * 6 + 4) + buffer.getInt(129 * 6)));
         assertArrayEquals(expected2.toArray(), sectors2.sectorsInArea(point, 2800).toArray());
     }
-
+    /*
     @Test
     void GraphSectorContainsEverySector(){
         byte[] bufferId = new byte[128 * 128 * 6];
@@ -67,5 +67,7 @@ public class GraphSectorsTest {
     void worksSiSurAretes(){
 
     }
+
+     */
 }
 

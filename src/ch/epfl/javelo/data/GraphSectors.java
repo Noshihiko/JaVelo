@@ -6,6 +6,8 @@ import ch.epfl.javelo.projection.SwissBounds;
 import java.nio.ByteBuffer;
 import java.util.*;
 
+import static ch.epfl.javelo.Math2.clamp;
+
 /**
  * Représente le tableau contenant les 16384 secteurs de JaVelo
  *
@@ -54,16 +56,16 @@ public record GraphSectors(ByteBuffer buffer) {
         double ySector = (SwissBounds.MAX_N - SwissBounds.MIN_N)/NUMBER_SECTOR;
 
         //calcul du carré centré au PointCh center
-        double xBordGauche = Math2.clamp(SwissBounds.MIN_E,(center.e() - distance),SwissBounds.MAX_E);
-        double xBordDroit = Math2.clamp(SwissBounds.MIN_E,(center.e() + distance),SwissBounds.MAX_E);
-        double yBordBas = Math2.clamp(SwissBounds.MIN_N,(center.n() - distance),SwissBounds.MAX_N);
-        double yBordHaut = Math2.clamp(SwissBounds.MIN_N,(center.n() + distance),SwissBounds.MAX_N);
+        double xBordGauche = clamp(SwissBounds.MIN_E,(center.e() - distance),SwissBounds.MAX_E);
+        double xBordDroit = clamp(SwissBounds.MIN_E,(center.e() + distance),SwissBounds.MAX_E);
+        double yBordBas = clamp(SwissBounds.MIN_N,(center.n() - distance),SwissBounds.MAX_N);
+        double yBordHaut = clamp(SwissBounds.MIN_N,(center.n() + distance),SwissBounds.MAX_N);
 
         //numéro des secteurs entre 0 et 127
-        int xMin = (int)((xBordGauche - SwissBounds.MIN_E)/xSector);
-        int xMax = (int) ((xBordDroit - SwissBounds.MIN_E)/xSector);
-        int yMin = (int) ((yBordBas - SwissBounds.MIN_N)/ySector);
-        int yMax = (int) ((yBordHaut - SwissBounds.MIN_N)/ySector);
+        int xMin = clamp(0,(int)((xBordGauche - SwissBounds.MIN_E)/xSector),127);
+        int xMax = clamp(0, (int) ((xBordDroit - SwissBounds.MIN_E)/xSector),127);
+        int yMin = clamp(0, (int) ((yBordBas - SwissBounds.MIN_N)/ySector), 127);
+        int yMax = clamp(0,(int) ((yBordHaut - SwissBounds.MIN_N)/ySector),127);
 
         //boucle pour chercher les sectors en xMin, xMax, yMin et yMax contenus dans le carré créé plus haut
         for (int i = yMin; i<= yMax; ++i){
