@@ -1,9 +1,8 @@
 package ch.epfl.javelo;
-
 import java.util.function.DoubleUnaryOperator;
-
 import static ch.epfl.javelo.Math2.interpolate;
 import static ch.epfl.javelo.Preconditions.checkArgument;
+
 /**
  *  Crée des objets représentant des fonctions mathématiques des réels vers les réels
  *
@@ -119,12 +118,9 @@ public final class Functions {
                 for (int i =0; i<(samples.length-1);++i){
                     double Y0 = samples[i];
                     double Y1 = samples[i+1];
-                    if (valeurX[i]<x && valeurX[i+1]>x){
-                        return interpolate(Y0, Y1, (x-valeurX[i])/distance);
-                    } else if (x==valeurX[i]){
-                        return samples[i];
-                    }
 
+                    if (valeurX[i]<x && valeurX[i+1]>x) return interpolate(Y0, Y1, (x-valeurX[i])/distance);
+                    else if (x==valeurX[i]) return samples[i];
                 }
             }
             throw new IllegalArgumentException();

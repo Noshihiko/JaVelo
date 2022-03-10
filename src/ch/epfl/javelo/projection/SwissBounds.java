@@ -7,13 +7,13 @@ package ch.epfl.javelo.projection;
  * @author Chiara Freneix (329552)
  *
  */
-
 public final class SwissBounds {
-    public final static double MIN_E = 2485000;
-    public final static double MAX_E = 2834000;
-    public final static double MIN_N = 1075000;
-    public final static double MAX_N = 1296000;
-    public final static double WIDTH = MAX_E -MIN_E;
+    public final static double MIN_E = 2_485_000;
+    public final static double MAX_E = 2_834_000;
+    public final static double MIN_N = 1_075_000;
+    public final static double MAX_N = 1_296_000;
+
+    public final static double WIDTH = MAX_E - MIN_E;
     public final static double HEIGHT = MAX_N - MIN_N;
 
     private SwissBounds(){}
@@ -31,10 +31,6 @@ public final class SwissBounds {
      *          si non
      */
     public static boolean containsEN(double e, double n){
-        if (MIN_E<=e && e<=MAX_E && MIN_N<=n && n<=MAX_N){
-            return true;
-        } else {
-            return false;
-        }
+        return MIN_E <= e && e <= MAX_E && MIN_N <= n && n <= MAX_N;
     }
 }

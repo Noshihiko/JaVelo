@@ -7,10 +7,8 @@ package ch.epfl.javelo;
  * @author Chiara Freneix (329552)
  *
  */
-
 public final class Preconditions {
-    private Preconditions() {
-    }
+    private Preconditions() {}
 
     /**
      * Méthode de validation d'argument.
