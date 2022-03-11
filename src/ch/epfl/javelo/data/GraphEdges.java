@@ -16,6 +16,12 @@ import static ch.epfl.javelo.Q28_4.asFloat;
  * @author Camille Espieux (324248)
  * @author Chiara Freneix (329552)
  *
+ * @param edgesBuffer
+ *              memoire tampon contenant la valeur des attributs figurant dans la première table
+ * @param profileIds
+ *              la mémoire tampon contenant la valeur des attributs figurant dans la seconde table
+ * @param elevations
+ *              la mémoire tampon contenant la totalité des échantillons des profils, compressés ou non
  */
 
 public record GraphEdges(ByteBuffer edgesBuffer, IntBuffer profileIds, ShortBuffer elevations) {
