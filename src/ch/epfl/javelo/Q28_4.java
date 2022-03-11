@@ -10,7 +10,8 @@ import static java.lang.Math.scalb;
  */
 public final class Q28_4 {
     private Q28_4(){}
-    final static int nbrBits = 4;
+    final static int NUMBER_OF_BITS_AFTER_POINT = 4;
+
     /**
      * Calcule la valeur Q28.4 correspondant à l'entier donné
      *
@@ -18,7 +19,7 @@ public final class Q28_4 {
      * @return  la valeur Q28.4
      */
     public static int ofInt(int i){
-        return (i<<nbrBits);
+        return (i<<NUMBER_OF_BITS_AFTER_POINT);
     }
 
     /**
@@ -28,7 +29,7 @@ public final class Q28_4 {
      */
 
     public static double asDouble(int q28_4){
-        return scalb((double) q28_4, -nbrBits);
+        return scalb((double) q28_4, -NUMBER_OF_BITS_AFTER_POINT);
     }
 
     /**
@@ -37,6 +38,6 @@ public final class Q28_4 {
      * @return la valeur de type float
      */
     public static float asFloat(int q28_4){
-        return scalb(q28_4,-nbrBits);
+        return scalb(q28_4,-NUMBER_OF_BITS_AFTER_POINT);
     }
 }
