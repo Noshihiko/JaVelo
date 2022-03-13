@@ -1,5 +1,7 @@
 package ch.epfl.javelo.data;
 
+import ch.epfl.javelo.Q28_4;
+
 import java.nio.ByteBuffer;
 import java.nio.IntBuffer;
 import java.nio.ShortBuffer;
@@ -7,6 +9,7 @@ import java.util.List;
 
 import static ch.epfl.javelo.Bits.extractSigned;
 import static ch.epfl.javelo.Bits.extractUnsigned;
+import static ch.epfl.javelo.Math2.ceilDiv;
 import static ch.epfl.javelo.Q28_4.asDouble;
 import static ch.epfl.javelo.Q28_4.asFloat;
 
@@ -32,7 +35,7 @@ public record GraphEdges(ByteBuffer edgesBuffer, IntBuffer profileIds, ShortBuff
     private static final int OFFSET_BYTES_PER_EDGE = OFFSET_IDENTITY + Short.BYTES;
 
     /**
-     *
+     * Enumeration privé representant les differents types de profils
      */
 
     private enum Types {
@@ -51,8 +54,8 @@ public record GraphEdges(ByteBuffer edgesBuffer, IntBuffer profileIds, ShortBuff
      */
 
     public boolean isInverted(int edgeId) {
-        int INDEX = edgeId*OFFSET_BYTES_PER_EDGE + OFFSET_TARGET_NODE_ID;
-        return (edgesBuffer.getInt(INDEX) < 0);
+        int index = edgeId*OFFSET_BYTES_PER_EDGE + OFFSET_TARGET_NODE_ID;
+        return (edgesBuffer.getInt(index) < 0);
     }
 
     /**
@@ -64,8 +67,8 @@ public record GraphEdges(ByteBuffer edgesBuffer, IntBuffer profileIds, ShortBuff
      */
 
     public int targetNodeId(int edgeId) {
-        int INDEX = edgeId*OFFSET_BYTES_PER_EDGE + OFFSET_TARGET_NODE_ID;
-        int nod_identity = edgesBuffer.getInt(INDEX);
+        int index = edgeId*OFFSET_BYTES_PER_EDGE + OFFSET_TARGET_NODE_ID;
+        int nod_identity = edgesBuffer.getInt(index);
         return nod_identity>=0 ? nod_identity : ~nod_identity;
     }
 
@@ -78,8 +81,8 @@ public record GraphEdges(ByteBuffer edgesBuffer, IntBuffer profileIds, ShortBuff
      */
 
     public double length(int edgeId) {
-        int INDEX = edgeId*OFFSET_BYTES_PER_EDGE + OFFSET_LENGTH;
-        return asDouble(Short.toUnsignedInt(edgesBuffer.getShort(INDEX)));
+        int index = edgeId*OFFSET_BYTES_PER_EDGE + OFFSET_LENGTH;
+        return asDouble(Short.toUnsignedInt(edgesBuffer.getShort(index)));
     }
 
     /**
@@ -91,8 +94,8 @@ public record GraphEdges(ByteBuffer edgesBuffer, IntBuffer profileIds, ShortBuff
      */
 
     public double elevationGain(int edgeId) {
-        int INDEX = edgeId*OFFSET_BYTES_PER_EDGE + OFFSET_ELEVATION;
-        return asDouble(Short.toUnsignedInt(edgesBuffer.getShort(INDEX)));
+        int index = edgeId*OFFSET_BYTES_PER_EDGE + OFFSET_ELEVATION;
+        return asDouble(Short.toUnsignedInt(edgesBuffer.getShort(index)));
     }
 
     /**
@@ -104,64 +107,64 @@ public record GraphEdges(ByteBuffer edgesBuffer, IntBuffer profileIds, ShortBuff
      */
 
     public boolean hasProfile(int edgeId) {
-        int profiletype = extractUnsigned(profileIds.get(edgeId), 30,2);
-        return (Types.ALL_types.get(profiletype) != Types.INEXISTANT);
+        int profileType = extractUnsigned(profileIds.get(edgeId), 30,2);
+        return (Types.ALL_types.get(profileType) != Types.INEXISTANT);
     }
 
+    /**
+     * Retourne le tableau des échantillons du profil de l'arête
+     *
+     * @param edgeId : identite de l'arrete
+     *
+     * @return le tableau des échantillons du profil de l'arête d'identité donnée
+     */
+
     public float[] profileSamples(int edgeId) {
-        int numberSamples = (int) (1+ Math.ceil(length(edgeId)/2));
-        int INDEX = extractUnsigned(profileIds.get(edgeId), 0,30);
+        int numberSamples = 1 + ceilDiv(Short.toUnsignedInt(edgesBuffer.getShort(edgeId*OFFSET_BYTES_PER_EDGE + OFFSET_LENGTH)), Q28_4.ofInt(2));
+        int index = extractUnsigned(profileIds.get(edgeId), 0,30);
+
         float ProfileSamples[] = new float[numberSamples];
-        int start = 0;
 
-        switch (Types.ALL_types.get(extractUnsigned(profileIds.get(edgeId), 30,2))) {
-            case INEXISTANT:
-                float ProfileSamplesEmpty[] = {};
-                return ProfileSamplesEmpty;
+        boolean isInverted =(edgesBuffer.getInt(edgeId*OFFSET_BYTES_PER_EDGE + OFFSET_TARGET_NODE_ID) < 0);
 
-            case NOT_COMPRESSED:
-                for (int i=0; i<numberSamples; ++i) {
-                    ProfileSamples[i] = asFloat(Short.toUnsignedInt(elevations.get(INDEX+i))); }
-                return ProfileSamples;
 
-            case COMPRESSED_IN_Q4_4:
-                ProfileSamples[0] = asFloat(Short.toUnsignedInt(elevations.get(INDEX)));
-                for (int i=1; i<numberSamples; ++i) {
-
-                    for(int j=0; j<2; j++) {
-                        if ((j==0)&&((i+j)<numberSamples)) {
-                            ProfileSamples[i] = asFloat(extractSigned(elevations.get(INDEX+i), 0, 8));
-                        }
-                        if ((j==1)&&((i+j)<numberSamples)) {
-                            ProfileSamples[i] = asFloat(extractSigned(elevations.get(INDEX+i), 8, 8));
-                        }
-                    }
+        switch (Types.ALL_types.get(extractUnsigned(profileIds.get(edgeId), 30, 2))) {
+            case INEXISTANT -> {
+                return new float[0];
             }
-                return ProfileSamples;
 
-            case  COMPRESSED_IN_Q0_4:
-                ProfileSamples[0] = asFloat(Short.toUnsignedInt(elevations.get(INDEX)));
-                for (int i=1; i<numberSamples; ++i) {
-
-                    for(int j=0; j<4; j++) {
-                        if ((j==0)&&((i+j)<numberSamples)) {
-                            ProfileSamples[i] = asFloat(extractSigned(elevations.get(INDEX+i), 0, 4));
-                        }
-                        if ((j==1)&&((i+j)<numberSamples)) {
-                            ProfileSamples[i] = asFloat(extractSigned(elevations.get(INDEX+i), 4, 4));
-                        }
-                        if ((j==2)&&((i+j)<numberSamples)) {
-                            ProfileSamples[i] = asFloat(extractSigned(elevations.get(INDEX+i), 8, 4));
-                        }
-                        if ((j==3)&&((i+j)<numberSamples)) {
-                            ProfileSamples[i] = asFloat(extractSigned(elevations.get(INDEX+i), 12, 4));
-                        }
-                    }
+            case NOT_COMPRESSED -> {
+                for (int i = 0; i < numberSamples; ++i) {
+                    ProfileSamples[i] = asFloat(elevations.get(index + i));
                 }
-                return ProfileSamples;
-            default: return ProfileSamples;
-        }
+                break;
 
+            }
+            case COMPRESSED_IN_Q4_4 -> {
+                ProfileSamples[0] = asFloat((elevations.get(index)));
+                for (int i = 0; i < numberSamples-1; ++i) {
+                    ProfileSamples[i+1] = ProfileSamples[i] + asFloat(extractSigned(elevations.get(index + 1 +i/2), 8-(i%2)*8, 8));
+                    }
+            break;
+            }
+
+            case COMPRESSED_IN_Q0_4 -> {
+                ProfileSamples[0] = asFloat((elevations.get(index)));
+                for (int i = 0; i < numberSamples-1; ++i) {
+                    ProfileSamples[i + 1] = ProfileSamples[i] + asFloat(extractSigned(elevations.get(index + 1 +(i / 4)), 12-(i % 4)*4, 4));
+                    }
+                break;
+            }
+
+        }
+        if (isInverted) {
+            for (int i=0; i< Math.floor(ProfileSamples.length/2); ++i) {
+                float temp = ProfileSamples[i];
+                ProfileSamples[i] = ProfileSamples[ProfileSamples.length-i-1];
+                ProfileSamples[ProfileSamples.length-i-1] = temp;
+            }
+        }
+        return ProfileSamples;
 
     }
 
@@ -174,8 +177,8 @@ public record GraphEdges(ByteBuffer edgesBuffer, IntBuffer profileIds, ShortBuff
      */
 
     public int attributesIndex(int edgeId) {
-        int INDEX = edgeId*OFFSET_BYTES_PER_EDGE + OFFSET_IDENTITY;
-        return Short.toUnsignedInt(edgesBuffer.getShort(INDEX));
+        int index = edgeId*OFFSET_BYTES_PER_EDGE + OFFSET_IDENTITY;
+        return Short.toUnsignedInt(edgesBuffer.getShort(index));
 
     }
 }
