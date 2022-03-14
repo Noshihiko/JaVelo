@@ -135,7 +135,7 @@ public record GraphEdges(ByteBuffer edgesBuffer, IntBuffer profileIds, ShortBuff
 
             case NOT_COMPRESSED -> {
                 for (int i = 0; i < numberSamples; ++i) {
-                    ProfileSamples[i] = asFloat(elevations.get(index + i));
+                    ProfileSamples[i] = asFloat(Short.toUnsignedInt(elevations.get(index + i)));
                 }
                 break;
 
