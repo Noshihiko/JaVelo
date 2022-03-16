@@ -3,10 +3,12 @@ package ch.epfl.javelo.data;
 import ch.epfl.javelo.projection.PointCh;
 
 import java.io.IOException;
+import java.nio.ByteBuffer;
 import java.nio.LongBuffer;
 import java.nio.ShortBuffer;
 import java.nio.channels.FileChannel;
 import java.nio.file.Path;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.function.DoubleUnaryOperator;
 
@@ -16,6 +18,7 @@ public final class Graph {
 
     private static PointCh COOR;
     private static AttributeSet OSM_ATTRIBUTES;
+    private static Graph graphLoadFrom;
 
     public GraphNodes nodes;
     public GraphSectors sectors;
@@ -29,7 +32,34 @@ public final class Graph {
         this.attributeSets = attributeSets;
     }
 
-    static Graph loadFrom(Path basePath) throws IOException{}
+    static Graph loadFrom(Path basePath) throws IOException{
+        GraphNodes nodes = new GraphNodes((bufferFile(basePath,"nodes.bin")).asIntBuffer());
+        GraphEdges edges = new GraphEdges(bufferFile(basePath,"edges.bin"),
+                bufferFile(basePath,"profile_ids.bin").asIntBuffer(),
+                bufferFile(basePath,"elevations.bin").asShortBuffer());
+        GraphSectors sectors = new GraphSectors(bufferFile(basePath,"sectors.bin"));
+
+        List<AttributeSet> attributes = new ArrayList<>();
+        int lengthBuffer = bufferFile(basePath,"attributes.bin").asLongBuffer().capacity();
+
+        for (int i = 0; i<lengthBuffer; i++){
+            AttributeSet a = new AttributeSet(bufferFile(basePath,"attributes.bin").asLongBuffer().get(i));
+            attributes.add(a);
+        }
+
+        LongBuffer nodes_osmId = bufferFile(basePath,"nodes_osmid.bin").asLongBuffer();
+
+        return new Graph(nodes,sectors,edges,attributes);
+    }
+
+    private static ByteBuffer bufferFile(Path basePath, String nameFile) throws IOException {
+        ByteBuffer buffer;
+        try (FileChannel channel = FileChannel.open(basePath.resolve(nameFile))) {
+            buffer = channel
+                    .map(FileChannel.MapMode.READ_ONLY, 0, channel.size());
+        }
+        return buffer;
+    }
 
     public int nodeCount(){
         return nodes.count();
@@ -80,50 +110,4 @@ public final class Graph {
             return (GraphEdges.Types.ALL_types.get(profileType));
         }
     }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-    /*
-       public static Graph loadFrom(Path basePath) throws IOException {
-        Path filePath = Path.of("lausanne/nodes_osmid.bin");
-        LongBuffer osmIdBuffer;
-        try (FileChannel channel = FileChannel.open(filePath)) {
-            osmIdBuffer = channel
-                    .map(FileChannel.MapMode.READ_ONLY, 0, channel.size())
-                    .asLongBuffer();
-        }
-        Path attributesPath = basePath.resolve("attributes.bin");
-        Path edgesPath = basePath.resolve("edges.bin");
-        Path elevationsPath = basePath.resolve("elevations.bin");
-        Path nodesPath = basePath.resolve("nodes.bin");
-        Path profile_idsPath = basePath.resolve("profile_ids.bin");
-        Path sectorsPath = basePath.resolve("sectors.bin");
-
-        ShortBuffer 
-
-        LongBuffer osmIdBuffer;
-        try (FileChannel channel = FileChannel.open(filePath)) {
-            osmIdBuffer = channel
-                    .map(FileChannel.MapMode.READ_ONLY, 0, channel.size())
-                    .asLongBuffer();
-        }
-
-        */
 }
