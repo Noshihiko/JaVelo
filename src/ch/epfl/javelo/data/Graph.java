@@ -40,11 +40,12 @@ public final class Graph {
         GraphSectors sectors = new GraphSectors(bufferFile(basePath,"sectors.bin"));
 
         List<AttributeSet> attributes = new ArrayList<>();
-        int lengthBuffer = bufferFile(basePath,"attributes.bin").asLongBuffer().capacity();
+        LongBuffer a =bufferFile(basePath,"attributes.bin").asLongBuffer()
+        int lengthBuffer = a.capacity();
 
         for (int i = 0; i<lengthBuffer; i++){
-            AttributeSet a = new AttributeSet(bufferFile(basePath,"attributes.bin").asLongBuffer().get(i));
-            attributes.add(a);
+            AttributeSet b = new AttributeSet(a.get(i));
+            attributes.add(b);
         }
 
         LongBuffer nodes_osmId = bufferFile(basePath,"nodes_osmid.bin").asLongBuffer();
