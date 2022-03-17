@@ -6,14 +6,13 @@ import ch.epfl.javelo.projection.PointCh;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.LongBuffer;
-import java.nio.ShortBuffer;
 import java.nio.channels.FileChannel;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.DoubleUnaryOperator;
 
-import static ch.epfl.javelo.Bits.extractUnsigned;
+import static java.lang.Math.pow;
 
 public final class Graph {
 
@@ -82,11 +81,12 @@ public final class Graph {
 
     public int nodeClosestTo(PointCh point, double searchDistance){
         int nodeId=OFFSET_NODE_CLOSEST;
-        double minDistance = Math.pow(searchDistance,2);
-
+        double minDistance = pow(searchDistance,2);
         List<GraphSectors.Sector> sectorsClosePoint= sectors.sectorsInArea(point, searchDistance);
+
         for (int i =0; i<sectorsClosePoint.size();i++){
             GraphSectors.Sector sector = sectorsClosePoint.get(i);
+
             for (int j = sector.startNodeId(); j< sector.endNodeId() ;j++){
                 if (nodePoint(j).squaredDistanceTo(point)<=minDistance){
                     nodeId = j;
@@ -118,7 +118,7 @@ public final class Graph {
     }
 
     public DoubleUnaryOperator edgeProfile(int edgeId){
-        if ((edges.hasProfile(edgeId))) {
+        if (edges.hasProfile(edgeId)) {
             return Functions.sampled(edges.profileSamples(edgeId),edgeLength(edgeId));
         } else {
             return Functions.constant(Double.NaN);
