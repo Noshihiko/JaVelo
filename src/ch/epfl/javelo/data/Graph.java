@@ -14,26 +14,7 @@ public final class Graph {
     }
 
     public static Graph loadFrom(Path basePath) throws IOException {
-        Path filePath = Path.of("lausanne/nodes_osmid.bin");
-        LongBuffer osmIdBuffer;
-        try (FileChannel channel = FileChannel.open(filePath)) {
-            osmIdBuffer = channel
-                    .map(FileChannel.MapMode.READ_ONLY, 0, channel.size())
-                    .asLongBuffer();
-        }
-        Path attributesPath = basePath.resolve("attributes.bin");
-        Path edgesPath = basePath.resolve("edges.bin");
-        Path elevationsPath = basePath.resolve("elevations.bin");
-        Path nodesPath = basePath.resolve("nodes.bin");
-        Path profile_idsPath = basePath.resolve("profile_ids.bin");
-        Path sectorsPath = basePath.resolve("sectors.bin");
 
-        ShortBuffer 
+    }
 
-        LongBuffer osmIdBuffer;
-        try (FileChannel channel = FileChannel.open(filePath)) {
-            osmIdBuffer = channel
-                    .map(FileChannel.MapMode.READ_ONLY, 0, channel.size())
-                    .asLongBuffer();
-        }
 }
