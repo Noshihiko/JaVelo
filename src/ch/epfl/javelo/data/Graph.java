@@ -1,5 +1,6 @@
 package ch.epfl.javelo.data;
 
+import ch.epfl.javelo.Functions;
 import ch.epfl.javelo.projection.PointCh;
 
 import java.io.IOException;
@@ -19,6 +20,7 @@ public final class Graph {
     private static PointCh COOR;
     private static AttributeSet OSM_ATTRIBUTES;
     private static Graph graphLoadFrom;
+    private static final int OFFSET_NODE_CLOSEST=-1;
 
     public GraphNodes nodes;
     public GraphSectors sectors;
@@ -40,7 +42,7 @@ public final class Graph {
         GraphSectors sectors = new GraphSectors(bufferFile(basePath,"sectors.bin"));
 
         List<AttributeSet> attributes = new ArrayList<>();
-        LongBuffer a =bufferFile(basePath,"attributes.bin").asLongBuffer()
+        LongBuffer a =bufferFile(basePath,"attributes.bin").asLongBuffer();
         int lengthBuffer = a.capacity();
 
         for (int i = 0; i<lengthBuffer; i++){
@@ -79,7 +81,20 @@ public final class Graph {
     }
 
     public int nodeClosestTo(PointCh point, double searchDistance){
+        int nodeId=OFFSET_NODE_CLOSEST;
+        double minDistance = Math.pow(searchDistance,2);
 
+        List<GraphSectors.Sector> sectorsClosePoint= sectors.sectorsInArea(point, searchDistance);
+        for (int i =0; i<sectorsClosePoint.size();i++){
+            GraphSectors.Sector sector = sectorsClosePoint.get(i);
+            for (int j = sector.startNodeId(); j< sector.endNodeId() ;j++){
+                if (nodePoint(j).squaredDistanceTo(point)<=minDistance){
+                    nodeId = j;
+                    minDistance=nodePoint(j).squaredDistanceTo(point);
+                }
+            }
+        }
+        return nodeId;
     }
 
     public int edgeTargetNodeId(int edgeId){
@@ -102,13 +117,11 @@ public final class Graph {
         return edges.elevationGain(edgeId);
     }
 
-    // bien fausse sa mere, j'ai modif types et all types to protected au lieu de final
     public DoubleUnaryOperator edgeProfile(int edgeId){
-        if (!(edges.hasProfile(edgeId))) {
-            return Double.NaN;
+        if ((edges.hasProfile(edgeId))) {
+            return Functions.sampled(edges.profileSamples(edgeId),edgeLength(edgeId));
         } else {
-            int profileType = extractUnsigned(profileIds.get(edgeId), 30,2);
-            return (GraphEdges.Types.ALL_types.get(profileType));
+            return Functions.constant(Double.NaN);
         }
     }
 }
