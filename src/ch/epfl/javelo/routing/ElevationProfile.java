@@ -4,11 +4,6 @@ import java.util.DoubleSummaryStatistics;
 
 import static ch.epfl.javelo.Functions.sampled;
 import static ch.epfl.javelo.Preconditions.checkArgument;
-import static java.lang.Math.abs;
-
-
-//Q3: check pour savoir si elevationsample contine bien que le deniveleé et pas l'haiteir en metre : est ce qu0il faut faire des calculs
-//en plus ou comme ca ca va?
 
 
 public final class ElevationProfile {

@@ -19,39 +19,39 @@ public final class Graph {
     private static PointCh COOR;
     private static AttributeSet OSM_ATTRIBUTES;
     private static Graph graphLoadFrom;
-    private static final int OFFSET_NODE_CLOSEST=-1;
+    private static final int OFFSET_NODE_CLOSEST = -1;
 
     public GraphNodes nodes;
     public GraphSectors sectors;
     public GraphEdges edges;
     public List<AttributeSet> attributeSets;
 
-    public Graph(GraphNodes nodes, GraphSectors sectors, GraphEdges edges, List<AttributeSet> attributeSets){
+    public Graph(GraphNodes nodes, GraphSectors sectors, GraphEdges edges, List<AttributeSet> attributeSets) {
         this.nodes = nodes;
         this.sectors = sectors;
         this.edges = edges;
         this.attributeSets = attributeSets;
     }
 
-    static Graph loadFrom(Path basePath) throws IOException{
-        GraphNodes nodes = new GraphNodes((bufferFile(basePath,"nodes.bin")).asIntBuffer());
-        GraphEdges edges = new GraphEdges(bufferFile(basePath,"edges.bin"),
-                bufferFile(basePath,"profile_ids.bin").asIntBuffer(),
-                bufferFile(basePath,"elevations.bin").asShortBuffer());
-        GraphSectors sectors = new GraphSectors(bufferFile(basePath,"sectors.bin"));
+    static Graph loadFrom(Path basePath) throws IOException {
+        GraphNodes nodes = new GraphNodes((bufferFile(basePath, "nodes.bin")).asIntBuffer());
+        GraphEdges edges = new GraphEdges(bufferFile(basePath, "edges.bin"),
+                bufferFile(basePath, "profile_ids.bin").asIntBuffer(),
+                bufferFile(basePath, "elevations.bin").asShortBuffer());
+        GraphSectors sectors = new GraphSectors(bufferFile(basePath, "sectors.bin"));
 
         List<AttributeSet> attributes = new ArrayList<>();
-        LongBuffer a =bufferFile(basePath,"attributes.bin").asLongBuffer();
+        LongBuffer a = bufferFile(basePath, "attributes.bin").asLongBuffer();
         int lengthBuffer = a.capacity();
 
-        for (int i = 0; i<lengthBuffer; i++){
+        for (int i = 0; i < lengthBuffer; i++) {
             AttributeSet b = new AttributeSet(a.get(i));
             attributes.add(b);
         }
 
-        LongBuffer nodes_osmId = bufferFile(basePath,"nodes_osmid.bin").asLongBuffer();
+        LongBuffer nodes_osmId = bufferFile(basePath, "nodes_osmid.bin").asLongBuffer();
 
-        return new Graph(nodes,sectors,edges,attributes);
+        return new Graph(nodes, sectors, edges, attributes);
     }
 
     private static ByteBuffer bufferFile(Path basePath, String nameFile) throws IOException {
@@ -63,63 +63,63 @@ public final class Graph {
         return buffer;
     }
 
-    public int nodeCount(){
+    public int nodeCount() {
         return nodes.count();
     }
 
-    public PointCh nodePoint(int nodeId){
+    public PointCh nodePoint(int nodeId) {
         return COOR = new PointCh(nodes.nodeE(nodeId), nodes.nodeN(nodeId));
     }
 
-    public int nodeOutDegree(int nodeId){
+    public int nodeOutDegree(int nodeId) {
         return nodes.outDegree(nodeId);
     }
 
-    public int nodeOutEdgeId(int nodeId, int edgeIndex){
-        return nodes.edgeId(nodeId,edgeIndex);
+    public int nodeOutEdgeId(int nodeId, int edgeIndex) {
+        return nodes.edgeId(nodeId, edgeIndex);
     }
 
-    public int nodeClosestTo(PointCh point, double searchDistance){
-        int nodeId=OFFSET_NODE_CLOSEST;
-        double minDistance = pow(searchDistance,2);
-        List<GraphSectors.Sector> sectorsClosePoint= sectors.sectorsInArea(point, searchDistance);
+    public int nodeClosestTo(PointCh point, double searchDistance) {
+        int nodeId = OFFSET_NODE_CLOSEST;
+        double minDistance = pow(searchDistance, 2);
+        List<GraphSectors.Sector> sectorsClosePoint = sectors.sectorsInArea(point, searchDistance);
 
-        for (int i =0; i<sectorsClosePoint.size();i++){
+        for (int i = 0; i < sectorsClosePoint.size(); i++) {
             GraphSectors.Sector sector = sectorsClosePoint.get(i);
 
-            for (int j = sector.startNodeId(); j< sector.endNodeId() ;j++){
-                if (nodePoint(j).squaredDistanceTo(point)<=minDistance){
+            for (int j = sector.startNodeId(); j < sector.endNodeId(); j++) {
+                if (nodePoint(j).squaredDistanceTo(point) <= minDistance) {
                     nodeId = j;
-                    minDistance=nodePoint(j).squaredDistanceTo(point);
+                    minDistance = nodePoint(j).squaredDistanceTo(point);
                 }
             }
         }
         return nodeId;
     }
 
-    public int edgeTargetNodeId(int edgeId){
+    public int edgeTargetNodeId(int edgeId) {
         return edges.targetNodeId(edgeId);
     }
 
-    public boolean edgeIsInverted(int edgeId){
+    public boolean edgeIsInverted(int edgeId) {
         return edges.isInverted(edgeId);
     }
 
-    public AttributeSet edgeAttributes(int edgeId){
+    public AttributeSet edgeAttributes(int edgeId) {
         return OSM_ATTRIBUTES = new AttributeSet(edges.attributesIndex(edgeId));
     }
 
-    public double edgeLength(int edgeId){
+    public double edgeLength(int edgeId) {
         return edges.length(edgeId);
     }
 
-    public double edgeElevationGain(int edgeId){
+    public double edgeElevationGain(int edgeId) {
         return edges.elevationGain(edgeId);
     }
 
-    public DoubleUnaryOperator edgeProfile(int edgeId){
+    public DoubleUnaryOperator edgeProfile(int edgeId) {
         if (edges.hasProfile(edgeId)) {
-            return Functions.sampled(edges.profileSamples(edgeId),edgeLength(edgeId));
+            return Functions.sampled(edges.profileSamples(edgeId), edgeLength(edgeId));
         } else {
             return Functions.constant(Double.NaN);
         }
