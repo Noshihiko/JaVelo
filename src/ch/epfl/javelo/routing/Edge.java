@@ -13,7 +13,7 @@ import static ch.epfl.javelo.projection.Ch1903.n;
 public record Edge(int fromNodeId, int toNodeId, PointCh fromPoint, PointCh toPoint, double length,
                    DoubleUnaryOperator profile) {
 
-    static Edge of(Graph graph, int edgeId, int fromNodeId, int toNodeId) {
+    public static Edge of(Graph graph, int edgeId, int fromNodeId, int toNodeId) {
         PointCh fromPoint = graph.nodePoint(fromNodeId);
         PointCh toPoint = graph.nodePoint(toNodeId);
         double length = graph.edgeLength(edgeId);
