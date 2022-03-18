@@ -12,7 +12,7 @@ public final class ElevationProfile {
     private int arrayLength;
 
 
-    ElevationProfile(double length, float[] elevationSamples) {
+    public ElevationProfile(double length, float[] elevationSamples) {
         checkArgument(length > 0 && elevationSamples.length >= 2);
         this.length = length;
         this.elevationSamples = elevationSamples.clone();
