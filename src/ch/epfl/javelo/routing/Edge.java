@@ -27,8 +27,8 @@ public record Edge(int fromNodeId, int toNodeId, PointCh fromPoint, PointCh toPo
 
     public PointCh pointAt(double position) {
         double rapport = position / length;
-        double EofPoint = interpolate(toPoint.e(), fromPoint.e(), rapport);
-        double NofPoint = interpolate(toPoint.n(), fromPoint.n(), rapport);
+        double EofPoint = interpolate(fromPoint.e(), toPoint.e(), rapport);
+        double NofPoint = interpolate(fromPoint.n(), toPoint.n(), rapport);
         return new PointCh(EofPoint, NofPoint);
     }
 
