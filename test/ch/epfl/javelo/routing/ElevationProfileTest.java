@@ -99,7 +99,6 @@ public class ElevationProfileTest {
         assertEquals(5, actual);
     }
 
-
     @Test
     void constructorThrowsOnNegativeLength(){
         assertThrows(IllegalArgumentException.class, () -> {
