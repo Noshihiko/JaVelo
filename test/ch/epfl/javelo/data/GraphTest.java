@@ -20,162 +20,8 @@ import static ch.epfl.javelo.data.Attribute.*;
 import static org.junit.jupiter.api.Assertions.*;
 
 public class GraphTest {
-
-    @Test
-    void loadFromOpensWell(){
-        try {
-            Path path = Path.of("lausanne");
-            Graph lausanne = Graph.loadFrom(path);
-        } catch (IOException e){}
-    }
-
-    @Test
-    void easyMethodsWorkWell(){
-        //2 nodes
-        IntBuffer b = IntBuffer.wrap(new int[]{
-                2_600_000 << 4,
-                1_200_000 << 4,
-                0x2_000_1234,
-                2_600_000 << 4,
-                1_200_000 << 4,
-                0x2_000_1234
-        });
-        GraphNodes ns = new GraphNodes(b);
-
-        //1 sector
-        ByteBuffer SectorsBuffer = ByteBuffer.allocate(16384 * (Integer.BYTES + Short.BYTES));
-        SectorsBuffer.putInt(0, 835836139);
-        SectorsBuffer.putShort(4, (short) 1);
-        GraphSectors Graphsectors = new GraphSectors(SectorsBuffer);
-
-        //1 edge
-        ByteBuffer edgesBuffer = ByteBuffer.allocate(10);
-        // Sens : inversé. Nœud destination : 12.
-        edgesBuffer.putInt(0, ~12);
-        // Longueur : 0x10.b m (= 16.6875 m)
-        edgesBuffer.putShort(4, (short) 0x10_b);
-        // Dénivelé : 0x10.0 m (= 16.0 m)
-        edgesBuffer.putShort(6, (short) 0x10_0);
-        // Identité de l'ensemble d'attributs OSM : 1
-        edgesBuffer.putShort(8, (short) 2022);
-        IntBuffer profileIds = IntBuffer.wrap(new int[]{
-                // Type : 3. Index du premier échantillon : 1.
-                (3 << 30) | 1
-        });
-        ShortBuffer elevations = ShortBuffer.wrap(new short[]{
-                (short) 0,
-                (short) 0x180C, (short) 0xFEFF, (short) 0xFFFE, (short) 0xF000
-        });
-        GraphEdges edges = new GraphEdges(edgesBuffer, profileIds, elevations);
-
-        //1 attribut
-        List<AttributeSet> attributeSets = new ArrayList<>();
-        attributeSets.add(AttributeSet.of(HIGHWAY_SERVICE));
-
-        Graph graph = new Graph(ns, Graphsectors, edges, attributeSets);
-
-        assertEquals(2, graph.nodeCount());
-
-        PointCh pointNode1 = new PointCh(2_600_000, 1_200_000);
-        assertEquals(pointNode1, graph.nodePoint(0));
-        assertEquals(pointNode1, graph.nodePoint(1));
-
-        assertEquals(2, graph.nodeOutDegree(0));
-        assertEquals(0x1234, graph.nodeOutEdgeId(0,0));
-
-        assertEquals(12, graph.edgeTargetNodeId(0));
-        assertTrue(graph.edgeIsInverted(0));
-
-        assertEquals(16.6875, graph.edgeLength(0));
-        assertEquals(16.0, graph.edgeElevationGain(0));
-
-        float[] expectedSamples = new float[]{
-                384.0625f, 384.125f, 384.25f, 384.3125f, 384.375f,
-                384.4375f, 384.5f, 384.5625f, 384.6875f, 384.75f
-        };
-        DoubleUnaryOperator a = Functions.sampled(expectedSamples, 16.6875);
-    }
-
-    @Test
-    void nodeClosestToTest(){
-        IntBuffer b = IntBuffer.wrap(new int[]{
-                2_600_000 << 4,
-                1_200_000 << 4,
-                0x2_000_1234,
-                2_800_000 << 4,
-                1_100_000 << 4,
-                0x2_000_1834
-        });
-        GraphNodes ns = new GraphNodes(b);
-
-        //1 sector
-        ByteBuffer SectorsBuffer = ByteBuffer.allocate(16384 * (Integer.BYTES + Short.BYTES));
-        SectorsBuffer.putInt(0, 1);
-        SectorsBuffer.putShort(4, (short) 1);
-        GraphSectors Graphsectors = new GraphSectors(SectorsBuffer);
-
-        GraphSectors.Sector sector1 = new GraphSectors.Sector(1, 2);
-        ArrayList<GraphSectors.Sector> sectors = new ArrayList();
-        sectors.add(sector1);
-
-        //1 edge
-        ByteBuffer edgesBuffer = ByteBuffer.allocate(10);
-        // Sens : inversé. Nœud destination : 12.
-        edgesBuffer.putInt(0, ~12);
-        // Longueur : 0x10.b m (= 16.6875 m)
-        edgesBuffer.putShort(4, (short) 0x10_b);
-        // Dénivelé : 0x10.0 m (= 16.0 m)
-        edgesBuffer.putShort(6, (short) 0x10_0);
-        // Identité de l'ensemble d'attributs OSM : 1
-        edgesBuffer.putShort(8, (short) 2022);
-        IntBuffer profileIds = IntBuffer.wrap(new int[]{
-                // Type : 3. Index du premier échantillon : 1.
-                (3 << 30) | 1
-        });
-        ShortBuffer elevations = ShortBuffer.wrap(new short[]{
-                (short) 0,
-                (short) 0x180C, (short) 0xFEFF, (short) 0xFFFE, (short) 0xF000
-        });
-        GraphEdges edges = new GraphEdges(edgesBuffer, profileIds, elevations);
-
-        //1 attribut
-        List<AttributeSet> attributeSets = new ArrayList<>();
-        attributeSets.add(AttributeSet.of(HIGHWAY_SERVICE));
-
-        Graph graph = new Graph(ns, Graphsectors, edges, attributeSets);
-
-        PointCh actual = new PointCh(2_485_000, 1_200_000);
-        assertEquals(1, graph.nodeClosestTo(actual, 2));
-    }
-
-
     private static final int SUBDIVISIONS_PER_SIDE = 128;
     private static final int SECTORS_COUNT = SUBDIVISIONS_PER_SIDE * SUBDIVISIONS_PER_SIDE;
-
-
-    private static GraphSectors createSectorsGraph() {
-        ByteBuffer sectorsBuffer = ByteBuffer.allocate(SECTORS_COUNT * (Integer.BYTES + Short.BYTES));
-        for (int i = 0; i < SECTORS_COUNT; i += 1) {
-            sectorsBuffer.putInt(i*Integer.BYTES ,i);
-            sectorsBuffer.putShort(i*(Integer.BYTES+Short.BYTES),(short) 1);
-        }
-        assert !sectorsBuffer.hasRemaining();
-        return new GraphSectors(sectorsBuffer);
-    }
-
-    private static GraphNodes createNodeGraph() {
-        var nodesCount = 10_0000;
-        var buffer = IntBuffer.allocate(3 * nodesCount);
-        for (int i = 0; i < nodesCount*3; i += 1) {
-            var e = 2_600_000 + i;
-            var n = 1_200_000 + i;
-            var nodeId = i;
-            buffer.put(3 * i, e);
-            buffer.put(3 * i + 1, n);
-        }
-        return new GraphNodes(buffer);
-    }
-
 
     private static final double DELTA = 1./16;
 
@@ -341,37 +187,6 @@ public class GraphTest {
 
     }
 
-    @Test
-    void edgeAttributes() throws  IOException{
-        Graph graph = Graph.loadFrom(Path.of("lausanne"));
-
-        LongBuffer osmNodesBuffer;
-        try (FileChannel channel = FileChannel.open(Path.of("lausanne/nodes_osmid.bin"))) {
-            osmNodesBuffer = channel
-                    .map(FileChannel.MapMode.READ_ONLY, 0, channel.size())
-                    .asLongBuffer();
-        }
-        int index = nodeFinder(253204523, osmNodesBuffer);
-        int edgeIndex = graph.nodeOutEdgeId(index ,0);
-
-        AttributeSet output = AttributeSet.of(HIGHWAY_TERTIARY, SURFACE_ASPHALT);
-        assertEquals(output, graph.edgeAttributes(edgeIndex));
-
-        edgeIndex = graph.nodeOutEdgeId(index ,1);
-        output = AttributeSet.of(HIGHWAY_TERTIARY, SURFACE_ASPHALT);
-        assertEquals(output, graph.edgeAttributes(edgeIndex));
-
-
-        index = nodeFinder(1505761262, osmNodesBuffer);
-        edgeIndex = graph.nodeOutEdgeId(index ,0);
-
-        output = AttributeSet.of(HIGHWAY_MOTORWAY, SURFACE_ASPHALT, ONEWAY_YES);
-        assertEquals(output, graph.edgeAttributes(edgeIndex));
-
-        edgeIndex = graph.nodeOutEdgeId(index ,1);
-        output = AttributeSet.of(HIGHWAY_MOTORWAY, SURFACE_ASPHALT, ONEWAY_YES);
-        assertEquals(output, graph.edgeAttributes(edgeIndex));
-    }
 
     @Test
     void edgeLengthOnSmallRoute() throws IOException{
@@ -415,5 +230,254 @@ public class GraphTest {
         System.out.println("node not found");
         return -1;
     }
+
+
+
+    @Test
+    void testLoadFrom() throws IOException {
+        Path basePath0 = Path.of("lausanne");
+        Graph graph0 = Graph.loadFrom(basePath0);
+
+        /**
+         * NODES TEST
+         */
+        Path filePath = Path.of("lausanne/nodes.bin");
+        IntBuffer nodesBuffer;
+        try (FileChannel channel = FileChannel.open(filePath)) {
+            nodesBuffer = channel.map(FileChannel.MapMode.READ_ONLY, 0, channel.size()).asIntBuffer();
+        }
+        GraphNodes graphNodes1 = new GraphNodes(nodesBuffer);
+
+        assertEquals(new PointCh(graphNodes1.nodeE(2022), graphNodes1.nodeN(2022)), graph0.nodePoint(2022));
+        assertEquals(new PointCh(graphNodes1.nodeE(graph0.nodeCount()-1), graphNodes1.nodeN(graph0.nodeCount()-1)), graph0.nodePoint(graph0.nodeCount()-1));
+        assertNotEquals(new PointCh(graphNodes1.nodeE(500), graphNodes1.nodeN(501)), graph0.nodePoint(500));
+        assertEquals(graphNodes1.count(), graph0.nodeCount());
+
+    }
+
+    @Test
+    void testNodeCount() throws IOException {
+        Path basePath0 = Path.of("lausanne");
+        Graph graph0 = Graph.loadFrom(basePath0);
+
+        Path nodesPath = Path.of("lausanne/nodes.bin");
+        IntBuffer nodeBuffer;
+        try (FileChannel channel = FileChannel.open(nodesPath)) {
+            nodeBuffer = channel.map(FileChannel.MapMode.READ_ONLY, 0, channel.size()).asIntBuffer();
+        }
+
+        assertEquals(nodeBuffer.capacity()/3, graph0.nodeCount());
+    }
+
+    @Test
+    void testGraph() throws IOException {
+        Path filePath = Path.of("lausanne/nodes.bin");
+        IntBuffer nodesBuffer;
+        try (FileChannel channel = FileChannel.open(filePath)) {
+            nodesBuffer = channel.map(FileChannel.MapMode.READ_ONLY, 0, channel.size()).asIntBuffer();
+        }
+
+        Path filePath1 = Path.of("lausanne/nodes_osmid.bin");
+        LongBuffer osmIdBuffer;
+        try (FileChannel channel = FileChannel.open(filePath1)) {
+            osmIdBuffer = channel.map(FileChannel.MapMode.READ_ONLY, 0, channel.size()).asLongBuffer();
+        }
+
+        GraphNodes graphNodes = new GraphNodes(nodesBuffer);
+    }
+
+    @Test
+    void loadFromOpensWell(){
+        try {
+            Path path = Path.of("lausanne");
+            Graph lausanne = Graph.loadFrom(path);
+        } catch (IOException e){}
+    }
+
+    @Test
+    void easyMethodsWorkWell(){
+        //2 nodes
+        IntBuffer b = IntBuffer.wrap(new int[]{
+                2_600_000 << 4,
+                1_200_000 << 4,
+                0x2_000_1234,
+                2_600_000 << 4,
+                1_200_000 << 4,
+                0x2_000_1234
+        });
+        GraphNodes ns = new GraphNodes(b);
+
+        //1 sector
+        ByteBuffer SectorsBuffer = ByteBuffer.allocate(16384 * (Integer.BYTES + Short.BYTES));
+        SectorsBuffer.putInt(0, 835836139);
+        SectorsBuffer.putShort(4, (short) 1);
+        GraphSectors Graphsectors = new GraphSectors(SectorsBuffer);
+
+        //1 edge
+        ByteBuffer edgesBuffer = ByteBuffer.allocate(10);
+        // Sens : inversé. Nœud destination : 12.
+        edgesBuffer.putInt(0, ~12);
+        // Longueur : 0x10.b m (= 16.6875 m)
+        edgesBuffer.putShort(4, (short) 0x10_b);
+        // Dénivelé : 0x10.0 m (= 16.0 m)
+        edgesBuffer.putShort(6, (short) 0x10_0);
+        // Identité de l'ensemble d'attributs OSM : 1
+        edgesBuffer.putShort(8, (short) 2022);
+        IntBuffer profileIds = IntBuffer.wrap(new int[]{
+                // Type : 3. Index du premier échantillon : 1.
+                (3 << 30) | 1
+        });
+        ShortBuffer elevations = ShortBuffer.wrap(new short[]{
+                (short) 0,
+                (short) 0x180C, (short) 0xFEFF, (short) 0xFFFE, (short) 0xF000
+        });
+        GraphEdges edges = new GraphEdges(edgesBuffer, profileIds, elevations);
+
+        //1 attribut
+        List<AttributeSet> attributeSets = new ArrayList<>();
+        attributeSets.add(AttributeSet.of(HIGHWAY_SERVICE));
+
+        Graph graph = new Graph(ns, Graphsectors, edges, attributeSets);
+
+        assertEquals(2, graph.nodeCount());
+
+        PointCh pointNode1 = new PointCh(2_600_000, 1_200_000);
+        assertEquals(pointNode1, graph.nodePoint(0));
+        assertEquals(pointNode1, graph.nodePoint(1));
+
+        assertEquals(2, graph.nodeOutDegree(0));
+        assertEquals(0x1234, graph.nodeOutEdgeId(0,0));
+
+        assertEquals(12, graph.edgeTargetNodeId(0));
+        assertTrue(graph.edgeIsInverted(0));
+
+        assertEquals(16.6875, graph.edgeLength(0));
+        assertEquals(16.0, graph.edgeElevationGain(0));
+
+        float[] expectedSamples = new float[]{
+                384.0625f, 384.125f, 384.25f, 384.3125f, 384.375f,
+                384.4375f, 384.5f, 384.5625f, 384.6875f, 384.75f
+        };
+        DoubleUnaryOperator a = Functions.sampled(expectedSamples, 16.6875);
+    }
+
+    @Test
+    void nodeClosestToTest(){
+        IntBuffer b = IntBuffer.wrap(new int[]{
+                2_600_000 << 4,
+                1_200_000 << 4,
+                0x2_000_1234,
+                2_800_000 << 4,
+                1_100_000 << 4,
+                0x2_000_1834
+        });
+        GraphNodes ns = new GraphNodes(b);
+
+        //1 sector
+        ByteBuffer SectorsBuffer = ByteBuffer.allocate(16384 * (Integer.BYTES + Short.BYTES));
+        SectorsBuffer.putInt(0, 1);
+        SectorsBuffer.putShort(4, (short) 1);
+        GraphSectors Graphsectors = new GraphSectors(SectorsBuffer);
+
+        GraphSectors.Sector sector1 = new GraphSectors.Sector(1, 2);
+        ArrayList<GraphSectors.Sector> sectors = new ArrayList();
+        sectors.add(sector1);
+
+//1 edge
+        ByteBuffer edgesBuffer = ByteBuffer.allocate(10);
+        // Sens : inversé. Nœud destination : 12.
+        edgesBuffer.putInt(0, ~12);
+        // Longueur : 0x10.b m (= 16.6875 m)
+        edgesBuffer.putShort(4, (short) 0x10_b);
+        // Dénivelé : 0x10.0 m (= 16.0 m)
+        edgesBuffer.putShort(6, (short) 0x10_0);
+        // Identité de l'ensemble d'attributs OSM : 1
+        edgesBuffer.putShort(8, (short) 2022);
+        IntBuffer profileIds = IntBuffer.wrap(new int[]{
+                // Type : 3. Index du premier échantillon : 1.
+                (3 << 30) | 1
+        });
+        ShortBuffer elevations = ShortBuffer.wrap(new short[]{
+                (short) 0,
+                (short) 0x180C, (short) 0xFEFF, (short) 0xFFFE, (short) 0xF000
+        });
+        GraphEdges edges = new GraphEdges(edgesBuffer, profileIds, elevations);
+
+        //1 attribut
+        List<AttributeSet> attributeSets = new ArrayList<>();
+        attributeSets.add(AttributeSet.of(HIGHWAY_SERVICE));
+
+        Graph graph = new Graph(ns, Graphsectors, edges, attributeSets);
+
+        PointCh pointNode1 = new PointCh(2_600_000, 1_200_000);
+
+        PointCh point = new PointCh(2_800_000, 1_100_000);
+
+        PointCh actual = new PointCh(2700000, 1075000);
+
+        assertEquals(1, graph.nodeClosestTo(actual, 500000));
+    }
+
+
+
+    private static GraphSectors createSectorsGraph() {
+        ByteBuffer sectorsBuffer = ByteBuffer.allocate(SECTORS_COUNT * (Integer.BYTES + Short.BYTES));
+        for (int i = 0; i < SECTORS_COUNT; i += 1) {
+            sectorsBuffer.putInt(i*Integer.BYTES ,i);
+            sectorsBuffer.putShort(i*(Integer.BYTES+Short.BYTES),(short) 1);
+        }
+        assert !sectorsBuffer.hasRemaining();
+        return new GraphSectors(sectorsBuffer);
+    }
+
+    private static GraphNodes createNodeGraph() {
+        var nodesCount = 10_0000;
+        var buffer = IntBuffer.allocate(3 * nodesCount);
+        for (int i = 0; i < nodesCount*3; i += 1) {
+            var e = 2_600_000 + i;
+            var n = 1_200_000 + i;
+            var nodeId = i;
+            buffer.put(3 * i, e);
+            buffer.put(3 * i + 1, n);
+        }
+        return new GraphNodes(buffer);
+    }
+
+
+
+
+
+    @Test
+    void edgeAttributes() throws IOException{
+        Graph graph = Graph.loadFrom(Path.of("lausanne"));
+
+        LongBuffer osmNodesBuffer;
+        try (FileChannel channel = FileChannel.open(Path.of("lausanne/nodes_osmid.bin"))) {
+            osmNodesBuffer = channel
+                    .map(FileChannel.MapMode.READ_ONLY, 0, channel.size())
+                    .asLongBuffer();
+        }
+        int index = nodeFinder(253204523, osmNodesBuffer);
+        int edgeIndex = graph.nodeOutEdgeId(index ,0);
+
+        AttributeSet output = AttributeSet.of(HIGHWAY_TERTIARY, SURFACE_ASPHALT);
+        assertEquals(output, graph.edgeAttributes(edgeIndex));
+
+        edgeIndex = graph.nodeOutEdgeId(index ,1);
+        output = AttributeSet.of(HIGHWAY_TERTIARY, SURFACE_ASPHALT);
+        assertEquals(output, graph.edgeAttributes(edgeIndex));
+
+
+        index = nodeFinder(1505761262, osmNodesBuffer);
+        edgeIndex = graph.nodeOutEdgeId(index ,0);
+
+        output = AttributeSet.of(HIGHWAY_MOTORWAY, SURFACE_ASPHALT, ONEWAY_YES);
+        assertEquals(output, graph.edgeAttributes(edgeIndex));
+
+        edgeIndex = graph.nodeOutEdgeId(index ,1);
+        output = AttributeSet.of(HIGHWAY_MOTORWAY, SURFACE_ASPHALT, ONEWAY_YES);
+        assertEquals(output, graph.edgeAttributes(edgeIndex));
+    }
+
 
 }
