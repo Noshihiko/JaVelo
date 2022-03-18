@@ -99,27 +99,6 @@ public class ElevationProfileTest {
         assertEquals(5, actual);
     }
 
-    /*@Test
-    void GoodElevationAtPositionDouble(){
-        var elevationprofile = new ElevationProfile(6, elevationSamplesNormal);
-        var actual = elevationprofile.elevationAt(2.8);
-        assertEquals(2, actual);
-    }
-
-    @Test
-    void GoodElevationAtPositionDouble2(){
-        var elevationprofile = new ElevationProfile(6, elevationSamplesNormal);
-        var actual = elevationprofile.elevationAt(3.0);//Intréssant car il arrondit en bas alors qu'il est pile au milieu
-        assertEquals(2, actual);
-    }
-
-    @Test
-    void GoodElevationAtPositionDouble3(){
-        var elevationprofile = new ElevationProfile(6, elevationSamplesNormal);
-        var actual = elevationprofile.elevationAt(3.8);
-        assertEquals(9, actual);
-    }*/
-
     @Test
     void constructorThrowsOnNegativeLength(){
         assertThrows(IllegalArgumentException.class, () -> {

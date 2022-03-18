@@ -14,6 +14,13 @@ import java.util.function.DoubleUnaryOperator;
 
 import static java.lang.Math.pow;
 
+/**
+ * Représente le graphe JaVelo
+ *
+ *  @author Camille Espieux (324248)
+ *  @author Chiara Freneix (329552)
+ *
+ */
 public final class Graph {
 
     private static PointCh COOR;
@@ -26,6 +33,14 @@ public final class Graph {
     public GraphEdges edges;
     public List<AttributeSet> attributeSets;
 
+    /**
+     * Constructeur de Graph
+     *
+     * @param nodes
+     * @param sectors
+     * @param edges
+     * @param attributeSets
+     */
     public Graph(GraphNodes nodes, GraphSectors sectors, GraphEdges edges, List<AttributeSet> attributeSets) {
         this.nodes = nodes;
         this.sectors = sectors;
@@ -33,7 +48,7 @@ public final class Graph {
         this.attributeSets = attributeSets;
     }
 
-    static Graph loadFrom(Path basePath) throws IOException {
+    public static Graph loadFrom(Path basePath) throws IOException {
         GraphNodes nodes = new GraphNodes((bufferFile(basePath, "nodes.bin")).asIntBuffer());
         GraphEdges edges = new GraphEdges(bufferFile(basePath, "edges.bin"),
                 bufferFile(basePath, "profile_ids.bin").asIntBuffer(),

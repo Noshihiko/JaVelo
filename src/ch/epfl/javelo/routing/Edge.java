@@ -35,6 +35,7 @@ import static ch.epfl.javelo.Math2.projectionLength;
 public record Edge(int fromNodeId, int toNodeId, PointCh fromPoint, PointCh toPoint, double length,
                    DoubleUnaryOperator profile) {
 
+
     /**
      * retourne une instance de Edge
      *
@@ -50,7 +51,7 @@ public record Edge(int fromNodeId, int toNodeId, PointCh fromPoint, PointCh toPo
      * @return une instance de Edge
      */
 
-    static Edge of(Graph graph, int edgeId, int fromNodeId, int toNodeId) {
+    public static Edge of(Graph graph, int edgeId, int fromNodeId, int toNodeId) {
         PointCh fromPoint = graph.nodePoint(fromNodeId);
         PointCh toPoint = graph.nodePoint(toNodeId);
         double length = graph.edgeLength(edgeId);

@@ -30,7 +30,7 @@ public final class ElevationProfile {
      *              ou si le tableau d'échantillons contient moins de 2 éléments
      */
 
-    ElevationProfile(double length, float[] elevationSamples) {
+    public ElevationProfile(double length, float[] elevationSamples) {
         checkArgument(length > 0 && elevationSamples.length >= 2);
         this.length = length;
         this.elevationSamples = elevationSamples.clone();
