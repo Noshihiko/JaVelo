@@ -7,11 +7,48 @@ import java.util.function.DoubleUnaryOperator;
 
 import static ch.epfl.javelo.Math2.interpolate;
 import static ch.epfl.javelo.Math2.projectionLength;
-import static ch.epfl.javelo.projection.Ch1903.e;
-import static ch.epfl.javelo.projection.Ch1903.n;
+
+/**
+ * Représente une arête d'un itinéraire
+ *
+ * @author Camille Espieux (324248)
+ * @author Chiara Freneix (329552)
+ */
+
+/**
+ * Enregistrement Edge
+ *
+ * @param fromNodeId
+ *          identité du nœud de départ de l'arête
+ * @param toNodeId
+ *          identité du nœud d'arrivée de l'arête
+ * @param fromPoint
+ *          point de départ de l'arête
+ * @param toPoint
+ *          point d'arrivée de l'arête
+ * @param length
+ *          longueur de l'arête en mètres
+ * @param profile
+ *          profil en long de l'arête
+ */
 
 public record Edge(int fromNodeId, int toNodeId, PointCh fromPoint, PointCh toPoint, double length,
                    DoubleUnaryOperator profile) {
+
+    /**
+     * retourne une instance de Edge
+     *
+     * @param graph
+     *          graphe Javelo
+     * @param edgeId
+     *          identité de l'arrete
+     * @param fromNodeId
+     *          identité du nœud de départ de l'arête
+     * @param toNodeId
+     *          identité du nœud d'arrivée de l'arête
+     *
+     * @return une instance de Edge
+     */
 
     static Edge of(Graph graph, int edgeId, int fromNodeId, int toNodeId) {
         PointCh fromPoint = graph.nodePoint(fromNodeId);
@@ -21,9 +58,27 @@ public record Edge(int fromNodeId, int toNodeId, PointCh fromPoint, PointCh toPo
         return new Edge(fromNodeId, toNodeId, fromPoint, toPoint, length, profile);
     }
 
+    /**
+     * retourne la position le long de l'arête en mètres qui se trouve la plus proche du point donné
+     *
+     * @param point
+     *          point donné dont on cherche la positionla plus proche sur l'arete
+     *
+     * @return la position le long de l'arête en mètres qui se trouve la plus proche du point donné
+     */
+
     public double positionClosestTo(PointCh point) {
         return projectionLength(fromPoint.e(), fromPoint.n(), toPoint.e(), toPoint.n(), point.e(), point.n());
     }
+
+    /**
+     * retourne le point se trouvant à la position donnée sur l'arête exprimée en mètres
+     *
+     * @param position
+     *          position sur l'arete mètre
+     *
+     * @return le point se trouvant à la position donnée sur l'arête exprimée en mètres
+     */
 
     public PointCh pointAt(double position) {
         double rapport = position / length;
@@ -31,6 +86,15 @@ public record Edge(int fromNodeId, int toNodeId, PointCh fromPoint, PointCh toPo
         double NofPoint = interpolate(fromPoint.n(), toPoint.n(), rapport);
         return new PointCh(EofPoint, NofPoint);
     }
+
+    /**
+     * retourne l'altitude, en mètres, à la position donnée sur l'arête
+     *
+     * @param position
+     *          position sur l'arete mètre
+     *
+     * @return l'altitude en mètres à la position donnée sur l'arête
+     */
 
     public double elevationAt(double position) {
         return profile.applyAsDouble(position / length);
