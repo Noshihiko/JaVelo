@@ -446,7 +446,7 @@ public class GraphTest {
 
 
 
-
+    /*
     @Test
     void edgeAttributes() throws IOException{
         Graph graph = Graph.loadFrom(Path.of("lausanne"));
@@ -478,6 +478,8 @@ public class GraphTest {
         output = AttributeSet.of(HIGHWAY_MOTORWAY, SURFACE_ASPHALT, ONEWAY_YES);
         assertEquals(output, graph.edgeAttributes(edgeIndex));
     }
+
+     */
 
 
 }
