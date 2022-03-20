@@ -7,7 +7,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Représente un itinéraire simple  c.-à-d. reliant un point de départ à un point d'arrivée, sans point de passage intermédiaire
+ * Représente un itinéraire simple c.-à-d. reliant un point de départ à un point d'arrivée, sans point de passage intermédiaire
  *
  * @author Camille Espieux (324248)
  * @author Chiara Freneix (329552)
@@ -26,13 +26,13 @@ public final class SingleRoute implements Route{
 
     @Override
     public double length() {
-        double a = 0;
+        double length = 0;
 
         //demander à assistant si je dois faire ce qui m'est proposé en orange
         for (int i= 0; i < edges().size(); i ++){
-            a += edges().get(i).length();
+            length += edges().get(i).length();
         }
-        return a;
+        return length;
     }
 
     @Override
@@ -57,18 +57,36 @@ public final class SingleRoute implements Route{
         return pointsExtremums;
     }
 
+    //conditions position
+    private double positionCheck(double position){
+        if (position<0){
+            position = 0;
+        } else if (position > length()){
+            position = length();
+        }
+        return position;
+    }
+
+    //a faire :
     @Override
     public PointCh pointAt(double position) {
+        position= positionCheck(position);
         return null;
     }
 
+
+    //assistant
     @Override
     public double elevationAt(double position) {
+        position= positionCheck(position);
+        //return ElevationProfile.elevationAt(position);
+        //mettre elevationAt en static ?
         return 0;
     }
 
     @Override
     public int nodeClosestTo(double position) {
+        position= positionCheck(position);
         return 0;
     }
 
