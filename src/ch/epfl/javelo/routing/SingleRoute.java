@@ -29,7 +29,7 @@ public final class SingleRoute implements Route{
         double length = 0;
 
         //demander à assistant si je dois faire ce qui m'est proposé en orange
-        for (int i= 0; i < edges().size(); i ++){
+        for (int i = 0; i < edges().size(); i++){
             length += edges().get(i).length();
         }
         return length;
@@ -37,15 +37,15 @@ public final class SingleRoute implements Route{
 
     @Override
     public List<Edge> edges() {
-        //pas sûre
+        //pas bon : pk?
         return this.edges();
     }
 
     @Override
     public List<PointCh> points() {
-        List<PointCh> pointsExtremums= new ArrayList<>();
+        List<PointCh> pointsExtremums = new ArrayList<>();
 
-        int indexFinalPoint = edges().size()-1;
+        int indexFinalPoint = edges().size() - 1;
         Edge finalEdge = edges().get(indexFinalPoint);
 
         //liste de tous les premiers points des edges et du dernier de la dernière edge
@@ -59,7 +59,7 @@ public final class SingleRoute implements Route{
 
     //conditions position
     private double positionCheck(double position){
-        if (position<0){
+        if (position < 0){
             position = 0;
         } else if (position > length()){
             position = length();
@@ -67,10 +67,10 @@ public final class SingleRoute implements Route{
         return position;
     }
 
-    //a faire :
+    //à faire :
     @Override
     public PointCh pointAt(double position) {
-        position= positionCheck(position);
+        position = positionCheck(position);
         return null;
     }
 
@@ -78,7 +78,7 @@ public final class SingleRoute implements Route{
     //assistant
     @Override
     public double elevationAt(double position) {
-        position= positionCheck(position);
+        position = positionCheck(position);
         //return ElevationProfile.elevationAt(position);
         //mettre elevationAt en static ?
         return 0;
@@ -86,7 +86,7 @@ public final class SingleRoute implements Route{
 
     @Override
     public int nodeClosestTo(double position) {
-        position= positionCheck(position);
+        position = positionCheck(position);
         return 0;
     }
 
