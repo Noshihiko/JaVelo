@@ -26,9 +26,9 @@ public record RoutePoint(PointCh point, double position, double distanceToRefere
      * qui peut être positive ou négative
      *
      * @param positionDifference
-     *          la différence de position (négative ou positive)
+     *          différence de position (négative ou positive)
      *
-     * @return retourne un point identique mais dont la position est décalée
+     * @return un point identique, mais dont la position est décalée
      */
     public RoutePoint withPositionShiftedBy(double positionDifference) {
         return new RoutePoint(this.point, this.position + positionDifference, this.distanceToReference);
@@ -38,11 +38,10 @@ public record RoutePoint(PointCh point, double position, double distanceToRefere
      * Retourne un point d'itinéraire
      *
      * @param that
-     *          le point d'itinéraire que l'on compare
-     * @return this
-     *          si sa distance à la référence est inférieur ou égale à celle de that
-     * @return that
-     *          si non
+     *          point d'itinéraire que l'on compare
+     *
+     * @return this si sa distance à la référence est inférieur ou égale à celle de that
+     * sinon, that
      */
     public RoutePoint min(RoutePoint that) {
         return ((this.distanceToReference <= that.distanceToReference) ? this : that);
@@ -57,10 +56,9 @@ public record RoutePoint(PointCh point, double position, double distanceToRefere
      *          attribut pour le point that
      * @param thatDistanceToReference
      *          attribut pour le point that
-     * @return this
-     *          si sa distance à la référence est inférieure ou égale à thatDistanceToReference
-     * @return une nouvelle instance de RoutePoint dont les attributs sont les arguments passés à min
-     *          si non
+     *
+     * @return this si sa distance à la référence est inférieure ou égale à thatDistanceToReference
+     * sinon, une nouvelle instance de RoutePoint dont les attributs sont les arguments passés à min
      */
     public RoutePoint min(PointCh thatPoint, double thatPosition, double thatDistanceToReference) {
         return ((this.distanceToReference <= thatDistanceToReference) ? this : new RoutePoint(thatPoint, thatPosition, thatDistanceToReference));
