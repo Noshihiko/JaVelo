@@ -14,17 +14,17 @@ import static ch.epfl.javelo.Q28_4.asDouble;
 import static ch.epfl.javelo.Q28_4.asFloat;
 
 /**
- * Permet de recuperer les informations concernant les arretes
+ * Permet de récupérer les informations concernant les arêtes
  *
  * @author Camille Espieux (324248)
  * @author Chiara Freneix (329552)
  *
  * @param edgesBuffer
- *              memoire tampon contenant la valeur des attributs figurant dans la première table
+ *              mémoire tampon contenant la valeur des attributs figurant dans la première table
  * @param profileIds
- *              la mémoire tampon contenant la valeur des attributs figurant dans la seconde table
+ *              mémoire tampon contenant la valeur des attributs figurant dans la seconde table
  * @param elevations
- *              la mémoire tampon contenant la totalité des échantillons des profils, compressés ou non
+ *              mémoire tampon contenant la totalité des échantillons des profils, compressés ou non
  */
 
 public record GraphEdges(ByteBuffer edgesBuffer, IntBuffer profileIds, ShortBuffer elevations) {
@@ -35,7 +35,7 @@ public record GraphEdges(ByteBuffer edgesBuffer, IntBuffer profileIds, ShortBuff
     private static final int OFFSET_BYTES_PER_EDGE = OFFSET_IDENTITY + Short.BYTES;
 
     /**
-     * Enumeration privé representant les differents types de profils
+     * Enumeration privée représentant les différents types de profils
      */
 
     private enum Types {
@@ -46,11 +46,12 @@ public record GraphEdges(ByteBuffer edgesBuffer, IntBuffer profileIds, ShortBuff
     }
 
     /**
-     * Retourne vrai ou faux en fonction du sens de l'arrete
+     * Retourne vrai ou faux en fonction du sens de l'arête
      *
-     * @param edgeId : identité de l'arrete donnèe en paramètre
+     * @param edgeId
+     *          identité de l'arête donnée en paramètre
      *
-     * @return vrai si l'arrete va dans le sens inverse du noeud OSM dont elle provient
+     * @return vrai si l'arête va dans le sens inverse du nœud OSM dont elle provient
      */
 
     public boolean isInverted(int edgeId) {
@@ -59,11 +60,12 @@ public record GraphEdges(ByteBuffer edgesBuffer, IntBuffer profileIds, ShortBuff
     }
 
     /**
-     * Retourne l'identité du noeud destination de l'arrete
+     * Retourne l'identité du nœud destination de l'arête
      *
-     * @param edgeId : identite de l'arrete
+     * @param edgeId
+     *          identité de l'arête
      *
-     * @return l'identité du noeud destination de l'arrete
+     * @return l'identité du nœud destination de l'arête
      */
 
     public int targetNodeId(int edgeId) {
@@ -73,11 +75,12 @@ public record GraphEdges(ByteBuffer edgesBuffer, IntBuffer profileIds, ShortBuff
     }
 
     /**
-     * Retourne la longueur de l'arrete passè en parametre
+     * Retourne la longueur de l'arête passée en paramètre
      *
-     * @param edgeId : identite de l'arrete
+     * @param edgeId
+     *          identité de l'arête
      *
-     * @return la longueur de l'arrete en mètres
+     * @return la longueur de l'arête en mètres
      */
 
     public double length(int edgeId) {
@@ -86,11 +89,12 @@ public record GraphEdges(ByteBuffer edgesBuffer, IntBuffer profileIds, ShortBuff
     }
 
     /**
-     * Retourne le denivelé positif de l'arrete en mètres
+     * Retourne le dénivelé positif de l'arête en mètres
      *
-     * @param edgeId : identite de l'arrete
+     * @param edgeId
+     *          identité de l'arête
      *
-     * @return le denivelé positif de l'arrete en mètres
+     * @return le dénivelé positif de l'arête en mètres
      */
 
     public double elevationGain(int edgeId) {
@@ -99,11 +103,12 @@ public record GraphEdges(ByteBuffer edgesBuffer, IntBuffer profileIds, ShortBuff
     }
 
     /**
-     * Indique si l'arrete possede un profil
+     * Indique si l'arête possède un profil
      *
-     * @param edgeId : identite de l'arrete
+     * @param edgeId
+     *          identité de l'arête
      *
-     * @return vrai si l'arrete possède un profil
+     * @return vrai si l'arête possède un profil
      */
 
     public boolean hasProfile(int edgeId) {
@@ -114,7 +119,8 @@ public record GraphEdges(ByteBuffer edgesBuffer, IntBuffer profileIds, ShortBuff
     /**
      * Retourne le tableau des échantillons du profil de l'arête
      *
-     * @param edgeId : identite de l'arrete
+     * @param edgeId
+     *          identité de l'arête
      *
      * @return le tableau des échantillons du profil de l'arête d'identité donnée
      */
@@ -169,11 +175,12 @@ public record GraphEdges(ByteBuffer edgesBuffer, IntBuffer profileIds, ShortBuff
     }
 
     /**
-     * Retourne l'identité de l'ensemble d'attributs attaché à l'arrête
+     * Retourne l'identité de l'ensemble d'attributs attaché à l'arête
      *
-     * @param edgeId : identite de l'arrete
+     * @param edgeId
+     *          identité de l'arête
      *
-     * @return l'identité de l'ensemble d'attributs attaché à l'arrête
+     * @return l'identité de l'ensemble d'attributs attaché à l'arête
      */
 
     public int attributesIndex(int edgeId) {

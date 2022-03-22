@@ -1,6 +1,5 @@
 package ch.epfl.javelo.data;
 
-import ch.epfl.javelo.Math2;
 import ch.epfl.javelo.projection.PointCh;
 import ch.epfl.javelo.projection.SwissBounds;
 import java.nio.ByteBuffer;
@@ -17,6 +16,7 @@ import static ch.epfl.javelo.Math2.clamp;
  * @param buffer
  *         Mémoire tampon contenant la valeur des attributs de la totalité des secteurs
  */
+
 public record GraphSectors(ByteBuffer buffer) {
     private final static int NUMBER_SECTOR = 128;
     private final static int FIRST_NODE=4;
@@ -25,15 +25,14 @@ public record GraphSectors(ByteBuffer buffer) {
 
 
     /**
-     * Représente un secteur
+     * Constructeur de GraphSectors qui construit un secteur
      *
      * @param startNodeId
      *        L'identité (index) du premier nœud du secteur
      * @param endNodeId
      *        L'identité (index) du nœud situé juste après le dernier nœud du secteur
-     *
-     * @return un secteur
      */
+
     public record Sector(int startNodeId, int endNodeId) {
     }
 
@@ -47,6 +46,7 @@ public record GraphSectors(ByteBuffer buffer) {
      *
      * @return la liste de tous les secteurs ayant une intersection avec le carré centré au point donné
      */
+
     public List<Sector> sectorsInArea(PointCh center, double distance) {
         //liste de sectors intersect dans le carré
         List<Sector> sectorsIntersect = new ArrayList<>();
