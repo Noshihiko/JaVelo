@@ -71,6 +71,7 @@ class Math2Test {
             var y = Math2.interpolate(y0, y1, x);
             var expectedSlope = y1 - y0;
             var actualSlope = (y - y0) / x;
+            System.out.println(Math2.interpolate(345, 367, 4.0/5));
             assertEquals(expectedSlope, actualSlope, DELTA);
         }
     }
