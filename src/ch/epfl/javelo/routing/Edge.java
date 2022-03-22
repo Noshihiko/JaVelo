@@ -37,12 +37,12 @@ public record Edge(int fromNodeId, int toNodeId, PointCh fromPoint, PointCh toPo
 
 
     /**
-     * retourne une instance de Edge
+     * Retourne une instance de Edge
      *
      * @param graph
-     *          graphe Javelo
+     *          graphe JaVelo
      * @param edgeId
-     *          identité de l'arrete
+     *          identité de l'arête
      * @param fromNodeId
      *          identité du nœud de départ de l'arête
      * @param toNodeId
@@ -60,10 +60,10 @@ public record Edge(int fromNodeId, int toNodeId, PointCh fromPoint, PointCh toPo
     }
 
     /**
-     * retourne la position le long de l'arête en mètres qui se trouve la plus proche du point donné
+     * Retourne la position le long de l'arête en mètres qui se trouve la plus proche du point donné
      *
      * @param point
-     *          point donné dont on cherche la positionla plus proche sur l'arete
+     *          point donné dont on cherche la position la plus proche sur l'arête
      *
      * @return la position le long de l'arête en mètres qui se trouve la plus proche du point donné
      */
@@ -73,10 +73,10 @@ public record Edge(int fromNodeId, int toNodeId, PointCh fromPoint, PointCh toPo
     }
 
     /**
-     * retourne le point se trouvant à la position donnée sur l'arête exprimée en mètres
+     * Retourne le point se trouvant à la position donnée sur l'arête exprimée en mètres
      *
      * @param position
-     *          position sur l'arete mètre
+     *          position sur l'arête, en mètres
      *
      * @return le point se trouvant à la position donnée sur l'arête exprimée en mètres
      */
@@ -89,10 +89,10 @@ public record Edge(int fromNodeId, int toNodeId, PointCh fromPoint, PointCh toPo
     }
 
     /**
-     * retourne l'altitude, en mètres, à la position donnée sur l'arête
+     * Retourne l'altitude, en mètres, à la position donnée sur l'arête
      *
      * @param position
-     *          position sur l'arete mètre
+     *          position sur l'arête, en mètres
      *
      * @return l'altitude en mètres à la position donnée sur l'arête
      */

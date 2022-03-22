@@ -6,7 +6,7 @@ import static ch.epfl.javelo.Functions.sampled;
 import static ch.epfl.javelo.Preconditions.checkArgument;
 
 /**
- * représente le profil en long d'un itinéraire simple ou multiple
+ * Représente le profil en long d'un itinéraire simple ou multiple
  *
  * @author Camille Espieux (324248)
  * @author Chiara Freneix (329552)
@@ -45,7 +45,6 @@ public final class ElevationProfile {
     }
 
     /**
-     *
      * Retourne la longueur du profil en mètres
      *
      * @return la longueur du profil en mètres
