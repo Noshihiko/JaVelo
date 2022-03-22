@@ -98,6 +98,6 @@ public record Edge(int fromNodeId, int toNodeId, PointCh fromPoint, PointCh toPo
      */
 
     public double elevationAt(double position) {
-        return profile.applyAsDouble(position / length);
+        return profile.applyAsDouble(position);
     }
 }
