@@ -22,7 +22,7 @@ public final class ElevationProfile {
      * Constructeur de la classe qui construit le profil en long d'un itinéraire de longueur length
      *
      * @param length
-     *              longueur de l'itineraire
+     *              longueur de l'itinéraire
      * @param elevationSamples
      *              échantillons d'altitude, répartis uniformément le long de l'itinéraire
      *
@@ -45,7 +45,8 @@ public final class ElevationProfile {
     }
 
     /**
-     *retourne la longueur du profil en mètres
+     *
+     * Retourne la longueur du profil en mètres
      *
      * @return la longueur du profil en mètres
      */
@@ -55,7 +56,7 @@ public final class ElevationProfile {
     }
 
     /**
-     * retourne l'altitude minimum du profil en mètres
+     * Retourne l'altitude minimum du profil en mètres
      *
      * @return l'altitude minimum du profil en mètres
      */
@@ -65,7 +66,7 @@ public final class ElevationProfile {
     }
 
     /**
-     * retourne l'altitude maximum du profil en mètres
+     * Retourne l'altitude maximum du profil en mètres
      *
      * @return l'altitude maximum du profil en mètres
      */
@@ -75,11 +76,10 @@ public final class ElevationProfile {
     }
 
     /**
-     * retourne le dénivelé positif total du profil en mètres
+     * Retourne le dénivelé positif total du profil en mètres
      *
      * @return le dénivelé positif total du profil en mètres
      */
-
 
     public double totalAscent() {
         double totalAscent = 0;
@@ -92,7 +92,7 @@ public final class ElevationProfile {
     }
 
     /**
-     * retourne le dénivelé négatif total du profil en mètres
+     * Retourne le dénivelé négatif total du profil en mètres
      *
      * @return le dénivelé négatif total du profil en mètres
      */
@@ -108,10 +108,10 @@ public final class ElevationProfile {
     }
 
     /**
-     * retourne l'altitude du profil à la position donnée
+     * Retourne l'altitude du profil à la position donnée
      *
      * @param position
-     *              position a laquelle on veut connaitre l'altitude
+     *              position à laquelle on veut connaître l'altitude
      *
      * @return l'altitude du profil à la position donnée
      */

@@ -5,6 +5,7 @@ import ch.epfl.javelo.Preconditions;
 import ch.epfl.javelo.projection.PointCh;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.ListResourceBundle;
 
@@ -15,12 +16,25 @@ import java.util.ListResourceBundle;
  * @author Chiara Freneix (329552)
  */
 public final class SingleRoute implements Route{
+    private double[] distance;
+
     private final List<Edge> edgesClass;
+
+    /**
+     * Constructeur de SingleRoute
+     *
+     * @param edges
+     *      l'itinéraire simple composé des arêtes données
+     */
+
     public SingleRoute(List<Edge> edges){
         this.edgesClass = List.copyOf(edges);
+        distance[0] = 0;
+        for (int i=1; i<edgesClass.size(); i++) {
+            distance[i] = distance[i-1]+ edgesClass.get(i).length();
+        }
         Preconditions.checkArgument(!(edges.isEmpty()));
     }
-
 
     @Override
     public int indexOfSegmentAt(double position) {
@@ -31,9 +45,8 @@ public final class SingleRoute implements Route{
     public double length() {
         double length = 0;
 
-        //demander à assistant si je dois faire ce qui m'est proposé en orange
-        for (int i = 0; i < edgesClass.size(); i++){
-            length += edgesClass.get(i).length();
+        for (Edge aClass : edgesClass) {
+            length += aClass.length();
         }
         return length;
     }
@@ -64,20 +77,23 @@ public final class SingleRoute implements Route{
     }
 
 
-
-    //à faire :
     @Override
     public PointCh pointAt(double position) {
         position = Math2.clamp(0,position,length());
-        return null;
+
+        int a = Arrays.binarySearch(distance, position);
+        if (a<0) {
+            a = -(a+2);
+        }
+        return edgesClass.get(a).pointAt(position - distance[a]);
     }
 
 
-    //assistant
     @Override
     public double elevationAt(double position) {
         position = Math2.clamp(0,position,length());
-        //return ElevationProfile.elevationAt(position);
+        //TODO
+       // return ElevationProfile.elevationAt(position);
         //mettre elevationAt en static ?
         return 0;
     }
@@ -85,11 +101,16 @@ public final class SingleRoute implements Route{
     @Override
     public int nodeClosestTo(double position) {
         position = Math2.clamp(0,position,length());
+        //TODO
+        //retourne l'identité du nœud appartenant à l'itinéraire et se trouvant le plus proche
+        // de la position donnée
         return 0;
     }
 
     @Override
     public RoutePoint pointClosestTo(PointCh point) {
+        //TODOs
+        //retourne le point de l'itinéraire se trouvant le plus proche du point de référence donné
         return null;
     }
 }
