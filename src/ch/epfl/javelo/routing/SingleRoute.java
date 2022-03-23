@@ -127,7 +127,7 @@ public final class SingleRoute implements Route {
         for (int i = 0; i < edgesClass.size(); i++){
             Edge edge = edgesClass.get(i);
             double position = clamp(0, edge.positionClosestTo(point), length());
-            pointClosest.min(edge.pointAt(position), position + distance[i], point.distanceTo(edge.pointAt(position)));
+            pointClosest = pointClosest.min(edge.pointAt(position), position + distance[i], point.distanceTo(edge.pointAt(position)));
         }
         return pointClosest;
     }
