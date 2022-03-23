@@ -124,7 +124,7 @@ public final class SingleRoute implements Route {
     public RoutePoint pointClosestTo(PointCh point) {
         RoutePoint pointClosest = RoutePoint.NONE;
 
-        for (int i = 0; i < edgesClass.size(); i++){
+        for (int i = 0; i < edgesClass.size(); i++) {
             Edge edge = edgesClass.get(i);
             double position = clamp(0, edge.positionClosestTo(point), length());
             pointClosest.min(edge.pointAt(position), position + distance[i], point.distanceTo(edge.pointAt(position)));

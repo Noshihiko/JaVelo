@@ -44,8 +44,8 @@ public final class ElevationProfileComputer {
         //*************************************************************
 
         //Deuxieme remplissage ****************************************
-        float latestValidValue = 0, nextValidValue = 0;
-        int count = 0;
+        float latestValidValue = 0, nextValidValue;
+        int count;
 
         for (int i = 0; i < nbrEchantillons - 1; ++i) {
             count = i + 1;
@@ -58,7 +58,7 @@ public final class ElevationProfileComputer {
                 }
                 nextValidValue = routeProfile[count];
                 for (int j = i; j < count; ++j) {
-                    routeProfile[j] = (float) Math2.interpolate(latestValidValue, nextValidValue, i / nbrEchantillons);
+                    routeProfile[j] = (float) Math2.interpolate(latestValidValue, nextValidValue, j / nbrEchantillons);
                 }
                 i = count;
             }
