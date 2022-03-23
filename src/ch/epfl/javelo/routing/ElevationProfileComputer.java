@@ -38,8 +38,8 @@ public final class ElevationProfileComputer {
         }
         if (positionFirstvalidValue < 0) Arrays.fill(routeProfile, 0, nbrEchantillons - 1, 0);
         else {
-            Arrays.fill(routeProfile, 0, positionFirstvalidValue - 1, firstValidValue);
-            Arrays.fill(routeProfile, positionLastValidValue + 1, nbrEchantillons - 1, lastValidValue);
+            Arrays.fill(routeProfile, 0, positionFirstvalidValue, firstValidValue);
+            Arrays.fill(routeProfile, positionLastValidValue, nbrEchantillons - 1, lastValidValue);
         }
         //*************************************************************
 
