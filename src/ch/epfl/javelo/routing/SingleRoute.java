@@ -6,6 +6,7 @@ import ch.epfl.javelo.projection.PointCh;
 import ch.epfl.javelo.routing.RoutePoint;
 import org.junit.jupiter.params.shadow.com.univocity.parsers.annotations.Copy;
 
+import java.sql.Array;
 import java.util.*;
 
 import static ch.epfl.javelo.Math2.clamp;
@@ -29,13 +30,15 @@ public final class SingleRoute implements Route {
 
     public SingleRoute(List<Edge> edges) {
         this.edgesClass = List.copyOf(edges);
+        Preconditions.checkArgument(!(edges.isEmpty()));
 
         //tableau pour méthodes pointAt, elevationAt, nodeClosestTo et pointClosestTo
+        distance = new double[edgesClass.size() + 1];
         distance[0] = 0;
+
         for (int i = 1; i < edgesClass.size(); i++) {
-            distance[i] = distance[i - 1] + edgesClass.get(i).length();
+            distance[i + 1] = distance[i] + edgesClass.get(i - 1).length();
         }
-        Preconditions.checkArgument(!(edges.isEmpty()));
     }
 
     @Override
@@ -127,7 +130,7 @@ public final class SingleRoute implements Route {
         for (int i = 0; i < edgesClass.size(); i++) {
             Edge edge = edgesClass.get(i);
             double position = clamp(0, edge.positionClosestTo(point), length());
-            pointClosest.min(edge.pointAt(position), position + distance[i], point.distanceTo(edge.pointAt(position)));
+            pointClosest = pointClosest.min(edge.pointAt(position), position + distance[i], point.distanceTo(edge.pointAt(position)));
         }
         return pointClosest;
     }
