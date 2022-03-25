@@ -42,18 +42,29 @@ public class ElevationProfileComputerTest {
     }
 
     @Test
+
     void OnlyNaNTest(){
+
         int fromNodeId = 0;
         int toNodeId = 10;
         PointCh fromPoint = new PointCh(2485000, 1075000);
         PointCh toPointCh = new PointCh(2485100, 1075100);
         double length = 100;
+
+        //float[] samples = {NaN, 310, 305, 320, 300, 290, 305, 300, 310, 300};
+
         float[] samples = {Float.NaN, Float.NaN, Float.NaN, Float.NaN, Float.NaN, Float.NaN, Float.NaN, Float.NaN, Float.NaN, Float.NaN};
+
         DoubleUnaryOperator a = Functions.sampled(samples, 100);
         Edge edge = new Edge(fromNodeId, toNodeId, fromPoint, toPointCh, length, a);
         List<Edge> edges = new ArrayList<>();
         edges.add(edge);
         SingleRoute route = new SingleRoute(edges);
+
+
+        //assertEquals(elevationProfile(route, 5).elevationAt(0), 310);
+
+
 
         ElevationProfile NaNProfile = ElevationProfileComputer.elevationProfile(route, 10);
         assertEquals(0, NaNProfile.minElevation());
@@ -79,6 +90,7 @@ public class ElevationProfileComputerTest {
         ElevationProfile profile = ElevationProfileComputer.elevationProfile(route, 10);
         assertEquals(500.54544, profile.minElevation(), 0.00001);
     }
+
 
     @Test
     void EndNaNTest(){
