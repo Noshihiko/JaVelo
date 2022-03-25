@@ -31,15 +31,15 @@ public final class SingleRoute implements Route {
      */
 
     public SingleRoute(List<Edge> edges) {
-        this.edgesClass = List.copyOf(edges);
         Preconditions.checkArgument(!(edges.isEmpty()));
+        this.edgesClass = List.copyOf(edges);
 
         //tableau pour méthodes pointAt, elevationAt, nodeClosestTo et pointClosestTo
         distance = new double[edgesClass.size() + 1];
         distance[0] = 0;
 
         for (int i = 1; i < edgesClass.size(); i++) {
-            distance[i + 1] = distance[i] + edgesClass.get(i - 1).length();
+            distance[i] = distance[i - 1] + edgesClass.get(i).length();
         }
     }
 
@@ -105,10 +105,9 @@ public final class SingleRoute implements Route {
         if (index < 0) {index = - index - 2;}
 
         if (index >= edgesClass.size()) {
-            return edgesClass.get(index - 1).pointAt(position - distance[ index - 1]);
+            return edgesClass.get(edgesClass.size() - 1).pointAt(position - distance[ edgesClass.size() - 1]);
         } else {
             return edgesClass.get(index).pointAt(position - distance[index]);
-
         }
 
     }
@@ -118,15 +117,16 @@ public final class SingleRoute implements Route {
     public double elevationAt(double position) {
         position = clamp(0, position, length());
         int index = binarySearch(distance, position);
+        double elevation =0;
 
         if (index < 0) {index = - index - 2;}
 
         if (index >= edgesClass.size()) {
-            return edgesClass.get(edgesClass.size() - 1).elevationAt(position - distance[edgesClass.size() - 1]);
-        } else {
-            return edgesClass.get(index).elevationAt(position - distance[index]);
+            elevation = edgesClass.get(edgesClass.size() - 1).elevationAt(position - distance[edgesClass.size() - 1]);
+        } else if (index >=0){
+            elevation = edgesClass.get(index).elevationAt(position - distance[index]);
         }
-
+        return elevation;
     }
 
     @Override
