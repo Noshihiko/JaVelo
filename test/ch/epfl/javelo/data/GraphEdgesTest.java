@@ -349,51 +349,6 @@ public class GraphEdgesTest {
 
         assertArrayEquals(expectedSamples, edges.profileSamples(0));
     }
-    /*
-    @Test
-    void testEdges(){
-        ByteBuffer edgesBuffer = ByteBuffer.allocate(10);
-// Sens : direct. Nœud destination : 12.
-        edgesBuffer.putInt(0, 12);
-// Longueur : 0x10.b m (= 16.6875 m)
-        edgesBuffer.putShort(4, (short) 208);
-// Dénivelé : 0x10.0 m (= 16.0 m)
-        edgesBuffer.putShort(6, (short) 0x10_0);
-// Identité de l'ensemble d'attributs OSM : 1
-        edgesBuffer.putShort(8, (short) 2022);
-
-        IntBuffer profileIds = IntBuffer.wrap(new int[]{
-                // Type : 2. Index du premier échantillon : 1.
-                (1 << 30) | 1
-        });
-
-        ShortBuffer elevations = ShortBuffer.wrap(new short[]{
-                (short) 2345,
-                (short) 200*16, (short) 20*16,
-                (short) 100*16, (short) -10*16,
-                (short) 35*16,  (short) 0*16,
-                (short) 100*16, (short) -1*16,
-        });
-
-        GraphEdges edges =
-                new GraphEdges(edgesBuffer, profileIds, elevations);
-
-        /* assertFalse(edges.isInverted(0));
-        assertEquals(12, edges.targetNodeId(0));
-        assertEquals(13, edges.length(0));
-        assertEquals(16.0, edges.elevationGain(0));
-        assertEquals(2022, edges.attributesIndex(0));
-        float[] expectedSamples = new float[]{
-                200f ,20f , 100f , -10f , 35f , 0f , 100f , -1f} ;
-
-        assertArrayEquals(expectedSamples, edges.profileSamples(0));
-    }
-
-     */
-
-
-
-
 
 
     @Test
