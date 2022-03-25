@@ -123,7 +123,7 @@ public final class SingleRoute implements Route {
 
         if (index >= edgesClass.size()) {
             return edgesClass.get(edgesClass.size() - 1).elevationAt(position - distance[edgesClass.size() - 1]);
-        } else{
+        } else {
             return edgesClass.get(index).elevationAt(position - distance[index]);
         }
 
