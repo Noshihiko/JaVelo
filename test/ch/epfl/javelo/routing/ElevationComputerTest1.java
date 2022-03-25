@@ -1,10 +1,7 @@
-package ch.epfl.javelo.routing;
+/*package ch.epfl.javelo.routing;
 
 import ch.epfl.javelo.Functions;
-<<<<<<< HEAD
-import ch.epfl.javelo.Math2;
-=======
-        >>>>>>> origin/master
+
 import ch.epfl.javelo.projection.PointCh;
 import org.junit.jupiter.api.Test;
 import ch.epfl.javelo.routing.*;
@@ -18,8 +15,7 @@ import static ch.epfl.javelo.Functions.sampled;
 import static org.junit.jupiter.api.Assertions.*;
 import ch.epfl.javelo.routing.ElevationProfileComputer;
 
-<<<<<<< HEAD
-        =======
+
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.List;
@@ -29,11 +25,11 @@ import static ch.epfl.javelo.routing.ElevationProfileComputer.elevationProfile;
 import static java.lang.Float.NaN;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
->>>>>>> origin/master
 
-public class ElevationProfileComputerTest {
 
-<<<<<<< HEAD
+public class ElevationProfileComputerTest1 {
+
+
     @Test
             void elevationProfileExceptionTest(){
         int fromNodeId = 0;
@@ -97,9 +93,9 @@ public class ElevationProfileComputerTest {
     }
 
     @Test
-    void EndNaNTest(){
-=======
-   /* @Test
+    void EndNaNTest() {
+
+    @Test
     void ElevationProfileComputerWorkOnNormalValues() {
 
         var p1 = new PointCh(2600123, 1200456);
@@ -120,50 +116,50 @@ public class ElevationProfileComputerTest {
         var testRoute = new SingleRoute(listeEdge);
 
         assertEquals(elevationProfile(testRoute, 5).elevationAt(1), actualElevationProfile.elevationAt(1));
-    }*/
+    }
 
         @Test
-        void elevationProfileExceptionTest(){
->>>>>>> origin/master
+        void elevationProfileExceptionTest() {
+
             int fromNodeId = 0;
             int toNodeId = 10;
             PointCh fromPoint = new PointCh(2485000, 1075000);
             PointCh toPointCh = new PointCh(2485100, 1075100);
             double length = 100;
-<<<<<<< HEAD
-            float[] samples = {500, 502, 505, 510, 500, 520, 510, Float.NaN, Float.NaN, Float.NaN, };
-=======
-            float[] samples = {300, 310, 305, 320, 300, 290, 305, 300, 310, 300};
->>>>>>> origin/master
+
+            float[] samples = {500, 502, 505, 510, 500, 520, 510, Float.NaN, Float.NaN, Float.NaN,};
+
+            //float[] samples = {300, 310, 305, 320, 300, 290, 305, 300, 310, 300};
+
             DoubleUnaryOperator a = Functions.sampled(samples, 100);
             Edge edge = new Edge(fromNodeId, toNodeId, fromPoint, toPointCh, length, a);
             List<Edge> edges = new ArrayList<>();
             edges.add(edge);
             SingleRoute route = new SingleRoute(edges);
-<<<<<<< HEAD
+
 
             ElevationProfile profile = ElevationProfileComputer.elevationProfile(route, 10);
             assertEquals(500, profile.minElevation());
-=======
+
 
             assertThrows(IllegalArgumentException.class, () -> {
                 ElevationProfile elevationProfile1 = ElevationProfileComputer.elevationProfile(route, 0);
-            } );
+            });
 
             assertThrows(IllegalArgumentException.class, () -> {
                 ElevationProfile elevationProfile1 = ElevationProfileComputer.elevationProfile(route, -1);
-            } );
->>>>>>> origin/master
+            });
+
         }
 
         @Test
-        void MiddleNaNTest(){
+        void MiddleNaNTest () {
             int fromNodeId = 0;
             int toNodeId = 10;
             PointCh fromPoint = new PointCh(2485000, 1075000);
             PointCh toPointCh = new PointCh(2485100, 1075100);
             double length = 100;
-            float[] samples = {500, 500, 500, 500, 500, Float.NaN, Float.NaN, Float.NaN, 500, 500 };
+            float[] samples = {500, 500, 500, 500, 500, Float.NaN, Float.NaN, Float.NaN, 500, 500};
             DoubleUnaryOperator a = Functions.sampled(samples, 100);
             Edge edge = new Edge(fromNodeId, toNodeId, fromPoint, toPointCh, length, a);
             List<Edge> edges = new ArrayList<>();
@@ -173,17 +169,17 @@ public class ElevationProfileComputerTest {
             ElevationProfile profile = ElevationProfileComputer.elevationProfile(route, 10);
             assertEquals(500, profile.minElevation());
 
-<<<<<<< HEAD
+
         }
 
         @Test
-        void multipleTunnelsTest(){
+        void multipleTunnelsTest() {
             int fromNodeId = 0;
             int toNodeId = 10;
             PointCh fromPoint = new PointCh(2485000, 1075000);
             PointCh toPointCh = new PointCh(2485100, 1075100);
             double length = 100;
-            float[] samples = {Float.NaN, Float.NaN, 500, 500, Float.NaN, Float.NaN, Float.NaN, 500, 500, 500, Float.NaN, Float.NaN, Float.NaN, 500, 500, Float.NaN, Float.NaN };
+            float[] samples = {Float.NaN, Float.NaN, 500, 500, Float.NaN, Float.NaN, Float.NaN, 500, 500, 500, Float.NaN, Float.NaN, Float.NaN, 500, 500, Float.NaN, Float.NaN};
             DoubleUnaryOperator a = Functions.sampled(samples, 100);
             Edge edge = new Edge(fromNodeId, toNodeId, fromPoint, toPointCh, length, a);
             List<Edge> edges = new ArrayList<>();
@@ -194,7 +190,6 @@ public class ElevationProfileComputerTest {
             assertEquals(500, profile.minElevation());
 
         }
-=======
->>>>>>> origin/master
-    }
+    }*/
+
 
