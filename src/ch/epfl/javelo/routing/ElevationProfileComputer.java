@@ -38,14 +38,14 @@ public final class ElevationProfileComputer {
         }
         if (positionFirstvalidValue < 0) Arrays.fill(routeProfile, 0, nbrEchantillons - 1, 0);
         else {
-            Arrays.fill(routeProfile, 0, positionFirstvalidValue - 1, firstValidValue);
-            Arrays.fill(routeProfile, positionLastValidValue + 1, nbrEchantillons - 1, lastValidValue);
+            Arrays.fill(routeProfile, 0, positionFirstvalidValue, firstValidValue);
+            Arrays.fill(routeProfile, positionLastValidValue, nbrEchantillons - 1, lastValidValue);
         }
         //*************************************************************
 
         //Deuxieme remplissage ****************************************
-        float latestValidValue = 0, nextValidValue = 0;
-        int count = 0;
+        float latestValidValue = 0, nextValidValue;
+        int count;
 
         for (int i = 0; i < nbrEchantillons - 1; ++i) {
             count = i + 1;
@@ -58,7 +58,7 @@ public final class ElevationProfileComputer {
                 }
                 nextValidValue = routeProfile[count];
                 for (int j = i; j < count; ++j) {
-                    routeProfile[j] = (float) Math2.interpolate(latestValidValue, nextValidValue, i / nbrEchantillons);
+                    routeProfile[j] = (float) Math2.interpolate(latestValidValue, nextValidValue, j / nbrEchantillons);
                 }
                 i = count;
             }

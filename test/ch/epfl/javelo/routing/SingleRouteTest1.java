@@ -82,7 +82,7 @@ class SingleRouteTest1 {
         assertEquals(expected1, actual1);
 
     }
-
+    /*
     //mettre binarySearchIndex en public pour la tester puis de nouveau en pv
     @Test
     public void binarySearchIndexWorks(){
@@ -128,7 +128,7 @@ class SingleRouteTest1 {
         assertEquals(1, actual8);
 
     }
-
+    */
 
     @Test
     public void pointAtWorks(){

@@ -40,7 +40,6 @@ public final class SingleRoute implements Route {
 
         for (int i = 1; i < edgesClass.size()+1; i++) {
             distance[i] = distance[i - 1] + edgesClass.get(i-1).length();
-            //System.out.println("distance "+distance[i]);
         }
 
     }
@@ -83,22 +82,6 @@ public final class SingleRoute implements Route {
         return pointsExtremums;
     }
 
-    /*
-    private int binarySearchIndex(double position) {
-        position = clamp(0, position, length());
-
-        //Recherche dichotomique dans le tableau distance :
-        //index de l'arête sur laquelle se trouve la position
-        int a = Arrays.binarySearch(distance, position);
-        if (a < 0) {
-            a = -(a + 2);
-        } else if (a == distance.length - 1) {
-            a = distance.length - 2;
-        }
-        return a;
-    }
-       */
-
     @Override
     public PointCh pointAt(double position) {
         position = clamp(0, position, length());
@@ -118,16 +101,15 @@ public final class SingleRoute implements Route {
     public double elevationAt(double position) {
         position = clamp(0, position, length());
         int index = binarySearch(distance, position);
-        double elevation = 0;
 
         if (index < 0) {index = - index - 2;}
 
         if (index >= edgesClass.size()) {
-            elevation = edgesClass.get(edgesClass.size() - 1).elevationAt(position - distance[edgesClass.size() - 1]);
-        } else if (index >=0){
-            elevation = edgesClass.get(index).elevationAt(position - distance[index]);
+            return edgesClass.get(edgesClass.size() - 1).elevationAt(position - distance[edgesClass.size() - 1]);
+        } else {
+            return edgesClass.get(index).elevationAt(position - distance[index]);
         }
-        return elevation;
+
     }
 
     @Override
@@ -141,7 +123,7 @@ public final class SingleRoute implements Route {
             index = edgesClass.size() - 1;
         }
 
-        if ((position <= distance[index] / 2)) {
+        if ((position - distance[index] <= edgesClass.get(index).length() / 2)) {
             return edgesClass.get(index).fromNodeId();
         } else {
             return edgesClass.get(index).toNodeId();
@@ -151,10 +133,12 @@ public final class SingleRoute implements Route {
     @Override
     public RoutePoint pointClosestTo(PointCh point) {
         RoutePoint pointClosest = RoutePoint.NONE;
+        double position;
+        Edge edge;
 
-        for (int i = 0; i < edgesClass.size(); i++) {
-            Edge edge = edgesClass.get(i);
-            double position = clamp(0, edge.positionClosestTo(point), length());
+        for (int i = 0; i < edgesClass.size(); ++i) {
+            edge = edgesClass.get(i);
+            position = clamp(0, edge.positionClosestTo(point), edge.length());
             pointClosest = pointClosest.min(edge.pointAt(position), position + distance[i], point.distanceTo(edge.pointAt(position)));
         }
         return pointClosest;

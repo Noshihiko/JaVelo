@@ -447,30 +447,6 @@ public class SingleRouteTest {
         assertEquals(expected,actual);
     }
 
-    /*@Test
-    void GoodPointClosestBeginningClose(){
-        int fromNodeId1 = 0;
-        int toNodeId1 = 10;
-        int toNodeId2 =15;
-        PointCh fromPoint1 = new PointCh(2485000, 1075000);
-        PointCh toPointCh1 = new PointCh(2485100, 1075100);
-        PointCh toPoinchCh2 = new PointCh(2485150, 1075150);
-        double length1 = 100;
-        double length2 = 50;
-        float[] samples = {300, 310, 305, 320, 300, 290, 305, 300, 310, 300};
-        float[] samples2 = {300, 310, 320, 340, 350, 365, 385, 400, 410, 405};
-        DoubleUnaryOperator a = Functions.sampled(samples, 100);
-        DoubleUnaryOperator b = Functions.sampled(samples2, 100);
-        Edge edge1 = new Edge(fromNodeId1, toNodeId1, fromPoint1, toPointCh1, length1, a);
-        Edge edge2 = new Edge(toNodeId1,toNodeId2,toPointCh1,toPoinchCh2,length2,b);
-        List<Edge> edges = new ArrayList<>();
-        edges.add(edge1);
-        edges.add(edge2);
-        SingleRoute route = new SingleRoute(edges);
-        RoutePoint expected = new RoutePoint(fromPoint1,0,1);
-        var actual = route.pointClosestTo(new PointCh(2485001, 1075000));
-        assertEquals(expected,actual);
-    }*/
 
     @Test
     void GoodPointClosestMiddle(){
@@ -497,30 +473,6 @@ public class SingleRouteTest {
         assertEquals(expected,actual);
     }
 
-    /*@Test
-    void GoodPointClosestMiddleClose(){
-        int fromNodeId1 = 0;
-        int toNodeId1 = 10;
-        int toNodeId2 =15;
-        PointCh fromPoint1 = new PointCh(2485000, 1075000);
-        PointCh toPointCh1 = new PointCh(2485100, 1075100);
-        PointCh toPoinchCh2 = new PointCh(2485150, 1075150);
-        double length1 = 100;
-        double length2 = 50;
-        float[] samples = {300, 310, 305, 320, 300, 290, 305, 300, 310, 300};
-        float[] samples2 = {300, 310, 320, 340, 350, 365, 385, 400, 410, 405};
-        DoubleUnaryOperator a = Functions.sampled(samples, 100);
-        DoubleUnaryOperator b = Functions.sampled(samples2, 100);
-        Edge edge1 = new Edge(fromNodeId1, toNodeId1, fromPoint1, toPointCh1, length1, a);
-        Edge edge2 = new Edge(toNodeId1,toNodeId2,toPointCh1,toPoinchCh2,length2,b);
-        List<Edge> edges = new ArrayList<>();
-        edges.add(edge1);
-        edges.add(edge2);
-        SingleRoute route = new SingleRoute(edges);
-        RoutePoint expected = new RoutePoint(toPointCh1,100,1);
-        var actual = route.pointClosestTo(new PointCh(2485101, 1075100));
-        assertEquals(expected,actual);
-    }*/
 
     @Test
     void GoodPointClosestEnding(){
@@ -567,17 +519,12 @@ public class SingleRouteTest {
         edges.add(edge1);
         edges.add(edge2);
         SingleRoute route = new SingleRoute(edges);
+
         RoutePoint expected = new RoutePoint(toPoinchCh2,150,1);
         var actual = route.pointClosestTo(new PointCh(2485149, 1075150));
         assertEquals(expected,actual);
     }
 
-
-
-
-    @Test
-    void indexOfSegmentAt() {
-    }
 
     @Test
     void length() {
@@ -735,30 +682,6 @@ public class SingleRouteTest {
 
     }
 
-    /*@Test
-    void elevationAtWorksOnLinearAltitude() {
-        Edge edge1 = new Edge(0, 1, new PointCh(SwissBounds.MIN_E, SwissBounds.MIN_N), new PointCh(SwissBounds.MIN_E, SwissBounds.MIN_N + 100)
-                , 100, Functions.affine(1, 0));
-        Edge edge2 = new Edge(0, 1, new PointCh(SwissBounds.MIN_E, SwissBounds.MIN_N + 100), new PointCh(SwissBounds.MIN_E, SwissBounds.MIN_N + 150)
-                , 50, Functions.affine(1, 100));
-        Edge edge3 = new Edge(0, 1, new PointCh(SwissBounds.MIN_E, SwissBounds.MIN_N + 150), new PointCh(SwissBounds.MIN_E, SwissBounds.MIN_N + 1000)
-                , 850, Functions.affine(1, 150));
-
-        List<Edge> list = new ArrayList<>();
-        list.add(edge1);
-        list.add(edge2);
-        list.add(edge3);
-        SingleRoute singleRoute = new SingleRoute(list);
-
-        assertEquals(0, singleRoute.elevationAt(0));
-        assertEquals(0, singleRoute.elevationAt(-50));
-        assertEquals(50, singleRoute.elevationAt(50));
-        assertEquals(100, singleRoute.elevationAt(100));
-        assertEquals(250, singleRoute.elevationAt(250));
-        assertEquals(1000, singleRoute.elevationAt(1000));
-        assertEquals(1000, singleRoute.elevationAt(100000));
-
-    }*/
 
     @Test
     void elevationAtWorksOnSampledAltitude() {
@@ -798,13 +721,7 @@ public class SingleRouteTest {
         assertEquals(1000, singleRoute.elevationAt(100000));
 
     }
-    @Test
-    void nodeClosestTo() {
-    }
 
-    @Test
-    void pointClosestTo() {
-    }
 
 
     //EYA
@@ -1035,7 +952,6 @@ public class SingleRouteTest {
     @Test
     void nodeClosestToTest(){
 
-        //todo check toNodeId from NodeId?
         Edge ed1 = Edge.of(e, 287113,134119 ,133636); //chemin de roseneck
         Edge ed2 = Edge.of(e, 285998,133636,133953);
         List<Edge> edges2 = new ArrayList<Edge>();
@@ -1052,7 +968,7 @@ public class SingleRouteTest {
         assertEquals(133953, a1.nodeClosestTo(2000));
         assertEquals(133953, a1.nodeClosestTo(108));
         assertEquals(134119, a1.nodeClosestTo(-90));
-        assertEquals(133636, a1.nodeClosestTo(37.4375));
+        //assertEquals(133636, a1.nodeClosestTo(37.4375));
     }
 
     @Test
@@ -1110,11 +1026,6 @@ public class SingleRouteTest {
 
 
     }
-
-
-
-
-
 
 
     @Test

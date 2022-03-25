@@ -1,22 +1,45 @@
-/*package ch.epfl.javelo.routing;
+/*
+package ch.epfl.javelo.routing;
 
 import ch.epfl.javelo.Functions;
-import ch.epfl.javelo.Math2;
 import ch.epfl.javelo.projection.PointCh;
 import org.junit.jupiter.api.Test;
-import ch.epfl.javelo.routing.*;
 
+import java.nio.ByteBuffer;
 import java.util.ArrayList;
-import java.util.DoubleSummaryStatistics;
 import java.util.List;
 import java.util.function.DoubleUnaryOperator;
 
-import static ch.epfl.javelo.Functions.sampled;
-import static org.junit.jupiter.api.Assertions.*;
-import ch.epfl.javelo.routing.ElevationProfileComputer;
-
+import static ch.epfl.javelo.routing.ElevationProfileComputer.elevationProfile;
+import static java.lang.Float.NaN;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 public class ElevationProfileComputerTest {
+    private static final double DELTA = 1e-7;
+
+   @Test
+    void ElevationProfileComputerWorkOnNormalValues() {
+
+        var p1 = new PointCh(2600123, 1200456);
+        var p2 = new PointCh(2600456, 1200789);
+        var p3 = new PointCh(2600789, 1200123);
+        var p4 = new PointCh(2601000, 1201000);
+
+        var edge1 = new Edge(1, 2, p1, p2, p1.distanceTo(p2), d -> 100);
+
+
+        var tab = new float[]{NaN, 289, 345, NaN, 367};
+        var testElevationProfile = new ElevationProfile(20, tab);
+        var actualtab = new float[]{289, 289, 345, (float) 362.6, 367};
+        var actualElevationProfile = new ElevationProfile(20, actualtab);
+
+        var listeEdge = List.of(edge1, edge2);
+
+        var testRoute = new SingleRoute(listeEdge);
+
+        assertEquals(elevationProfile(testRoute, 5).elevationAt(1), actualElevationProfile.elevationAt(1));
+    }
 
     @Test
     void elevationProfileExceptionTest(){
@@ -124,10 +147,8 @@ public class ElevationProfileComputerTest {
         edges.add(edge);
         SingleRoute route = new SingleRoute(edges);
 
-        ElevationProfile profile = ElevationProfileComputer.elevationProfile(route, 10);
-        assertEquals(500, profile.minElevation());
 
-    }
+}
 
     @Test
     void multipleTunnelsTest(){
@@ -147,4 +168,6 @@ public class ElevationProfileComputerTest {
         assertEquals(500, profile.minElevation());
 
     }
-}*/
+}
+
+ */
