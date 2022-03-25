@@ -1,4 +1,4 @@
-package ch.epfl.javelo.routing;
+/*package ch.epfl.javelo.routing;
 
 import ch.epfl.javelo.projection.PointCh;
 import org.junit.jupiter.api.Test;
@@ -296,4 +296,4 @@ class SingleRouteTest1 {
 
     }
 
-}
+}*/
