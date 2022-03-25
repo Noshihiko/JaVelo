@@ -205,14 +205,6 @@ public class GraphTest {
     }
 
     @Test
-    void edgeElevationGain() {
-    }
-
-    @Test
-    void edgeProfile() {
-    }
-
-    @Test
     void testNodeClosestToNapoleon() throws IOException {
         Graph g = Graph.loadFrom(Path.of("lausanne"));
         System.out.println(Ch1903.e(Math.toRadians(6.5790772), Math.toRadians(46.5218976)));
@@ -442,44 +434,4 @@ public class GraphTest {
         }
         return new GraphNodes(buffer);
     }
-
-
-
-
-    /*
-    @Test
-    void edgeAttributes() throws IOException{
-        Graph graph = Graph.loadFrom(Path.of("lausanne"));
-
-        LongBuffer osmNodesBuffer;
-        try (FileChannel channel = FileChannel.open(Path.of("lausanne/nodes_osmid.bin"))) {
-            osmNodesBuffer = channel
-                    .map(FileChannel.MapMode.READ_ONLY, 0, channel.size())
-                    .asLongBuffer();
-        }
-        int index = nodeFinder(253204523, osmNodesBuffer);
-        int edgeIndex = graph.nodeOutEdgeId(index ,0);
-
-        AttributeSet output = AttributeSet.of(HIGHWAY_TERTIARY, SURFACE_ASPHALT);
-        assertEquals(output, graph.edgeAttributes(edgeIndex));
-
-        edgeIndex = graph.nodeOutEdgeId(index ,1);
-        output = AttributeSet.of(HIGHWAY_TERTIARY, SURFACE_ASPHALT);
-        assertEquals(output, graph.edgeAttributes(edgeIndex));
-
-
-        index = nodeFinder(1505761262, osmNodesBuffer);
-        edgeIndex = graph.nodeOutEdgeId(index ,0);
-
-        output = AttributeSet.of(HIGHWAY_MOTORWAY, SURFACE_ASPHALT, ONEWAY_YES);
-        assertEquals(output, graph.edgeAttributes(edgeIndex));
-
-        edgeIndex = graph.nodeOutEdgeId(index ,1);
-        output = AttributeSet.of(HIGHWAY_MOTORWAY, SURFACE_ASPHALT, ONEWAY_YES);
-        assertEquals(output, graph.edgeAttributes(edgeIndex));
     }
-
-     */
-
-
-}

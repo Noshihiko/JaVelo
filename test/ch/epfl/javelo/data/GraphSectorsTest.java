@@ -36,38 +36,6 @@ public class GraphSectorsTest {
         expected2.add(new GraphSectors.Sector(buffer.getInt(129 * 6), buffer.getShort(129 * 6 + 4) + buffer.getInt(129 * 6)));
         assertArrayEquals(expected2.toArray(), sectors2.sectorsInArea(point, 2800).toArray());
     }
-    /*
-    @Test
-    void GraphSectorContainsEverySector(){
-        byte[] bufferId = new byte[128 * 128 * 6];
 
-        for (int i = 0; i < bufferId.length; ++i) {
-            bufferId[i] = (byte) i;
-        }
-
-        ByteBuffer buffer = ByteBuffer.wrap(bufferId);
-        PointCh point = new PointCh((SwissBounds.MIN_E+SwissBounds.MAX_E)/2, (SwissBounds.MIN_N+SwissBounds.MAX_N)/2);
-
-        List<GraphSectors.Sector> expected1 = new ArrayList<>();
-        GraphSectors sectors1 = new GraphSectors(buffer);
-        expected1.add(new GraphSectors.Sector(buffer.getInt(0), buffer.getShort(4) + buffer.getInt(0)));
-        expected1.add(new GraphSectors.Sector(buffer.getInt(6), buffer.getShort(10) + buffer.getInt(6)));
-        expected1.add(new GraphSectors.Sector(buffer.getInt(128 * 6), buffer.getShort(128 * 6 + 4) + buffer.getInt(128 * 6)));
-        expected1.add(new GraphSectors.Sector(buffer.getInt(129 * 6), buffer.getShort(129 * 6 + 4) + buffer.getInt(129 * 6)));
-        assertArrayEquals(expected1.toArray(), sectors1.sectorsInArea(point, Integer.MAX_VALUE).toArray());
-        //la value est peut etre trop grande
-    }
-
-    @Test
-    void GraphSectorDoesntContainAnySectors(){
-
-    }
-
-    @Test
-    void worksSiSurAretes(){
-
-    }
-
-     */
 }
 
