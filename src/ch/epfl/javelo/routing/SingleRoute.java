@@ -15,7 +15,7 @@ import static java.util.Arrays.binarySearch;
  * @author Chiara Freneix (329552)
  */
 public final class SingleRoute implements Route {
-    private double[] distance;
+    private final double[] distance;
 
     private final List<Edge> edgesClass;
 
@@ -36,7 +36,6 @@ public final class SingleRoute implements Route {
         for (int i = 1; i < edgesClass.size()+1; i++) {
             distance[i] = distance[i - 1] + edgesClass.get(i-1).length();
         }
-
     }
 
     @Override
@@ -88,35 +87,30 @@ public final class SingleRoute implements Route {
         } else {
                 return edgesClass.get(index).pointAt(position-distance[index]);
         }
-
     }
 
-
-    @Override
-    public double elevationAt(double position) {
-        position = clamp(0, position, length());
-        int index = binarySearch(distance, position);
-
-        if (index < 0) {index = - index - 2;}
-
-        if (index >= edgesClass.size()) {
-            return edgesClass.get(edgesClass.size() - 1).elevationAt(position - distance[edgesClass.size() - 1]);
-        } else {
-            return edgesClass.get(index).elevationAt(position - distance[index]);
-        }
-
-    }
-
-    @Override
-    public int nodeClosestTo(double position) {
+    private int indexSearch(double position) {
         position = clamp(0, position, length());
         int index = binarySearch(distance, position);
 
         if (index < 0) {
-            index = - index - 2;
+            return - index - 2;
         } else if (index >= edgesClass.size()){
-            index = edgesClass.size() - 1;
+            return edgesClass.size() - 1;
+        } else {
+            return index;
         }
+    }
+
+    @Override
+    public double elevationAt(double position) {
+        int index = indexSearch(position);
+        return edgesClass.get(index).elevationAt(position - distance[index]);
+    }
+
+    @Override
+    public int nodeClosestTo(double position) {
+        int index = indexSearch(position);
 
         if ((position - distance[index] <= edgesClass.get(index).length() / 2)) {
             return edgesClass.get(index).fromNodeId();

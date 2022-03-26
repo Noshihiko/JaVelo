@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class MultiRoute implements Route{
+
     private final List<Route> route;
 
     public MultiRoute(List<Route> segments){
@@ -20,20 +21,24 @@ public class MultiRoute implements Route{
     public int indexOfSegmentAt(double position) {
         position = Math2.clamp(0, position, route.size());
         return nodeClosestTo(position);
-
     }
 
+    //TOCHECK
     @Override
     public double length() {
         double length = 0;
 
         for (Route aClass : route) {
+            length += aClass.length();
+            /* ,
             for (int i = 0; i < route.size(); i++){
                 length += aClass.edges().get(i).length();
             }
+             */
         }
         return length;
     }
+
 
     @Override
     public List<Edge> edges() {
@@ -45,45 +50,29 @@ public class MultiRoute implements Route{
         return edges;
     }
 
-    //est-ce que si l'on utilise points() de SingleRoute, on aura le dernier point de la dernière edge de la route (i-1)
-    // qui sera compté
-    // et le premier point de la premiere edge de la route (i) aussi (est ce que c'est la meme chose)
-    //si oui, alors méthode ci-dessous fausse
+    // faut-il faire comme pour length ?
     @Override
     public List<PointCh> points() {
-        List<PointCh> points = new ArrayList<>();
-
-        for (Route aClass : route){
-            points.addAll(aClass.points());
-        }
-        return points;
-
-        /*
         List<PointCh> pointsExtremums = new ArrayList<>();
         Route routeFinal = route.get(route.size()-1);
 
-        PointCh finalPoint = routeFinal.edges().get(edges().size() - 1).toPoint();
-
-
-        //liste de tous les premiers points des edges et du dernier de la dernière edge
+        //boucle pour aller chercher dans chaque route
         for (Route aClass : route) {
-            for (int i = 0; i < aClass.) {
-                pointsExtremums.add(aClass.bClass.fromPoint());
+            //boucle pour aller chercher dans la route le premier point de chaque edge
+            for (int i = 0; i < aClass.edges().size() ; i++) {
+                pointsExtremums.add(aClass.edges().get(i).fromPoint());
             }
         }
-
-        pointsExtremums.add(finalEdge.toPoint());
+        pointsExtremums.add(routeFinal.edges().get(edges().size() - 1).toPoint());
 
         return pointsExtremums;
-
-         */
-
     }
 
     //TODO
     @Override
     public PointCh pointAt(double position) {
         return null;
+
     }
 
     //TODO
