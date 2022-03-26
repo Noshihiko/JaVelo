@@ -1,17 +1,12 @@
 package ch.epfl.javelo.routing;
 
-import ch.epfl.javelo.Math2;
 import ch.epfl.javelo.Preconditions;
 import ch.epfl.javelo.projection.PointCh;
-import ch.epfl.javelo.routing.RoutePoint;
-import org.junit.jupiter.params.shadow.com.univocity.parsers.annotations.Copy;
 
-import java.sql.Array;
 import java.util.*;
 
 import static ch.epfl.javelo.Math2.clamp;
 import static java.util.Arrays.binarySearch;
-import static java.util.Arrays.parallelSetAll;
 
 /**
  * Représente un itinéraire simple c.-à-d. reliant un point de départ à un point d'arrivée, sans point de passage intermédiaire
