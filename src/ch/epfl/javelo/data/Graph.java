@@ -17,9 +17,8 @@ import static java.lang.Math.pow;
 /**
  * Représente le graphe JaVelo
  *
- *  @author Camille Espieux (324248)
- *  @author Chiara Freneix (329552)
- *
+ * @author Camille Espieux (324248)
+ * @author Chiara Freneix (329552)
  */
 public final class Graph {
 
@@ -36,15 +35,10 @@ public final class Graph {
     /**
      * Constructeur de Graph
      *
-     * @param nodes
-     *      Représente le tableau de tous les nœuds du graphe JaVelo
-     * @param sectors
-     *      Représente le tableau contenant les 16384 secteurs de JaVelo
-     * @param edges
-     *      Permet de récupérer les informations concernant les arêtes
-     * @param attributeSets
-     *      Représente un ensemble d'attributs OpenStreetMap
-     *
+     * @param nodes         Représente le tableau de tous les nœuds du graphe JaVelo
+     * @param sectors       Représente le tableau contenant les 16384 secteurs de JaVelo
+     * @param edges         Permet de récupérer les informations concernant les arêtes
+     * @param attributeSets Représente un ensemble d'attributs OpenStreetMap
      */
 
     public Graph(GraphNodes nodes, GraphSectors sectors, GraphEdges edges, List<AttributeSet> attributeSets) {
@@ -55,17 +49,12 @@ public final class Graph {
     }
 
 
-
     /**
      * Donne le graphe JaVelo obtenu à partir des fichiers dans "lausanne"
      *
-     * @param basePath
-     *          chemin pour accéder aux fichiers dans le répertoire
-     *
-     * @return  le graphe JaVelo obtenu à partir des fichiers se trouvant dans le répertoire dont le chemin d'accès est basePath
-     *
-     * @throws IOException
-     *          en cas d'erreur d'entrée/sortie, p. ex. si l'un des fichiers attendus n'existe pas
+     * @param basePath chemin pour accéder aux fichiers dans le répertoire
+     * @return le graphe JaVelo obtenu à partir des fichiers se trouvant dans le répertoire dont le chemin d'accès est basePath
+     * @throws IOException en cas d'erreur d'entrée/sortie, p. ex. si l'un des fichiers attendus n'existe pas
      */
 
     public static Graph loadFrom(Path basePath) throws IOException {
@@ -95,15 +84,10 @@ public final class Graph {
     /**
      * Permet de créer un ByteBuffer que l'on convertit et qu'on utilise comme attribut pour créer nos différents objets
      *
-     * @param basePath
-     *           chemin pour accéder aux fichiers dans le répertoire
-     * @param nameFile
-     *           nom du fichier dont on cherche à récupérer le contenu
-     *
-     * @return  un ByteBuffer utilisé dans loadFrom
-     *
-     * @throws IOException
-     *          en cas d'erreur d'entrée/sortie, p. ex. si l'un des fichiers attendus n'existe pas
+     * @param basePath chemin pour accéder aux fichiers dans le répertoire
+     * @param nameFile nom du fichier dont on cherche à récupérer le contenu
+     * @return un ByteBuffer utilisé dans loadFrom
+     * @throws IOException en cas d'erreur d'entrée/sortie, p. ex. si l'un des fichiers attendus n'existe pas
      */
 
     private static ByteBuffer bufferFile(Path basePath, String nameFile) throws IOException {
@@ -128,9 +112,7 @@ public final class Graph {
     /**
      * Donne la position du nœud d'identité donnée
      *
-     * @param nodeId
-     *          identité du nœud dont on cherche la position
-     *
+     * @param nodeId identité du nœud dont on cherche la position
      * @return la position du nœud d'identité donnée
      */
 
@@ -141,9 +123,7 @@ public final class Graph {
     /**
      * Donne le nombre d'arêtes sortant du nœud d'identité donnée
      *
-     * @param nodeId
-     *          identité du nœud dont on cherche le nombre d'arêtes
-     *
+     * @param nodeId identité du nœud dont on cherche le nombre d'arêtes
      * @return le nombre d'arêtes sortant du nœud d'identité donnée
      */
 
@@ -152,14 +132,11 @@ public final class Graph {
     }
 
     /**
-     *  Donne l'identité de l'edgeIndex-ième arête sortant du nœud d'identité nodeId
+     * Donne l'identité de l'edgeIndex-ième arête sortant du nœud d'identité nodeId
      *
-     * @param nodeId
-     *          identité du nœud
-     * @param edgeIndex
-     *          index de l'arête sortant du nœud d'identité nodeId
-     *
-     * @return  l'identité de l'edgeIndex-ième arête sortant du nœud d'identité nodeId
+     * @param nodeId    identité du nœud
+     * @param edgeIndex index de l'arête sortant du nœud d'identité nodeId
+     * @return l'identité de l'edgeIndex-ième arête sortant du nœud d'identité nodeId
      */
 
     public int nodeOutEdgeId(int nodeId, int edgeIndex) {
@@ -169,11 +146,8 @@ public final class Graph {
     /**
      * Donne l'identité du nœud se trouvant le plus proche du point donné, à la distance maximale donnée (en mètres)
      *
-     * @param point
-     *      point donné dont on cherche le nœud le plus proche selon la distance searchDistance
-     * @param searchDistance
-     *      distance maximale donnée pour chercher un nœud proche du point donné
-     *
+     * @param point          point donné dont on cherche le nœud le plus proche selon la distance searchDistance
+     * @param searchDistance distance maximale donnée pour chercher un nœud proche du point donné
      * @return l'identité du nœud se trouvant le plus proche du point donné, à la distance maximale donnée (en mètres)
      */
 
@@ -200,9 +174,7 @@ public final class Graph {
     /**
      * Donne l'identité du nœud destination de l'arête d'identité donnée
      *
-     * @param edgeId
-     *          identité de l'arête dont on cherche le nœud correspondant
-     *
+     * @param edgeId identité de l'arête dont on cherche le nœud correspondant
      * @return l'identité du nœud destination de l'arête d'identité donnée
      */
 
@@ -213,9 +185,7 @@ public final class Graph {
     /**
      * Vérifie si l'arête d'identité donnée va dans le sens contraire de la voie OSM dont elle provient
      *
-     * @param edgeId
-     *          identité de l'arête que l'on vérifie
-     *
+     * @param edgeId identité de l'arête que l'on vérifie
      * @return true ssi l'arête d'identité donnée va dans le sens contraire de la voie OSM dont elle provient
      */
 
@@ -226,9 +196,7 @@ public final class Graph {
     /**
      * Donne l'ensemble des attributs OSM attachés à l'arête d'identité donnée
      *
-     * @param edgeId
-     *          identité de l'arête étudiée
-     *
+     * @param edgeId identité de l'arête étudiée
      * @return l'ensemble des attributs OSM attachés à l'arête d'identité donnée
      */
 
@@ -239,9 +207,7 @@ public final class Graph {
     /**
      * Donne la longueur, en mètres, de l'arête d'identité donnée
      *
-     * @param edgeId
-     *          identité de l'arête étudiée
-     *
+     * @param edgeId identité de l'arête étudiée
      * @return la longueur, en mètres, de l'arête d'identité donnée
      */
 
@@ -252,9 +218,7 @@ public final class Graph {
     /**
      * Donne le dénivelé positif total de l'arête d'identité donnée
      *
-     * @param edgeId
-     *          identité de l'arête étudiée
-     *
+     * @param edgeId identité de l'arête étudiée
      * @return le dénivelé positif total de l'arête d'identité donnée
      */
 
@@ -265,9 +229,7 @@ public final class Graph {
     /**
      * Donne une fonction possédant soit le profil en long de l'arête d'identité donnée, soit Double.NaN
      *
-     * @param edgeId
-     *          l'identité de l'arête étudiée
-     *
+     * @param edgeId l'identité de l'arête étudiée
      * @return le profil en long de l'arête d'identité donnée, sous la forme d'une fonction, ou une fonction constante égale à Double.NaN si l'arête ne possède pas de profil
      */
 

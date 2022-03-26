@@ -33,8 +33,8 @@ public final class SingleRoute implements Route {
         distance = new double[edgesClass.size() + 1];
         distance[0] = 0;
 
-        for (int i = 1; i < edgesClass.size()+1; i++) {
-            distance[i] = distance[i - 1] + edgesClass.get(i-1).length();
+        for (int i = 1; i < edgesClass.size() + 1; i++) {
+            distance[i] = distance[i - 1] + edgesClass.get(i - 1).length();
         }
     }
 
@@ -80,12 +80,14 @@ public final class SingleRoute implements Route {
     public PointCh pointAt(double position) {
         position = clamp(0, position, length());
         int index = binarySearch(distance, position);
-        if (index < 0) {index = - index - 2;}
+        if (index < 0) {
+            index = -index - 2;
+        }
 
         if (index >= edgesClass.size()) {
             return edgesClass.get(edgesClass.size() - 1).toPoint();
         } else {
-                return edgesClass.get(index).pointAt(position-distance[index]);
+            return edgesClass.get(index).pointAt(position - distance[index]);
         }
     }
 
@@ -94,8 +96,8 @@ public final class SingleRoute implements Route {
         int index = binarySearch(distance, position);
 
         if (index < 0) {
-            return - index - 2;
-        } else if (index >= edgesClass.size()){
+            return -index - 2;
+        } else if (index >= edgesClass.size()) {
             return edgesClass.size() - 1;
         } else {
             return index;

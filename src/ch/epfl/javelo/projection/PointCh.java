@@ -1,5 +1,7 @@
 package ch.epfl.javelo.projection;
+
 import ch.epfl.javelo.Preconditions;
+
 import static ch.epfl.javelo.Math2.squaredNorm;
 import static java.lang.Math.sqrt;
 
@@ -8,33 +10,30 @@ import static java.lang.Math.sqrt;
  *
  * @author Camille Espieux (324248)
  * @author Chiara Freneix (329552)
- *
  */
 
 public record PointCh(double e, double n) {
-    public PointCh{
-        Preconditions.checkArgument(SwissBounds.containsEN(e,n));
+    public PointCh {
+        Preconditions.checkArgument(SwissBounds.containsEN(e, n));
     }
 
     /**
      * Calcule le carré de la distance en mètres séparant le récepteur (this) de l'argument that.
      *
-     * @param that
-     *          l'argument
+     * @param that l'argument
      * @return le carré de la distance en mètres séparant le récepteur de l'argument.
      */
-    public double squaredDistanceTo(PointCh that){
-        return squaredNorm((that.e-e),(that.n-n));
+    public double squaredDistanceTo(PointCh that) {
+        return squaredNorm((that.e - e), (that.n - n));
     }
 
     /**
      * Calcule la distance en mètres séparant le récepteur (this) de l'argument that.
      *
-     * @param that
-     *          l'argument
+     * @param that l'argument
      * @return la distance en mètres séparant le récepteur de l'argument.
      */
-    public double distanceTo(PointCh that){
+    public double distanceTo(PointCh that) {
         return sqrt(squaredDistanceTo(that));
     }
 
@@ -43,8 +42,8 @@ public record PointCh(double e, double n) {
      *
      * @return la longitude du point, dans le système WGS84, en radians.
      */
-    public double lon(){
-        return Ch1903.lon(e,n);
+    public double lon() {
+        return Ch1903.lon(e, n);
     }
 
     /**
@@ -52,8 +51,7 @@ public record PointCh(double e, double n) {
      *
      * @return la latitude du point, dans le système WGS84, en radians.
      */
-    public double lat(){
-        return Ch1903.lat(e,n);
+    public double lat() {
+        return Ch1903.lat(e, n);
     }
 }
-

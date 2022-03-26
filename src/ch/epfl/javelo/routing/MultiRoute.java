@@ -7,11 +7,11 @@ import ch.epfl.javelo.projection.PointCh;
 import java.util.ArrayList;
 import java.util.List;
 
-public class MultiRoute implements Route{
+public class MultiRoute implements Route {
 
     private final List<Route> route;
 
-    public MultiRoute(List<Route> segments){
+    public MultiRoute(List<Route> segments) {
         Preconditions.checkArgument(!(segments.isEmpty()));
         this.route = List.copyOf(segments);
     }
@@ -44,7 +44,7 @@ public class MultiRoute implements Route{
     public List<Edge> edges() {
         List<Edge> edges = new ArrayList<>();
 
-        for (Route aClass : route){
+        for (Route aClass : route) {
             edges.addAll(aClass.edges());
         }
         return edges;
@@ -54,12 +54,12 @@ public class MultiRoute implements Route{
     @Override
     public List<PointCh> points() {
         List<PointCh> pointsExtremums = new ArrayList<>();
-        Route routeFinal = route.get(route.size()-1);
+        Route routeFinal = route.get(route.size() - 1);
 
         //boucle pour aller chercher dans chaque route
         for (Route aClass : route) {
             //boucle pour aller chercher dans la route le premier point de chaque edge
-            for (int i = 0; i < aClass.edges().size() ; i++) {
+            for (int i = 0; i < aClass.edges().size(); i++) {
                 pointsExtremums.add(aClass.edges().get(i).fromPoint());
             }
         }
