@@ -62,16 +62,12 @@ public final class SingleRoute implements Route {
     public List<PointCh> points() {
         List<PointCh> pointsExtremums = new ArrayList<>();
 
-        int indexFinalPoint = edgesClass.size() - 1;
-        Edge finalEdge = edgesClass.get(indexFinalPoint);
-
-        //liste de tous les premiers points des edges et du dernier de la dernière edge
+        //liste de tous les premiers points des edges
         for (Edge aClass : edgesClass) {
-            //pointsExtremums.add(edgesClass.get(i).pointAt(0));
             pointsExtremums.add(aClass.fromPoint());
         }
-        //pointsExtremums.add(finalEdge.pointAt(finalEdge.length()));
-        pointsExtremums.add(finalEdge.toPoint());
+        //ajout du dernier point de la dernière edge
+        pointsExtremums.add(edgesClass.get(edgesClass.size() - 1).toPoint());
 
         return pointsExtremums;
     }
