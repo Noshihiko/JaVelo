@@ -1,18 +1,19 @@
 package ch.epfl.javelo.data;
+
 import java.util.StringJoiner;
+
 import static ch.epfl.javelo.Preconditions.checkArgument;
 import static ch.epfl.javelo.data.Attribute.ALL;
 
 /**
  * Représente un ensemble d'attributs OpenStreetMap
  *
- *  @author Camille Espieux (324248)
- *  @author Chiara Freneix (329552)
- *
+ * @author Camille Espieux (324248)
+ * @author Chiara Freneix (329552)
  */
 public record AttributeSet(long bits) {
     public AttributeSet {
-        checkArgument((bits>>Attribute.COUNT) == 0);
+        checkArgument((bits >> Attribute.COUNT) == 0);
     }
 
     /**
@@ -25,7 +26,7 @@ public record AttributeSet(long bits) {
      */
     public static AttributeSet of(Attribute... attributes) {
         long seq = 0;
-        for (int i=0; i< attributes.length; ++i) {
+        for (int i = 0; i < attributes.length; ++i) {
             long mask = 1L << attributes[i].ordinal();
             seq = (mask | seq);
         }
@@ -68,7 +69,7 @@ public record AttributeSet(long bits) {
     public String toString() {
         StringJoiner M = new StringJoiner(",", "{", "}");
 
-        for (int i=0; i< Attribute.COUNT; ++i) {
+        for (int i = 0; i < Attribute.COUNT; ++i) {
             if (this.contains(ALL.get(i))) {
                 M.add(ALL.get(i).keyValue());
             }

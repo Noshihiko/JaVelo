@@ -16,15 +16,11 @@ import static ch.epfl.javelo.Q28_4.asFloat;
 /**
  * Permet de récupérer les informations concernant les arêtes
  *
+ * @param edgesBuffer mémoire tampon contenant la valeur des attributs figurant dans la première table
+ * @param profileIds  mémoire tampon contenant la valeur des attributs figurant dans la seconde table
+ * @param elevations  mémoire tampon contenant la totalité des échantillons des profils, compressés ou non
  * @author Camille Espieux (324248)
  * @author Chiara Freneix (329552)
- *
- * @param edgesBuffer
- *              mémoire tampon contenant la valeur des attributs figurant dans la première table
- * @param profileIds
- *              mémoire tampon contenant la valeur des attributs figurant dans la seconde table
- * @param elevations
- *              mémoire tampon contenant la totalité des échantillons des profils, compressés ou non
  */
 
 public record GraphEdges(ByteBuffer edgesBuffer, IntBuffer profileIds, ShortBuffer elevations) {
@@ -48,9 +44,7 @@ public record GraphEdges(ByteBuffer edgesBuffer, IntBuffer profileIds, ShortBuff
     /**
      * Retourne vrai ou faux en fonction du sens de l'arête
      *
-     * @param edgeId
-     *          identité de l'arête donnée en paramètre
-     *
+     * @param edgeId identité de l'arête donnée en paramètre
      * @return vrai si l'arête va dans le sens inverse du nœud OSM dont elle provient
      */
 
@@ -62,9 +56,7 @@ public record GraphEdges(ByteBuffer edgesBuffer, IntBuffer profileIds, ShortBuff
     /**
      * Retourne l'identité du nœud destination de l'arête
      *
-     * @param edgeId
-     *          identité de l'arête
-     *
+     * @param edgeId identité de l'arête
      * @return l'identité du nœud destination de l'arête
      */
 
@@ -77,9 +69,7 @@ public record GraphEdges(ByteBuffer edgesBuffer, IntBuffer profileIds, ShortBuff
     /**
      * Retourne la longueur de l'arête passée en paramètre
      *
-     * @param edgeId
-     *          identité de l'arête
-     *
+     * @param edgeId identité de l'arête
      * @return la longueur de l'arête en mètres
      */
 
@@ -91,9 +81,7 @@ public record GraphEdges(ByteBuffer edgesBuffer, IntBuffer profileIds, ShortBuff
     /**
      * Retourne le dénivelé positif de l'arête en mètres
      *
-     * @param edgeId
-     *          identité de l'arête
-     *
+     * @param edgeId identité de l'arête
      * @return le dénivelé positif de l'arête en mètres
      */
 
@@ -105,33 +93,29 @@ public record GraphEdges(ByteBuffer edgesBuffer, IntBuffer profileIds, ShortBuff
     /**
      * Indique si l'arête possède un profil
      *
-     * @param edgeId
-     *          identité de l'arête
-     *
+     * @param edgeId identité de l'arête
      * @return vrai si l'arête possède un profil
      */
 
     public boolean hasProfile(int edgeId) {
-        int profileType = extractUnsigned(profileIds.get(edgeId), 30,2);
+        int profileType = extractUnsigned(profileIds.get(edgeId), 30, 2);
         return (Types.ALL_types.get(profileType) != Types.INEXISTANT);
     }
 
     /**
      * Retourne le tableau des échantillons du profil de l'arête
      *
-     * @param edgeId
-     *          identité de l'arête
-     *
+     * @param edgeId identité de l'arête
      * @return le tableau des échantillons du profil de l'arête d'identité donnée
      */
 
     public float[] profileSamples(int edgeId) {
         int numberSamples = 1 + ceilDiv(Short.toUnsignedInt(edgesBuffer.getShort(edgeId * OFFSET_BYTES_PER_EDGE + OFFSET_LENGTH)), Q28_4.ofInt(2));
-        int index = extractUnsigned(profileIds.get(edgeId), 0,30);
+        int index = extractUnsigned(profileIds.get(edgeId), 0, 30);
 
         float[] ProfileSamples = new float[numberSamples];
 
-        boolean isInverted =(edgesBuffer.getInt(edgeId * OFFSET_BYTES_PER_EDGE + OFFSET_TARGET_NODE_ID) < 0);
+        boolean isInverted = (edgesBuffer.getInt(edgeId * OFFSET_BYTES_PER_EDGE + OFFSET_TARGET_NODE_ID) < 0);
 
 
         switch (Types.ALL_types.get(extractUnsigned(profileIds.get(edgeId), 30, 2))) {
@@ -149,16 +133,16 @@ public record GraphEdges(ByteBuffer edgesBuffer, IntBuffer profileIds, ShortBuff
             case COMPRESSED_IN_Q4_4 -> {
                 ProfileSamples[0] = asFloat((elevations.get(index)));
                 for (int i = 0; i < numberSamples - 1; ++i) {
-                    ProfileSamples[i + 1] = ProfileSamples[i] + asFloat(extractSigned(elevations.get(index + 1 + (i / 2)), 8 - (i % 2)*8, 8));
-                    }
-            break;
+                    ProfileSamples[i + 1] = ProfileSamples[i] + asFloat(extractSigned(elevations.get(index + 1 + (i / 2)), 8 - (i % 2) * 8, 8));
+                }
+                break;
             }
 
             case COMPRESSED_IN_Q0_4 -> {
                 ProfileSamples[0] = asFloat((elevations.get(index)));
                 for (int i = 0; i < numberSamples - 1; ++i) {
-                    ProfileSamples[i + 1] = ProfileSamples[i] + asFloat(extractSigned(elevations.get(index + 1 +(i / 4)), 12 - (i % 4)*4, 4));
-                    }
+                    ProfileSamples[i + 1] = ProfileSamples[i] + asFloat(extractSigned(elevations.get(index + 1 + (i / 4)), 12 - (i % 4) * 4, 4));
+                }
                 break;
             }
 
@@ -177,9 +161,7 @@ public record GraphEdges(ByteBuffer edgesBuffer, IntBuffer profileIds, ShortBuff
     /**
      * Retourne l'identité de l'ensemble d'attributs attaché à l'arête
      *
-     * @param edgeId
-     *          identité de l'arête
-     *
+     * @param edgeId identité de l'arête
      * @return l'identité de l'ensemble d'attributs attaché à l'arête
      */
 

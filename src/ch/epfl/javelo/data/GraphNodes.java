@@ -8,10 +8,9 @@ import static ch.epfl.javelo.Q28_4.asDouble;
 /**
  * Représente le tableau de tous les nœuds du graphe JaVelo
  *
+ * @param buffer
  * @author Camille Espieux (324248)
  * @author Chiara Freneix (329552)
- *
- * @param buffer
  */
 
 public record GraphNodes(IntBuffer buffer) {
@@ -32,46 +31,40 @@ public record GraphNodes(IntBuffer buffer) {
      * @return le nombre total de nœuds
      */
 
-    public int count(){
+    public int count() {
         return buffer().capacity() / NBR_OF_ATTRIBUTS;
     }
 
     /**
      * Donne la coordonnée E du nœud d'identité nodeId
      *
-     * @param nodeId
-     *          le nœud d'identité donné
-     *
+     * @param nodeId le nœud d'identité donné
      * @return la coordonnée E du nœud d'identité donné
      */
 
-    public double nodeE(int nodeId){
+    public double nodeE(int nodeId) {
         return asDouble(buffer().get(NODE_INTS * nodeId + OFFSET_E));
     }
 
     /**
      * Donne la coordonnée N du nœud d'identité nodeId
      *
-     * @param nodeId
-     *          le nœud d'identité donné
-     *
+     * @param nodeId le nœud d'identité donné
      * @return la coordonnée N du nœud d'identité donné
      */
 
-    public double nodeN(int nodeId){
-        return asDouble(buffer().get(NODE_INTS *nodeId + OFFSET_N));
+    public double nodeN(int nodeId) {
+        return asDouble(buffer().get(NODE_INTS * nodeId + OFFSET_N));
     }
 
     /**
      * Donne le nombre d'arêtes sortant du nœud d'identité nodeId
      *
-     * @param nodeId
-     *          le nœud d'identité donné
-     *
+     * @param nodeId le nœud d'identité donné
      * @return le nombre d'arêtes sortant du nœud d'identité donné
      */
 
-    public int outDegree(int nodeId){
+    public int outDegree(int nodeId) {
         return extractUnsigned(buffer().get(NODE_INTS * nodeId + OFFSET_OUT_EDGES), DEBUT_BIT_EDGES, LENGTH_EDGES_OUT);
     }
 
@@ -79,15 +72,12 @@ public record GraphNodes(IntBuffer buffer) {
      * Vérifie si l'index de l'arête est valide (compris entre 0 inclus et le nombre d'arêtes sortant du nœud, exclus)
      * puis donne l'identité de l'edgeIndex-ième arête sortant du nœud d'identité nodeId
      *
-     * @param nodeId
-     *          le nœud d'identité donné
-     * @param edgeIndex
-     *          l'index de l'arête
-     *
+     * @param nodeId    le nœud d'identité donné
+     * @param edgeIndex l'index de l'arête
      * @return l'identité de l'edgeIndex-ième arête sortant du nœud d'identité nodeId
      */
 
-    public int edgeId(int nodeId, int edgeIndex){
+    public int edgeId(int nodeId, int edgeIndex) {
         assert 0 <= edgeIndex && edgeIndex < outDegree(nodeId);
         return (extractUnsigned(buffer().get(NODE_INTS * nodeId + OFFSET_OUT_EDGES), DEBUT_BIT_IDENTITY, LENGTH_IDENTITY))
                 + edgeIndex;

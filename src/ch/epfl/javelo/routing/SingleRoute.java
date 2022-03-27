@@ -1,11 +1,12 @@
 package ch.epfl.javelo.routing;
+
 import ch.epfl.javelo.Preconditions;
 import ch.epfl.javelo.projection.PointCh;
+
 import java.util.*;
 
 import static ch.epfl.javelo.Math2.clamp;
 import static java.util.Arrays.binarySearch;
-
 
 /**
  * Représente un itinéraire simple c.-à-d. reliant un point de départ à un point d'arrivée, sans point de passage intermédiaire
@@ -14,7 +15,7 @@ import static java.util.Arrays.binarySearch;
  * @author Chiara Freneix (329552)
  */
 public final class SingleRoute implements Route {
-    private double[] distance;
+    private final double[] distance;
 
     private final List<Edge> edgesClass;
 
@@ -32,10 +33,9 @@ public final class SingleRoute implements Route {
         distance = new double[edgesClass.size() + 1];
         distance[0] = 0;
 
-        for (int i = 1; i < edgesClass.size()+1; i++) {
-            distance[i] = distance[i - 1] + edgesClass.get(i-1).length();
+        for (int i = 1; i < edgesClass.size() + 1; i++) {
+            distance[i] = distance[i - 1] + edgesClass.get(i - 1).length();
         }
-
     }
 
     @Override
@@ -80,42 +80,39 @@ public final class SingleRoute implements Route {
     public PointCh pointAt(double position) {
         position = clamp(0, position, length());
         int index = binarySearch(distance, position);
-        if (index < 0) {index = - index - 2;}
+        if (index < 0) {
+            index = -index - 2;
+        }
 
         if (index >= edgesClass.size()) {
             return edgesClass.get(edgesClass.size() - 1).toPoint();
         } else {
-            return edgesClass.get(index).pointAt(position-distance[index]);
+            return edgesClass.get(index).pointAt(position - distance[index]);
         }
-
     }
 
-
-    @Override
-    public double elevationAt(double position) {
-        position = clamp(0, position, length());
-        int index = binarySearch(distance, position);
-
-        if (index < 0) {index = - index - 2;}
-
-        if (index >= edgesClass.size()) {
-            return edgesClass.get(edgesClass.size() - 1).elevationAt(position - distance[edgesClass.size() - 1]);
-        } else {
-            return edgesClass.get(index).elevationAt(position - distance[index]);
-        }
-
-    }
-
-    @Override
-    public int nodeClosestTo(double position) {
+    private int indexSearch(double position) {
         position = clamp(0, position, length());
         int index = binarySearch(distance, position);
 
         if (index < 0) {
-            index = -index - 2;
-        } else if (index >= edgesClass.size()){
-            index = edgesClass.size() - 1;
+            return -index - 2;
+        } else if (index >= edgesClass.size()) {
+            return edgesClass.size() - 1;
+        } else {
+            return index;
         }
+    }
+
+    @Override
+    public double elevationAt(double position) {
+        int index = indexSearch(position);
+        return edgesClass.get(index).elevationAt(position - distance[index]);
+    }
+
+    @Override
+    public int nodeClosestTo(double position) {
+        int index = indexSearch(position);
 
         if ((position - distance[index] <= edgesClass.get(index).length() / 2)) {
             return edgesClass.get(index).fromNodeId();
@@ -127,13 +124,14 @@ public final class SingleRoute implements Route {
     @Override
     public RoutePoint pointClosestTo(PointCh point) {
         RoutePoint pointClosest = RoutePoint.NONE;
+        double position;
+        Edge edge;
 
-        for (int i = 0; i < edgesClass.size(); i++) {
-            Edge edge = edgesClass.get(i);
-            double position = clamp(0, edge.positionClosestTo(point), edge.length());
+        for (int i = 0; i < edgesClass.size(); ++i) {
+            edge = edgesClass.get(i);
+            position = clamp(0, edge.positionClosestTo(point), edge.length());
             pointClosest = pointClosest.min(edge.pointAt(position), position + distance[i], point.distanceTo(edge.pointAt(position)));
         }
         return pointClosest;
     }
 }
-

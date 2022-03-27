@@ -18,18 +18,12 @@ import static ch.epfl.javelo.Math2.projectionLength;
 /**
  * Enregistrement Edge
  *
- * @param fromNodeId
- *          identité du nœud de départ de l'arête
- * @param toNodeId
- *          identité du nœud d'arrivée de l'arête
- * @param fromPoint
- *          point de départ de l'arête
- * @param toPoint
- *          point d'arrivée de l'arête
- * @param length
- *          longueur de l'arête en mètres
- * @param profile
- *          profil en long de l'arête
+ * @param fromNodeId identité du nœud de départ de l'arête
+ * @param toNodeId   identité du nœud d'arrivée de l'arête
+ * @param fromPoint  point de départ de l'arête
+ * @param toPoint    point d'arrivée de l'arête
+ * @param length     longueur de l'arête en mètres
+ * @param profile    profil en long de l'arête
  */
 
 public record Edge(int fromNodeId, int toNodeId, PointCh fromPoint, PointCh toPoint, double length,
@@ -39,15 +33,10 @@ public record Edge(int fromNodeId, int toNodeId, PointCh fromPoint, PointCh toPo
     /**
      * Retourne une instance de Edge
      *
-     * @param graph
-     *          graphe JaVelo
-     * @param edgeId
-     *          identité de l'arête
-     * @param fromNodeId
-     *          identité du nœud de départ de l'arête
-     * @param toNodeId
-     *          identité du nœud d'arrivée de l'arête
-     *
+     * @param graph      graphe JaVelo
+     * @param edgeId     identité de l'arête
+     * @param fromNodeId identité du nœud de départ de l'arête
+     * @param toNodeId   identité du nœud d'arrivée de l'arête
      * @return une instance de Edge
      */
 
@@ -62,9 +51,7 @@ public record Edge(int fromNodeId, int toNodeId, PointCh fromPoint, PointCh toPo
     /**
      * Retourne la position le long de l'arête en mètres qui se trouve la plus proche du point donné
      *
-     * @param point
-     *          point donné dont on cherche la position la plus proche sur l'arête
-     *
+     * @param point point donné dont on cherche la position la plus proche sur l'arête
      * @return la position le long de l'arête en mètres qui se trouve la plus proche du point donné
      */
 
@@ -75,9 +62,7 @@ public record Edge(int fromNodeId, int toNodeId, PointCh fromPoint, PointCh toPo
     /**
      * Retourne le point se trouvant à la position donnée sur l'arête exprimée en mètres
      *
-     * @param position
-     *          position sur l'arête, en mètres
-     *
+     * @param position position sur l'arête, en mètres
      * @return le point se trouvant à la position donnée sur l'arête exprimée en mètres
      */
 
@@ -91,9 +76,7 @@ public record Edge(int fromNodeId, int toNodeId, PointCh fromPoint, PointCh toPo
     /**
      * Retourne l'altitude, en mètres, à la position donnée sur l'arête
      *
-     * @param position
-     *          position sur l'arête, en mètres
-     *
+     * @param position position sur l'arête, en mètres
      * @return l'altitude en mètres à la position donnée sur l'arête
      */
 
