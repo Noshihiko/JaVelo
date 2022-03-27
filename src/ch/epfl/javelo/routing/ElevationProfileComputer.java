@@ -42,7 +42,9 @@ public final class ElevationProfileComputer {
         else {
             Arrays.fill(routeProfile, 0, positionFirstvalidValue, firstValidValue);
             Arrays.fill(routeProfile, positionLastValidValue, nbrEchantillons, lastValidValue);
+            ;
 
+            //*************************************************************
 
             //Deuxieme remplissage ****************************************
             float latestValidValue = 0, nextValidValue = 0;
@@ -56,7 +58,6 @@ public final class ElevationProfileComputer {
                     latestValidValue = routeProfile[i];
                     positionLatestValidValue = i;
                 }
-
                 if (isNaN(routeProfile[i])) {
                     while (isNaN(routeProfile[count])) {
                         count++;
@@ -69,18 +70,11 @@ public final class ElevationProfileComputer {
 
                     }
                     i = count - 1;
-
-                    nextValidValue = routeProfile[count];
-                    for (int j = i; j < count; ++j) {
-                        routeProfile[j] = (float) Math2.interpolate(latestValidValue, nextValidValue, j / nbrEchantillons);
-
-                    }
                 }
             }
         }
-            //************************************************************
-            return new ElevationProfile(route.length(), routeProfile);
-
+        //************************************************************
+        return new ElevationProfile(route.length(), routeProfile);
     }
 }
 
