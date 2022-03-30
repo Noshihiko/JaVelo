@@ -1,3 +1,4 @@
+/*
 package ch.epfl.javelo;
 
 
@@ -40,4 +41,4 @@ final class SignatureChecks_6 {
     ch.epfl.javelo.routing.Route v12;
 }
 
-
+*/
