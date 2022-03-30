@@ -1,14 +1,14 @@
 package ch.epfl.javelo.routing;
 
-import ch.epfl.javelo.Math2;
 import ch.epfl.javelo.Preconditions;
 import ch.epfl.javelo.projection.PointCh;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class MultiRoute implements Route {
+import static ch.epfl.javelo.Math2.clamp;
 
+public class MultiRoute implements Route {
     private final List<Route> route;
 
     public MultiRoute(List<Route> segments) {
@@ -16,29 +16,40 @@ public class MultiRoute implements Route {
         this.route = List.copyOf(segments);
     }
 
-    //TODO
-    @Override
-    public int indexOfSegmentAt(double position) {
-        position = Math2.clamp(0, position, route.size());
-        return nodeClosestTo(position);
+    private double distance(int setting) {
+        double distance = 0;
+        for (int i = 0; i < setting; ++i) {
+            distance += route.get(i).length();
+        }
+        return distance;
     }
 
-    //TOCHECK
+    @Override
+    public int indexOfSegmentAt(double position) {
+        position = clamp(0, position, route.size());
+        int index = 0;
+        double distanceMin = 0;
+        double distanceMax = 0;
+
+        for (int i = 0; i < route.size(); ++i) {
+            distanceMax = distance(i+1);
+            distanceMin = distance(i);
+            if ((position < distanceMax) && ((position) > distanceMin)) {
+                index = i;
+            }
+        }
+        return index;
+    }
+
     @Override
     public double length() {
         double length = 0;
 
         for (Route aClass : route) {
             length += aClass.length();
-            /* ,
-            for (int i = 0; i < route.size(); i++){
-                length += aClass.edges().get(i).length();
-            }
-             */
         }
         return length;
     }
-
 
     @Override
     public List<Edge> edges() {
@@ -50,46 +61,58 @@ public class MultiRoute implements Route {
         return edges;
     }
 
-    // faut-il faire comme pour length ?
     @Override
     public List<PointCh> points() {
         List<PointCh> pointsExtremums = new ArrayList<>();
-        Route routeFinal = route.get(route.size() - 1);
 
-        //boucle pour aller chercher dans chaque route
-        for (Route aClass : route) {
-            //boucle pour aller chercher dans la route le premier point de chaque edge
-            for (int i = 0; i < aClass.edges().size(); i++) {
-                pointsExtremums.add(aClass.edges().get(i).fromPoint());
-            }
+        //boucle pour aller chercher dans chaque route sauf la dernière les premiers points de chaque edge
+        for (int i = 0; i < route.size()-2; i++) {
+            pointsExtremums =route.get(i).points();
+            pointsExtremums.remove(route.get(i).edges().get(edges().size() - 1).toPoint());
         }
-        pointsExtremums.add(routeFinal.edges().get(edges().size() - 1).toPoint());
+        //ajout des points extremums des edges de la dernière route
+        pointsExtremums = route.get(route.size()-1).points();
 
         return pointsExtremums;
     }
 
-    //TODO
     @Override
     public PointCh pointAt(double position) {
-        return null;
+        position = clamp(0, position, length());
 
+        int index = indexOfSegmentAt(position);
+        position = clamp(0, position, route.get(index).length());
+
+        return route.get(index).pointAt(position);
     }
 
-    //TODO
     @Override
     public double elevationAt(double position) {
-        return 0;
+        position = clamp(0, position, length());
+
+        int index = indexOfSegmentAt(position);
+        position = clamp(0, position, route.get(index).length());
+
+        return route.get(index).elevationAt(position);
     }
 
-    //TODO
     @Override
     public int nodeClosestTo(double position) {
-        return 0;
+        position = clamp(0, position, length());
+
+        int index = indexOfSegmentAt(position);
+        position = clamp(0, position, route.get(index).length());
+
+        return route.get(index).nodeClosestTo(position);
     }
 
-    //TODO
     @Override
     public RoutePoint pointClosestTo(PointCh point) {
-        return null;
+        RoutePoint pointClosest = RoutePoint.NONE;
+
+        for (Route aClass : route) {
+            pointClosest = pointClosest.min(aClass.pointClosestTo(point));
+        }
+        return pointClosest;
     }
 }

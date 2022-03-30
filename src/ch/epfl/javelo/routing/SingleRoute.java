@@ -62,16 +62,12 @@ public final class SingleRoute implements Route {
     public List<PointCh> points() {
         List<PointCh> pointsExtremums = new ArrayList<>();
 
-        int indexFinalPoint = edgesClass.size() - 1;
-        Edge finalEdge = edgesClass.get(indexFinalPoint);
-
-        //liste de tous les premiers points des edges et du dernier de la dernière edge
+        //liste de tous les premiers points des edges
         for (Edge aClass : edgesClass) {
-            //pointsExtremums.add(edgesClass.get(i).pointAt(0));
             pointsExtremums.add(aClass.fromPoint());
         }
-        //pointsExtremums.add(finalEdge.pointAt(finalEdge.length()));
-        pointsExtremums.add(finalEdge.toPoint());
+        //ajout du dernier point de la dernière edge
+        pointsExtremums.add(edgesClass.get(edgesClass.size() - 1).toPoint());
 
         return pointsExtremums;
     }
@@ -90,7 +86,7 @@ public final class SingleRoute implements Route {
             return edgesClass.get(index).pointAt(position - distance[index]);
         }
     }
-
+    /*
     private int indexSearch(double position) {
         position = clamp(0, position, length());
         int index = binarySearch(distance, position);
@@ -104,15 +100,32 @@ public final class SingleRoute implements Route {
         }
     }
 
+     */
+
     @Override
     public double elevationAt(double position) {
-        int index = indexSearch(position);
-        return edgesClass.get(index).elevationAt(position - distance[index]);
+        position = clamp(0, position, length());
+        int index = binarySearch(distance, position);
+        if (index < 0) {index = - index - 2;}
+
+        if (index >= edgesClass.size()) {
+            return edgesClass.get(edgesClass.size() - 1).elevationAt(position - distance[edgesClass.size() - 1]);
+        } else {
+            return edgesClass.get(index).elevationAt(position - distance[index]);
+        }
     }
 
     @Override
     public int nodeClosestTo(double position) {
-        int index = indexSearch(position);
+       // int index = indexSearch(position);
+        position = clamp(0, position, length());
+        int index = binarySearch(distance, position);
+
+        if (index < 0) {
+            index = -index - 2;
+        } else if (index >= edgesClass.size()){
+            index = edgesClass.size() - 1;
+        }
 
         if ((position - distance[index] <= edgesClass.get(index).length() / 2)) {
             return edgesClass.get(index).fromNodeId();
