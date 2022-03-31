@@ -38,7 +38,6 @@ public record GraphEdges(ByteBuffer edgesBuffer, IntBuffer profileIds, ShortBuff
         INEXISTANT, NOT_COMPRESSED, COMPRESSED_IN_Q4_4, COMPRESSED_IN_Q0_4;
 
         private static final List<Types> ALL_types = List.of(values());
-        //private static final int COUNT = ALL_types.size();
     }
 
     /**

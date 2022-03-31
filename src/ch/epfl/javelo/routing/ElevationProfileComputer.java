@@ -8,9 +8,26 @@ import java.util.Arrays;
 import static ch.epfl.javelo.Preconditions.checkArgument;
 import static java.lang.Double.isNaN;
 
+/**
+ * Calcule le profil en long d'un itineraire
+ *
+ * @author Camille Espieux (324248)
+ * @author Chiara Freneix (329552)
+ */
+
 public final class ElevationProfileComputer {
     private ElevationProfileComputer() {
     }
+
+    /**
+     * calcule le profile en long de l'itineraire
+     *
+     * @param route
+     *          route dont on veut construire le profil en long
+     * @param maxStepLength
+     *          maximum d'espacement en mètres entre les echantillons du profil
+     * @return le profil en long de l'itineraire
+     */
 
     public static ElevationProfile elevationProfile(Route route, double maxStepLength) {
         checkArgument(maxStepLength > 0);
@@ -47,9 +64,9 @@ public final class ElevationProfileComputer {
             //*************************************************************
 
             //Deuxieme remplissage ****************************************
-            float latestValidValue = 0, nextValidValue = 0;
-            int count = 0;
-            int positionNextValidValue = 0, positionLatestValidValue = 0;
+            float latestValidValue = 0, nextValidValue;
+            int count;
+            int positionNextValidValue, positionLatestValidValue = 0;
 
 
             for (int i = 0; i < nbrEchantillons - 1; ++i) {
