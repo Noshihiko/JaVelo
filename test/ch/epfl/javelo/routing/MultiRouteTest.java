@@ -433,7 +433,6 @@ class MultiRouteTest {
 
         MultiRoute route = new MultiRoute(routes);
 
-        //only SingleRoutes
         int expected0 = 0;
         int actual0 = route.indexOfSegmentAt(-100);
         assertEquals(expected0, actual0);

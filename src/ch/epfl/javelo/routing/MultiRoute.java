@@ -26,19 +26,22 @@ public class MultiRoute implements Route {
 
     @Override
     public int indexOfSegmentAt(double position) {
-        position = clamp(0, position, route.size());
+        position = clamp(0, position, length());
         int index = 0;
-        double distanceMin = 0;
-        double distanceMax = 0;
+        int indexMulti = 0;
 
-        for (int i = 0; i < route.size(); ++i) {
-            distanceMax = distance(i+1);
-            distanceMin = distance(i);
-            if ((position < distanceMax) && ((position) > distanceMin)) {
-                index = i;
+        while (position > 0) {
+            if (route.get(index).length() < position) {
+                indexMulti += route.get(index).indexOfSegmentAt(route.get(index).length()) + 1;
+            } else {
+                indexMulti += route.get(index).indexOfSegmentAt(position);
             }
+            position -= route.get(index).length();
+            index +=1;
         }
-        return index;
+
+        return indexMulti;
+
     }
 
     @Override
@@ -65,14 +68,12 @@ public class MultiRoute implements Route {
     public List<PointCh> points() {
         List<PointCh> pointsExtremums = new ArrayList<>();
 
-        //boucle pour aller chercher dans chaque route sauf la dernière les premiers points de chaque edge
-        for (int i = 0; i < route.size()-2; i++) {
-            pointsExtremums =route.get(i).points();
-            pointsExtremums.remove(route.get(i).edges().get(edges().size() - 1).toPoint());
+        pointsExtremums.add(route.get(0).points().get(0));
+        for (Route aClass : route) {
+            for (int i = 1; i < aClass.points().size(); ++i) {
+                pointsExtremums.add(aClass.points().get(i));
+            }
         }
-        //ajout des points extremums des edges de la dernière route
-        pointsExtremums = route.get(route.size()-1).points();
-
         return pointsExtremums;
     }
 
