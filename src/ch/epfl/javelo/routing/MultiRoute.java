@@ -3,7 +3,6 @@ package ch.epfl.javelo.routing;
 import ch.epfl.javelo.Preconditions;
 import ch.epfl.javelo.projection.PointCh;
 
-import java.sql.SQLOutput;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -38,7 +37,7 @@ public class MultiRoute implements Route {
                 indexMulti += route.get(index).indexOfSegmentAt(position);
             }
             position -= route.get(index).length();
-            index +=1;
+            index += 1;
         }
 
         return indexMulti;
@@ -97,6 +96,7 @@ public class MultiRoute implements Route {
     @Override
     public double elevationAt(double position) {
         position = clamp(0, position, length());
+
         for (Route aClass : route) {
             if (position > aClass.length()) {
                 position -= aClass.length();
@@ -131,8 +131,8 @@ public class MultiRoute implements Route {
         double distance = 0;
 
         for (Route aClass : route) {
-            checkIf = Math.abs(pointClosest.distanceToReference())
-                    > Math.abs(aClass.pointClosestTo(point).distanceToReference());
+            checkIf = pointClosest.distanceToReference()
+                    > aClass.pointClosestTo(point).distanceToReference();
 
             if (checkIf) {
                 pointClosest = aClass.pointClosestTo(point);
