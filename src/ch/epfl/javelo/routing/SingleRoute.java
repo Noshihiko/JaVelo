@@ -86,21 +86,6 @@ public final class SingleRoute implements Route {
             return edgesClass.get(index).pointAt(position - distance[index]);
         }
     }
-    /*
-    private int indexSearch(double position) {
-        position = clamp(0, position, length());
-        int index = binarySearch(distance, position);
-
-        if (index < 0) {
-            return -index - 2;
-        } else if (index >= edgesClass.size()) {
-            return edgesClass.size() - 1;
-        } else {
-            return index;
-        }
-    }
-
-     */
 
     @Override
     public double elevationAt(double position) {

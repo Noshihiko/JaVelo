@@ -3,6 +3,7 @@ package ch.epfl.javelo.routing;
 import ch.epfl.javelo.Preconditions;
 import ch.epfl.javelo.projection.PointCh;
 
+import java.sql.SQLOutput;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -80,40 +81,65 @@ public class MultiRoute implements Route {
     @Override
     public PointCh pointAt(double position) {
         position = clamp(0, position, length());
+        int index = 0;
 
-        int index = indexOfSegmentAt(position);
-        position = clamp(0, position, route.get(index).length());
+        for (Route aClass : route) {
+            if (position > aClass.length()) {
+                position -= aClass.length();
+            } else if (position >= 0) {
+                return aClass.pointAt(position);
+            }
+        }
 
-        return route.get(index).pointAt(position);
+        return null;
     }
 
     @Override
     public double elevationAt(double position) {
         position = clamp(0, position, length());
+        for (Route aClass : route) {
+            if (position > aClass.length()) {
+                position -= aClass.length();
+            } else if (position >= 0) {
+                return aClass.elevationAt(position);
+            }
+        }
 
-        int index = indexOfSegmentAt(position);
-        position = clamp(0, position, route.get(index).length());
-
-        return route.get(index).elevationAt(position);
+        return -1;
     }
 
     @Override
     public int nodeClosestTo(double position) {
         position = clamp(0, position, length());
 
-        int index = indexOfSegmentAt(position);
-        position = clamp(0, position, route.get(index).length());
+        for (Route aClass : route) {
+            if (position > aClass.length()) {
+                position -= aClass.length();
+            } else if (position >= 0) {
+                return aClass.nodeClosestTo(position);
+            }
+        }
 
-        return route.get(index).nodeClosestTo(position);
+        return -1;
     }
 
     @Override
     public RoutePoint pointClosestTo(PointCh point) {
         RoutePoint pointClosest = RoutePoint.NONE;
+        boolean checkIf;
+        double position = 0;
+        double distance = 0;
 
         for (Route aClass : route) {
-            pointClosest = pointClosest.min(aClass.pointClosestTo(point));
+            checkIf = Math.abs(pointClosest.distanceToReference())
+                    > Math.abs(aClass.pointClosestTo(point).distanceToReference());
+
+            if (checkIf) {
+                pointClosest = aClass.pointClosestTo(point);
+                position = distance + pointClosest.position();
+                distance += aClass.length();
+            }
         }
-        return pointClosest;
+        return new RoutePoint(pointClosest.point(), position, pointClosest.distanceToReference());
     }
 }
