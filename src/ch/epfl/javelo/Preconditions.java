@@ -11,7 +11,7 @@ public final class Preconditions {
     }
 
     /**
-     * Méthode de validation d'argument.
+     * Méthode de validation d'argument
      *
      * @param shouldBeTrue l'argument
      * @throws IllegalArgumentException si l'argument est faux
@@ -21,5 +21,4 @@ public final class Preconditions {
             throw new IllegalArgumentException();
         }
     }
-
 }
