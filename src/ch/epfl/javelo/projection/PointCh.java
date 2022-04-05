@@ -11,8 +11,16 @@ import static java.lang.Math.sqrt;
  * @author Camille Espieux (324248)
  * @author Chiara Freneix (329552)
  */
-
 public record PointCh(double e, double n) {
+
+    /**
+     * Constructeur public de l'enregistrement PointCh
+     *
+     * @param e la coordonnée est du point
+     * @param n la coordonnée nord du point
+     * @throws IllegalArgumentException si les coordonnées fournies ne sont pas dans les limites de la Suisse,
+     * définies par SwissBounds.
+     */
     public PointCh {
         Preconditions.checkArgument(SwissBounds.containsEN(e, n));
     }
@@ -37,7 +45,6 @@ public record PointCh(double e, double n) {
 
     /**
      * Calcule la longitude du point, dans le système WGS84, en radians.
-     *
      * @return la longitude du point, dans le système WGS84, en radians.
      */
     public double lon() {
@@ -46,7 +53,6 @@ public record PointCh(double e, double n) {
 
     /**
      * Calcule la latitude du point, dans le système WGS84, en radians.
-     *
      * @return la latitude du point, dans le système WGS84, en radians.
      */
     public double lat() {
