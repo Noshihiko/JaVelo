@@ -33,9 +33,7 @@ public record PointCh(double e, double n) {
      * @param that l'argument
      * @return la distance en mètres séparant le récepteur de l'argument.
      */
-    public double distanceTo(PointCh that) {
-        return sqrt(squaredDistanceTo(that));
-    }
+    public double distanceTo(PointCh that) { return sqrt(squaredDistanceTo(that)); }
 
     /**
      * Calcule la longitude du point, dans le système WGS84, en radians.

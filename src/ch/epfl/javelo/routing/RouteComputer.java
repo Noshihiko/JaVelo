@@ -4,6 +4,7 @@ import ch.epfl.javelo.Preconditions;
 import ch.epfl.javelo.data.Graph;
 import ch.epfl.javelo.data.GraphEdges;
 import ch.epfl.javelo.data.GraphNodes;
+import ch.epfl.javelo.projection.PointCh;
 
 import java.util.*;
 
@@ -26,6 +27,8 @@ public class RouteComputer {
         }
     }
 
+
+
     public Route bestRouteBetween(int startNodeId, int endNodeId) {
         Preconditions.checkArgument(startNodeId != endNodeId);
         int nbrNodes = graph.nodeCount();
@@ -40,34 +43,43 @@ public class RouteComputer {
         //********************* trouve noeud à explorer ******************
         while (!en_exploration.isEmpty()) {
             WeightedNode actualNodeExplored = en_exploration.remove();
+            if (distance[actualNodeExplored.nodeId] == Float.NEGATIVE_INFINITY) continue;
+            int actualNodeExploredId = actualNodeExplored.nodeId;
 
             //************************+ remplissage tableau route la plus courte **************
-            if (actualNodeExplored.nodeId == endNodeId) {
+            if (actualNodeExploredId == endNodeId) {
                 int actualNodeId = endNodeId;
                 List<Edge> edges = new ArrayList<>();
 
+                //******
                 while (predecesseur[actualNodeId] != startNodeId) {
                     for (int i = 0; i < graph.nodeOutDegree(actualNodeId); ++i) {
-                        int ToNodeId = graph.edgeTargetNodeId(graph.nodeOutEdgeId(actualNodeId, i));
+                        int EdgeId  = graph.nodeOutEdgeId(actualNodeId, i);
+                        int ToNodeId = graph.edgeTargetNodeId(EdgeId);
                         if (ToNodeId == predecesseur[actualNodeId]) {
-                            edges.add(Edge.of(graph, graph.nodeOutEdgeId(actualNodeId, i), actualNodeId, ToNodeId));
+                            edges.add(Edge.of(graph, EdgeId, actualNodeId, ToNodeId));
                         }
                     }
                     actualNodeId = predecesseur[actualNodeId];
                 }
-                return new SingleRoute(edges);
 
+                return new SingleRoute(edges);
+                //********
             }
             //*************** mise a jour tblo exploration : quel noeud il reste a explorer ***********
-            for (int i = 0; i < graph.nodeOutDegree(actualNodeExplored.nodeId); ++i) {
-                int ToNodeId = graph.edgeTargetNodeId(graph.nodeOutEdgeId(actualNodeExplored.nodeId, i));
-                float d = (float) ((costFunction.costFactor(actualNodeExplored.nodeId, graph.nodeOutEdgeId(actualNodeExplored.nodeId, i)) * graph.edgeLength(graph.nodeOutEdgeId(actualNodeExplored.nodeId, i)) + distance[actualNodeExplored.nodeId]));
+            for (int i = 0; i < graph.nodeOutDegree(actualNodeExploredId); ++i) {
+                int edgeId = graph.nodeOutEdgeId(actualNodeExploredId, i);
+                int ToNodeId = graph.edgeTargetNodeId(edgeId);
+                float d = (float) ((costFunction.costFactor(actualNodeExploredId, edgeId) * graph.edgeLength(edgeId)) + distance[actualNodeExploredId]);
+
+
                 if (d < distance[ToNodeId]) {
                     distance[ToNodeId] = d;
-                    predecesseur[ToNodeId] = actualNodeExplored.nodeId;
+                    predecesseur[ToNodeId] = actualNodeExploredId;
                     en_exploration.add(new WeightedNode(ToNodeId, distance[ToNodeId]));
                 }
             }
+            distance[actualNodeExploredId] = Float.NEGATIVE_INFINITY;
         }
         return null;
     }

@@ -62,7 +62,8 @@ public final class Ch1903 {
     /**
      * Convertit les coordonnées du système WGS84 d'un point en sa latitude
      *
-     * @param e la coordonnée selon l'Est
+     * @param e
+     * la coordonnée selon l'Est
      * @param n la coordonnée selon le Nord
      * @return la latitude dans le système WGS84 du point dont les coordonnées sont e et n dans le système suisse
      */

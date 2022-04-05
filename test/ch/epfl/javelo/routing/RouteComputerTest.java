@@ -61,5 +61,15 @@ public class RouteComputerTest {
             Route r = rc.bestRouteBetween(159049, 117669);
             KmlPrinter.write("javelo.kml", r);
         }
+
+    @Test
+    public void RouteComputertestOuestSuisse() throws IOException {
+        Graph g = Graph.loadFrom(Path.of("ch_west"));
+        CostFunction cf = new CityBikeCF(g);
+        RouteComputer rc = new RouteComputer(g, cf);
+        Route r = rc.bestRouteBetween(2046055, 2694240);
+        System.out.println(r.length());
+        KmlPrinter.write("javelo.kml", r);
+    }
     }
 
