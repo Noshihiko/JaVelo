@@ -16,7 +16,7 @@ import static ch.epfl.javelo.Math2.projectionLength;
  */
 
 /**
- * Enregistrement Edge
+ * Enregistrement d'un Edge
  *
  * @param fromNodeId identité du nœud de départ de l'arête
  * @param toNodeId   identité du nœud d'arrivée de l'arête
@@ -45,6 +45,7 @@ public record Edge(int fromNodeId, int toNodeId, PointCh fromPoint, PointCh toPo
         PointCh toPoint = graph.nodePoint(toNodeId);
         double length = graph.edgeLength(edgeId);
         DoubleUnaryOperator profile = graph.edgeProfile(edgeId);
+
         return new Edge(fromNodeId, toNodeId, fromPoint, toPoint, length, profile);
     }
 
@@ -68,9 +69,10 @@ public record Edge(int fromNodeId, int toNodeId, PointCh fromPoint, PointCh toPo
 
     public PointCh pointAt(double position) {
         double rapport = position / length;
-        double EofPoint = interpolate(fromPoint.e(), toPoint.e(), rapport);
-        double NofPoint = interpolate(fromPoint.n(), toPoint.n(), rapport);
-        return new PointCh(EofPoint, NofPoint);
+        double e = interpolate(fromPoint.e(), toPoint.e(), rapport);
+        double n = interpolate(fromPoint.n(), toPoint.n(), rapport);
+
+        return new PointCh(e, n);
     }
 
     /**

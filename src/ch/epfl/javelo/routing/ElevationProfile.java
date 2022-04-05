@@ -21,13 +21,10 @@ public final class ElevationProfile {
     /**
      * Constructeur de la classe qui construit le profil en long d'un itinéraire de longueur length
      *
-     * @param length
-     *              longueur de l'itinéraire
-     * @param elevationSamples
-     *              échantillons d'altitude, répartis uniformément le long de l'itinéraire
-     *
+     * @param length           longueur de l'itinéraire
+     * @param elevationSamples échantillons d'altitude, répartis uniformément le long de l'itinéraire
      * @throws IllegalArgumentException si la longueur est négative ou nulle,
-     *              ou si le tableau d'échantillons contient moins de 2 éléments
+     *                                  ou si le tableau d'échantillons contient moins de 2 éléments
      */
 
     public ElevationProfile(double length, float[] elevationSamples) {
@@ -109,9 +106,7 @@ public final class ElevationProfile {
     /**
      * Retourne l'altitude du profil à la position donnée
      *
-     * @param position
-     *              position à laquelle on veut connaître l'altitude
-     *
+     * @param position position à laquelle on veut connaître l'altitude
      * @return l'altitude du profil à la position donnée
      */
 

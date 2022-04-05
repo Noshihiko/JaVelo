@@ -19,9 +19,7 @@ public record AttributeSet(long bits) {
     /**
      * Retourne un ensemble contenant uniquement les attributs donnés en argument
      *
-     * @param attributes
-     *          attributs contenus dans l'ensemble
-     *
+     * @param attributes attributs contenus dans l'ensemble
      * @return un ensemble contenant uniquement les attributs donnés en argument
      */
     public static AttributeSet of(Attribute... attributes) {
@@ -36,11 +34,8 @@ public record AttributeSet(long bits) {
     /**
      * Permet de savoir si l'ensemble récepteur contient l'attribut donné
      *
-     * @param attribute
-     *          attribut cherché
-     *
+     * @param attribute attribut cherché
      * @return true ssi l'ensemble récepteur (this) contient l'attribut donné
-     *
      * @return false si non
      */
     public boolean contains(Attribute attribute) {
@@ -50,11 +45,9 @@ public record AttributeSet(long bits) {
     /**
      * Permet de savoir si deux ensembles d'attributs ont des elements en commun
      *
-     * @param that
-     *          ensemble passé en argument
-     *
+     * @param that ensemble passé en argument
      * @return true ssi l'intersection de l'ensemble récepteur (this) avec celui
-     *          passé en argument (that) n'est pas vide, false si non
+     * passé en argument (that) n'est pas vide, false si non
      */
     public boolean intersects(AttributeSet that) {
         return (that.bits & this.bits) != 0;

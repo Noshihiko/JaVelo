@@ -29,6 +29,8 @@ public record GraphEdges(ByteBuffer edgesBuffer, IntBuffer profileIds, ShortBuff
     private static final int OFFSET_ELEVATION = OFFSET_LENGTH + Short.BYTES;
     private static final int OFFSET_IDENTITY = OFFSET_ELEVATION + Short.BYTES;
     private static final int OFFSET_BYTES_PER_EDGE = OFFSET_IDENTITY + Short.BYTES;
+    private static final int OFFSET_IDENTITY_FIRST_SAMPLE = 30;
+    private static final int OFFSET_PROFILE_TYPE = 2;
 
     /**
      * Enumeration privée représentant les différents types de profils
@@ -61,8 +63,8 @@ public record GraphEdges(ByteBuffer edgesBuffer, IntBuffer profileIds, ShortBuff
 
     public int targetNodeId(int edgeId) {
         int index = edgeId * OFFSET_BYTES_PER_EDGE + OFFSET_TARGET_NODE_ID;
-        int nod_identity = edgesBuffer.getInt(index);
-        return nod_identity >= 0 ? nod_identity : ~nod_identity;
+        int nodeIdentity = edgesBuffer.getInt(index);
+        return nodeIdentity >= 0 ? nodeIdentity : ~nodeIdentity;
     }
 
     /**
@@ -97,7 +99,7 @@ public record GraphEdges(ByteBuffer edgesBuffer, IntBuffer profileIds, ShortBuff
      */
 
     public boolean hasProfile(int edgeId) {
-        int profileType = extractUnsigned(profileIds.get(edgeId), 30, 2);
+        int profileType = extractUnsigned(profileIds.get(edgeId), OFFSET_IDENTITY_FIRST_SAMPLE, OFFSET_PROFILE_TYPE);
         return (Types.ALL_types.get(profileType) != Types.INEXISTANT);
     }
 
@@ -110,14 +112,14 @@ public record GraphEdges(ByteBuffer edgesBuffer, IntBuffer profileIds, ShortBuff
 
     public float[] profileSamples(int edgeId) {
         int numberSamples = 1 + ceilDiv(Short.toUnsignedInt(edgesBuffer.getShort(edgeId * OFFSET_BYTES_PER_EDGE + OFFSET_LENGTH)), Q28_4.ofInt(2));
-        int index = extractUnsigned(profileIds.get(edgeId), 0, 30);
+        int index = extractUnsigned(profileIds.get(edgeId), OFFSET_TARGET_NODE_ID, OFFSET_IDENTITY_FIRST_SAMPLE);
 
         float[] ProfileSamples = new float[numberSamples];
 
         boolean isInverted = (edgesBuffer.getInt(edgeId * OFFSET_BYTES_PER_EDGE + OFFSET_TARGET_NODE_ID) < 0);
 
 
-        switch (Types.ALL_types.get(extractUnsigned(profileIds.get(edgeId), 30, 2))) {
+        switch (Types.ALL_types.get(extractUnsigned(profileIds.get(edgeId), OFFSET_IDENTITY_FIRST_SAMPLE, OFFSET_PROFILE_TYPE))) {
             case INEXISTANT -> {
                 return new float[0];
             }
@@ -126,7 +128,6 @@ public record GraphEdges(ByteBuffer edgesBuffer, IntBuffer profileIds, ShortBuff
                 for (int i = 0; i < numberSamples; ++i) {
                     ProfileSamples[i] = asFloat(Short.toUnsignedInt(elevations.get(index + i)));
                 }
-                break;
 
             }
             case COMPRESSED_IN_Q4_4 -> {
@@ -134,7 +135,6 @@ public record GraphEdges(ByteBuffer edgesBuffer, IntBuffer profileIds, ShortBuff
                 for (int i = 0; i < numberSamples - 1; ++i) {
                     ProfileSamples[i + 1] = ProfileSamples[i] + asFloat(extractSigned(elevations.get(index + 1 + (i / 2)), 8 - (i % 2) * 8, 8));
                 }
-                break;
             }
 
             case COMPRESSED_IN_Q0_4 -> {
@@ -142,7 +142,6 @@ public record GraphEdges(ByteBuffer edgesBuffer, IntBuffer profileIds, ShortBuff
                 for (int i = 0; i < numberSamples - 1; ++i) {
                     ProfileSamples[i + 1] = ProfileSamples[i] + asFloat(extractSigned(elevations.get(index + 1 + (i / 4)), 12 - (i % 4) * 4, 4));
                 }
-                break;
             }
 
         }
