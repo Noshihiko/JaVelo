@@ -10,8 +10,7 @@ import static java.lang.Math.*;
  * @author Chiara Freneix (329552)
  */
 public final class Math2 {
-    private Math2() {
-    }
+    private Math2() {}
 
     /**
      * Calcule la partie entière par excès de la division de x par y.
