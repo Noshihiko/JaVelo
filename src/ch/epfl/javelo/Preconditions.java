@@ -7,6 +7,7 @@ package ch.epfl.javelo;
  * @author Chiara Freneix (329552)
  */
 public final class Preconditions {
+    //Constructeur privé de Preconditions qui rend la classe non instanciable.
     private Preconditions() {
     }
 
