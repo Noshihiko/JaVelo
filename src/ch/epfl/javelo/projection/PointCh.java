@@ -19,7 +19,7 @@ public record PointCh(double e, double n) {
      * @param e la coordonnée est du point
      * @param n la coordonnée nord du point
      * @throws IllegalArgumentException si les coordonnées fournies ne sont pas dans les limites de la Suisse,
-     * définies par SwissBounds
+     * définies par SwissBounds.
      */
     public PointCh {
         Preconditions.checkArgument(SwissBounds.containsEN(e, n));
