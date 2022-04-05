@@ -12,6 +12,7 @@ import static java.lang.Math.toRadians;
  */
 
 public final class Ch1903 {
+    // Constructeur privé pour rendre la classe non instanciable.
     private Ch1903() {}
 
     /**
@@ -26,8 +27,8 @@ public final class Ch1903 {
         double lon1 = pow(10, -4) * (3_600 * toDegrees(lon) - 26_782.5);
         double lat1 = pow(10, -4) * (3_600 * toDegrees(lat) - 169_028.66);
 
-        return 2_600_072.37 + (211_455.93 * lon1) - (10_938.51 * lon1 * lat1) - (0.36 * lon1 * pow(lat1, 2))
-                - (44.54 * pow(lon1, 3));
+        return 2_600_072.37 + (211_455.93 * lon1) - (10_938.51 * lon1 * lat1) - (0.36 * lon1 * lat1 * lat1)
+                - (44.54 * lon1 * lon1 * lon1);
     }
 
     /**
@@ -42,8 +43,8 @@ public final class Ch1903 {
         double lon1 = pow(10, -4) * (3_600 * toDegrees(lon) - 26_782.5);
         double lat1 = pow(10, -4) * (3_600 * toDegrees(lat) - 169_028.66);
 
-        return 1_200_147.07 + (308_807.95 * lat1) + (3_745.25 * pow(lon1, 2)) + (76.63 * pow(lat1, 2))
-                - (194.56 * pow(lon1, 2) * lat1) + (119.79 * pow(lat1, 3));
+        return 1_200_147.07 + (308_807.95 * lat1) + (3_745.25 * lon1 * lon1) + (76.63 * lat1 * lat1)
+                - (194.56 * lat1 * lon1 * lon1) + (119.79 * lat1 * lat1 * lat1);
     }
 
     /**
@@ -57,7 +58,7 @@ public final class Ch1903 {
     public static double lon(double e, double n) {
         double x = pow(10, -6) * (e - 2_600_000);
         double y = pow(10, -6) * (n - 1_200_000);
-        double lon1 = 2.677_909_4 + (4.728_982 * x) + (0.791_484 * x * y) + (0.130_6 * x * pow(y, 2)) - (0.043_6 * pow(x, 3));
+        double lon1 = 2.677_909_4 + (4.728_982 * x) + (0.791_484 * x * y) + (0.130_6 * x * y * y) - (0.043_6 * x * x * x);
 
         return toRadians(lon1 * 100 / 36);
     }
@@ -73,8 +74,8 @@ public final class Ch1903 {
     public static double lat(double e, double n) {
         double x = pow(10, -6) * (e - 2_600_000);
         double y = pow(10, -6) * (n - 1_200_000);
-        double lat1 = 16.902_389_2 + (3.238_272 * y) - (0.270_978 * pow(x, 2)) - (0.002_528 * pow(y, 2))
-                - (0.044_7 * pow(x, 2) * y) - (0.014_0 * pow(y, 3));
+        double lat1 = 16.902_389_2 + (3.238_272 * y) - (0.270_978 * x * x) - (0.002_528 * y * y)
+                - (0.044_7 * y * x * x) - (0.014 * y * y * y);
 
         return toRadians(lat1 * 100 / 36);
     }
