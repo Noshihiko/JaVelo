@@ -24,9 +24,8 @@ public final class SwissBounds {
      * @param n la coordonnée Nord
      *
      * @return vrai si les coordonnées sont en Suisse,
-     * sinon faux.
+     *  sinon faux.
      */
-    //TODO : comment on comment un boolean ?
     public static boolean containsEN(double e, double n) {
         return (MIN_E <= e && e <= MAX_E) && (MIN_N <= n && n <= MAX_N);
     }
