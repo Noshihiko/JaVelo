@@ -10,6 +10,8 @@ import static java.lang.Math.*;
  * @author Chiara Freneix (329552)
  */
 public final class Math2 {
+
+    //Constructeur privé de Math2 qui rend la classe non instanciable.
     private Math2() {}
 
     /**
@@ -86,8 +88,6 @@ public final class Math2 {
     public static double asinh(double x) {
         return log(x + sqrt(1 + x * x));
     }
-    //TODO
-    //vaudrait pas mieux écrire pow(x, 2) ?
 
     /**
      * Calcule le produit scalaire des vecteurs u et v.
