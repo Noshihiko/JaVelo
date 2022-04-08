@@ -60,6 +60,7 @@ public final class ElevationProfile {
 
     /**
      * Retourne la longueur du profil en mètres.
+     *
      * @return la longueur du profil en mètres.
      */
     public double length() {
@@ -68,6 +69,7 @@ public final class ElevationProfile {
 
     /**
      * Retourne l'altitude minimum du profil en mètres.
+     *
      * @return l'altitude minimum du profil en mètres.
      */
     public double minElevation() {
@@ -76,6 +78,7 @@ public final class ElevationProfile {
 
     /**
      * Retourne l'altitude maximum du profil en mètres.
+     *
      * @return l'altitude maximum du profil en mètres.
      */
     public double maxElevation() {
@@ -84,6 +87,7 @@ public final class ElevationProfile {
 
     /**
      * Retourne le dénivelé positif total du profil en mètres.
+     *
      * @return le dénivelé positif total du profil en mètres.
      */
     public double totalAscent() {
@@ -92,6 +96,7 @@ public final class ElevationProfile {
 
     /**
      * Retourne le dénivelé négatif total du profil en mètres.
+     *
      * @return le dénivelé négatif total du profil en mètres.
      */
     public double totalDescent() {

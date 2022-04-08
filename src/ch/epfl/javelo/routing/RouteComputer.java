@@ -109,11 +109,20 @@ public class RouteComputer {
         return creationRoute(startNodeId, endNodeId, predecessor);
     }
 
+    /**
+     * Reconstitue une route correspondant à l'itineraire le plus court et optimisé entre deux noeuds
+     *
+     * @param startNodeId noeud de depart
+     * @param endNodeId noeud d'arrivée
+     * @param predecessor tableau de predecesseurs pour chaque noeud
+     *
+     * @return une single route correspondant à l'itineraire le plus court et optimisé entre les deux noeuds
+     */
+
     private Route creationRoute(int startNodeId, int endNodeId, int[] predecessor) {
         int actualNodeId = endNodeId;
         List<Edge> edges = new ArrayList<>();
 
-        //******
         while (actualNodeId != startNodeId) {
 
             int prevNodeId = predecessor[actualNodeId];

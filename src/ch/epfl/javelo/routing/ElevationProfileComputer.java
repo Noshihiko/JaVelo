@@ -16,14 +16,14 @@ import static java.lang.Double.isNaN;
  */
 
 public final class ElevationProfileComputer {
-    private ElevationProfileComputer() {
-    }
+    private ElevationProfileComputer() {}
 
     /**
      * calcule le profile en long de l'itineraire
      *
      * @param route         route dont on veut construire le profil en long
      * @param maxStepLength maximum d'espacement en mètres entre les echantillons du profil
+     * @throws IllegalArgumentException si maxStepLength est esgale ou inferieure à 0
      *
      * @return le profil en long de l'itineraire
      */

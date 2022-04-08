@@ -149,8 +149,8 @@ public record GraphEdges(ByteBuffer edgesBuffer, IntBuffer profileIds, ShortBuff
                     profileSamples[i] = asFloat(Short.toUnsignedInt(elevations.get(index + i)));
                 }
             }
-            case COMPRESSED_IN_Q4_4 -> profileSamples = decompression(OFFSET_VALUE_PER_SHORT_Q4_4, numberSamples, index).clone();
 
+            case COMPRESSED_IN_Q4_4 -> profileSamples = decompression(OFFSET_VALUE_PER_SHORT_Q4_4, numberSamples, index).clone();
 
             case COMPRESSED_IN_Q0_4 -> profileSamples = decompression(OFFSET_VALUE_PER_SHORT_Q0_4, numberSamples, index).clone();
 

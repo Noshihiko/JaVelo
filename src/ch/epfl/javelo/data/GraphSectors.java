@@ -40,7 +40,7 @@ public record GraphSectors(ByteBuffer buffer) {
      * @return la liste de tous les secteurs ayant une intersection avec le carré centré au point donné.
      */
     public List<Sector> sectorsInArea(PointCh center, double distance) {
-        int secteur = 0;
+        int secteur;
 
         //liste des sectors contenus dans le carré
         List<Sector> sectorsIntersect = new ArrayList<>();

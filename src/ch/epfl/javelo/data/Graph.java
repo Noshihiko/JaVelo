@@ -64,7 +64,7 @@ public final class Graph {
      *
      * @return le graphe JaVelo obtenu à partir des fichiers se trouvant dans le répertoire dont le chemin d'accès est basePath.
      */
-    
+
     public static Graph loadFrom(Path basePath) throws IOException {
         //création des différents attributs à l'aide des fichiers contenus dans "lausanne"
         GraphNodes nodes = new GraphNodes((bufferFile(basePath, "nodes.bin")).asIntBuffer());
