@@ -39,6 +39,7 @@ public record GraphSectors(ByteBuffer buffer) {
      * @return la liste de tous les secteurs ayant une intersection avec le carré centré au point donné
      */
     public List<Sector> sectorsInArea(PointCh center, double distance) {
+        int secteur = 0;
         //liste des sectors contenus dans le carré
         List<Sector> sectorsIntersect = new ArrayList<>();
 
@@ -61,7 +62,7 @@ public record GraphSectors(ByteBuffer buffer) {
         //boucle pour chercher les sectors en xMin, xMax, yMin et yMax contenus dans le carré créé plus haut
         for (int i = yMin; i <= yMax; ++i) {
             for (int j = xMin; j <= xMax; ++j) {
-                int secteur = i * NUMBER_SECTOR + j;
+                secteur = i * NUMBER_SECTOR + j;
                 sectorsIntersect.add(new Sector(buffer.getInt(secteur * LENGTH_SECTOR),
                         buffer.getInt(secteur * LENGTH_SECTOR) + Short.toUnsignedInt(buffer.getShort(secteur * LENGTH_SECTOR + FIRST_NODE))));
             }
