@@ -10,8 +10,6 @@ import java.nio.file.Path;
 import java.util.*;
 import java.util.function.DoubleUnaryOperator;
 
-import static java.lang.Math.pow;
-
 /**
  * Représente le graphe JaVelo
  *
@@ -19,9 +17,6 @@ import static java.lang.Math.pow;
  * @author Chiara Freneix (329552)
  */
 public final class Graph {
-    private static PointCh COOR;
-    private static AttributeSet OSM_ATTRIBUTES;
-    private static Graph graphLoadFrom;
     private static final int OFFSET_NODE_CLOSEST = -1;
 
     public GraphNodes nodes;
@@ -186,7 +181,7 @@ public final class Graph {
      * @return l'ensemble des attributs OSM attachés à l'arête d'identité donnée.
      */
     public AttributeSet edgeAttributes(int edgeId) {
-        return OSM_ATTRIBUTES = attributeSets.get(edges.attributesIndex(edgeId));
+        return attributeSets.get(edges.attributesIndex(edgeId));
     }
 
     /**
