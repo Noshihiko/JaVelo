@@ -8,22 +8,33 @@ import java.util.List;
 
 import static ch.epfl.javelo.Math2.clamp;
 
+/**
+ * Représente un itinéraire multiple, composé d'une séquence d'itinéraires contigus nommés segments.
+ *
+ * @author Camille Espieux (324248)
+ * @author Chiara Freneix (329552)
+ */
 public class MultiRoute implements Route {
-    private final List<Route> route;
+    private final List<Route> routeList;
 
+    /**
+     * Constructeur de MultiRoute
+     *
+     * @param segments liste des segments composants l'itinéraire
+     * @throws IllegalArgumentException si la liste de segments est vide
+     */
     public MultiRoute(List<Route> segments) {
         Preconditions.checkArgument(!(segments.isEmpty()));
-        this.route = List.copyOf(segments);
+        this.routeList = List.copyOf(segments);
     }
 
-    private double distance(int setting) {
-        double distance = 0;
-        for (int i = 0; i < setting; ++i) {
-            distance += route.get(i).length();
-        }
-        return distance;
-    }
-
+    /**
+     * Donne l'index du segment de l'itinéraire contenant la position donnée.
+     *
+     * @param position la position du segment pour calculer son index
+     *
+     * @return l'index du segment de l'itinéraire contenant la position donnée.
+     */
     @Override
     public int indexOfSegmentAt(double position) {
         position = clamp(0, position, length());
@@ -31,98 +42,134 @@ public class MultiRoute implements Route {
         int indexMulti = 0;
 
         while (position > 0) {
-            if (route.get(index).length() < position) {
-                indexMulti += route.get(index).indexOfSegmentAt(route.get(index).length()) + 1;
+            if (routeList.get(index).length() < position) {
+                indexMulti += routeList.get(index).indexOfSegmentAt(routeList.get(index).length()) + 1;
             } else {
-                indexMulti += route.get(index).indexOfSegmentAt(position);
+                indexMulti += routeList.get(index).indexOfSegmentAt(position);
             }
-            position -= route.get(index).length();
+            position -= routeList.get(index).length();
             index += 1;
         }
 
         return indexMulti;
-
     }
 
+    /**
+     * Donne la longueur de l'itinéraire, en mètres.
+     * @return la longueur de l'itinéraire, en mètres.
+     */
     @Override
     public double length() {
         double length = 0;
 
-        for (Route aClass : route) {
-            length += aClass.length();
+        for (Route route : routeList) {
+            length += route.length();
         }
         return length;
     }
 
+    /**
+     * Donne la totalité des arêtes de l'itinéraire.
+     * @return la totalité des arêtes de l'itinéraire.
+     */
     @Override
     public List<Edge> edges() {
         List<Edge> edges = new ArrayList<>();
 
-        for (Route aClass : route) {
-            edges.addAll(aClass.edges());
+        for (Route route : routeList) {
+            edges.addAll(route.edges());
         }
         return edges;
     }
 
+    /**
+     * Donne la totalité des points situés aux extrémités des arêtes de l'itinéraire, sans doublons.
+     * @return la totalité des points situés aux extrémités des arêtes de l'itinéraire, sans doublons.
+     */
     @Override
     public List<PointCh> points() {
         List<PointCh> pointsExtremums = new ArrayList<>();
 
-        pointsExtremums.add(route.get(0).points().get(0));
-        for (Route aClass : route) {
-            for (int i = 1; i < aClass.points().size(); ++i) {
-                pointsExtremums.add(aClass.points().get(i));
+        pointsExtremums.add(routeList.get(0).points().get(0));
+        for (Route route : routeList) {
+            for (int i = 1; i < route.points().size(); ++i) {
+                pointsExtremums.add(route.points().get(i));
             }
         }
         return pointsExtremums;
     }
 
+    /**
+     * Donne le point se trouvant à la position donnée le long de l'itinéraire.
+     *
+     * @param position la position donnée
+     *
+     * @return le point se trouvant à la position donnée le long de l'itinéraire.
+     */
     @Override
     public PointCh pointAt(double position) {
         position = clamp(0, position, length());
-        int index = 0;
 
-        for (Route aClass : route) {
-            if (position > aClass.length()) {
-                position -= aClass.length();
+        for (Route route : routeList) {
+            if (position > route.length()) {
+                position -= route.length();
             } else if (position >= 0) {
-                return aClass.pointAt(position);
+                return route.pointAt(position);
             }
         }
-
         return null;
     }
 
+    /**
+     * Donne l'altitude à la position donnée le long de l'itinéraire.
+     *
+     * @param position la position donnée
+     *
+     * @return l'altitude à la position donnée le long de l'itinéraire,
+     * si l'arête contenant cette position n'a pas de profil, vaut NaN.
+     */
     @Override
     public double elevationAt(double position) {
         position = clamp(0, position, length());
 
-        for (Route aClass : route) {
-            if (position > aClass.length()) {
-                position -= aClass.length();
+        for (Route route : routeList) {
+            if (position > route.length()) {
+                position -= route.length();
             } else if (position >= 0) {
-                return aClass.elevationAt(position);
+                return route.elevationAt(position);
             }
         }
-
         return -1;
     }
 
+    /**
+     * Donne l'identité du nœud appartenant à l'itinéraire et se trouvant le plus proche de la position donnée.
+     *
+     * @param position la position donnée
+     *
+     * @return l'identité du nœud appartenant à l'itinéraire et se trouvant le plus proche de la position donnée.
+     */
     @Override
     public int nodeClosestTo(double position) {
         position = clamp(0, position, length());
 
-        for (Route aClass : route) {
-            if (position > aClass.length()) {
-                position -= aClass.length();
+        for (Route route : routeList) {
+            if (position > route.length()) {
+                position -= route.length();
             } else if (position >= 0) {
-                return aClass.nodeClosestTo(position);
+                return route.nodeClosestTo(position);
             }
         }
-
         return -1;
     }
 
+    /**
+     * Donne le point de l'itinéraire se trouvant le plus proche du point de référence donné.
+     *
+     * @param point point de référence
+     *
+     * @return le point de l'itinéraire se trouvant le plus proche du point de référence donné.
+     */
     @Override
     public RoutePoint pointClosestTo(PointCh point) {
         RoutePoint pointClosest = RoutePoint.NONE;
@@ -130,7 +177,7 @@ public class MultiRoute implements Route {
         double position = 0;
         double distance = 0;
 
-        for (Route aClass : route) {
+        for (Route aClass : routeList) {
             checkIf = pointClosest.distanceToReference()
                     > aClass.pointClosestTo(point).distanceToReference();
 
