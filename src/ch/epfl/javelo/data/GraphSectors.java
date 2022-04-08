@@ -15,7 +15,6 @@ import static ch.epfl.javelo.Math2.clamp;
  * @author Camille Espieux (324248)
  * @author Chiara Freneix (329552)
  */
-
 public record GraphSectors(ByteBuffer buffer) {
     private final static int NUMBER_SECTOR = 128;
     private final static int FIRST_NODE = 4;
@@ -24,12 +23,11 @@ public record GraphSectors(ByteBuffer buffer) {
 
 
     /**
-     * Constructeur de GraphSectors qui construit un secteur
+     * Enregistrement imbriqué qui représente un secteur
      *
      * @param startNodeId L'identité (index) du premier nœud du secteur
      * @param endNodeId   L'identité (index) du nœud situé juste après le dernier nœud du secteur
      */
-
     public record Sector(int startNodeId, int endNodeId) {
     }
 
@@ -40,26 +38,25 @@ public record GraphSectors(ByteBuffer buffer) {
      * @param distance La distance entre le point et un des côtés du carré
      * @return la liste de tous les secteurs ayant une intersection avec le carré centré au point donné
      */
-
     public List<Sector> sectorsInArea(PointCh center, double distance) {
-        //liste de sectors intersect dans le carré
+        //liste des sectors contenus dans le carré
         List<Sector> sectorsIntersect = new ArrayList<>();
 
-        //calcul de la largeur et la hauteur pour un secteur(ils font tous la même taille)
+        //calcule la largeur et la hauteur d'un secteur (ils font tous la même taille)
         double xSector = (SwissBounds.MAX_E - SwissBounds.MIN_E) / NUMBER_SECTOR;
         double ySector = (SwissBounds.MAX_N - SwissBounds.MIN_N) / NUMBER_SECTOR;
 
-        //calcul du carré centré au PointCh center
+        //calcule carré centré au PointCh center
         double xBordGauche = clamp(SwissBounds.MIN_E, (center.e() - distance), SwissBounds.MAX_E);
         double xBordDroit = clamp(SwissBounds.MIN_E, (center.e() + distance), SwissBounds.MAX_E);
         double yBordBas = clamp(SwissBounds.MIN_N, (center.n() - distance), SwissBounds.MAX_N);
         double yBordHaut = clamp(SwissBounds.MIN_N, (center.n() + distance), SwissBounds.MAX_N);
 
         //numéro des secteurs entre 0 et 127
-        int xMin = clamp(0, (int) ((xBordGauche - SwissBounds.MIN_E) / xSector), 127);
-        int xMax = clamp(0, (int) ((xBordDroit - SwissBounds.MIN_E) / xSector), 127);
-        int yMin = clamp(0, (int) ((yBordBas - SwissBounds.MIN_N) / ySector), 127);
-        int yMax = clamp(0, (int) ((yBordHaut - SwissBounds.MIN_N) / ySector), 127);
+        int xMin = clamp(0, (int) ((xBordGauche - SwissBounds.MIN_E) / xSector), NUMBER_SECTOR-1);
+        int xMax = clamp(0, (int) ((xBordDroit - SwissBounds.MIN_E) / xSector), NUMBER_SECTOR-1);
+        int yMin = clamp(0, (int) ((yBordBas - SwissBounds.MIN_N) / ySector), NUMBER_SECTOR-1);
+        int yMax = clamp(0, (int) ((yBordHaut - SwissBounds.MIN_N) / ySector), NUMBER_SECTOR-1);
 
         //boucle pour chercher les sectors en xMin, xMax, yMin et yMax contenus dans le carré créé plus haut
         for (int i = yMin; i <= yMax; ++i) {
