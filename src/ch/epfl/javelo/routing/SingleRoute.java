@@ -105,8 +105,11 @@ public final class SingleRoute implements Route {
         if (index < 0) index = - index - 2;
 
 
-        return index >= edgesClass.size() ? edgesClass.get(edgesClass.size() - 1).toPoint()
-                : edgesClass.get(index).pointAt(position - distance[index]);
+        if (index >= edgesClass.size()) {
+           return edgesClass.get(edgesClass.size() - 1).toPoint();
+        } else {
+            return edgesClass.get(index).pointAt(position - distance[index]);
+        }
     }
 
     /**
@@ -123,8 +126,11 @@ public final class SingleRoute implements Route {
         int index = binarySearch(distance, position);
         if (index < 0) index = - index - 2;
 
-        return index >= edgesClass.size() ? edgesClass.get(edgesClass.size() - 1).elevationAt(position - distance[edgesClass.size() - 1])
-                : edgesClass.get(index).elevationAt(position - distance[index]);
+        if (index >= edgesClass.size()) {
+            return edgesClass.get(edgesClass.size() - 1).elevationAt(position - distance[edgesClass.size() - 1]);
+        } else {
+            return edgesClass.get(index).elevationAt(position - distance[index]);
+        }
     }
 
     /**
@@ -139,7 +145,7 @@ public final class SingleRoute implements Route {
         position = clamp(0, position, length());
         int index = binarySearch(distance, position);
 
-        if (index < 0) index = -index - 2;
+        if (index < 0) index = - index - 2;
         else if (index >= edgesClass.size()) index = edgesClass.size() - 1;
 
         if ((position - distance[index] <= edgesClass.get(index).length() / 2)) {
