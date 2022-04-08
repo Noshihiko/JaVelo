@@ -9,7 +9,6 @@ import static ch.epfl.javelo.Preconditions.checkArgument;
  * @author Chiara Freneix (329552)
  */
 public final class Bits {
-    static final int LENGTH_BITS = 32;
 
     private Bits() {
     }
@@ -26,11 +25,11 @@ public final class Bits {
      *                                  l'intervalle allant de 0 à 31 (inclus)
      */
     public static int extractSigned(int value, int start, int length) {
-        checkArgument((0 <= length) && (0 <= start) && ((length + start) <= LENGTH_BITS));
+        checkArgument((0 <= length) && (0 <= start) && ((length + start) <= Integer.SIZE));
         if (length == 0) return 0;
-        int r = value << (LENGTH_BITS - (length + start));
+        int r = value << (Integer.SIZE - (length + start));
 
-        return r >> (LENGTH_BITS - length);
+        return r >> (Integer.SIZE - length);
     }
 
     /**
@@ -45,10 +44,10 @@ public final class Bits {
      *                                  l'intervalle allant de 0 à 32 (inclus)
      */
     public static int extractUnsigned(int value, int start, int length) {
-        checkArgument((0 <= start) && ((length + start) <= LENGTH_BITS) && (length < LENGTH_BITS) && (0 <= length));
+        checkArgument((0 <= start) && ((length + start) <= Integer.SIZE) && (length < Integer.SIZE) && (0 <= length));
         if (length == 0) return 0;
-        int r = value << (LENGTH_BITS - (length + start));
+        int r = value << (Integer.SIZE - (length + start));
 
-        return (r >>> (LENGTH_BITS - length));
+        return (r >>> (Integer.SIZE - length));
     }
 }
