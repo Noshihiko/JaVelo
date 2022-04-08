@@ -92,18 +92,18 @@ public final class Functions {
             else if (x >= xMax) return samples[samples.length - 1];
             else {
                 double distance = xMax / (samples.length - 1);
-                double[] valeurX = new double[samples.length];
+                double[] abscissaValues = new double[samples.length];
 
                 for (int i = 0; i < samples.length; ++i) {
-                    valeurX[i] = distance * i;
+                    abscissaValues[i] = distance * i;
                 }
 
                 for (int i = 0; i < (samples.length - 1); ++i) {
                     double Y0 = samples[i];
                     double Y1 = samples[i + 1];
 
-                    if (valeurX[i] < x && valeurX[i + 1] > x) return interpolate(Y0, Y1, (x - valeurX[i]) / distance);
-                    else if (x == valeurX[i]) return samples[i];
+                    if (abscissaValues[i] < x && abscissaValues[i + 1] > x) return interpolate(Y0, Y1, (x - abscissaValues[i]) / distance);
+                    else if (x == abscissaValues[i]) return samples[i];
                 }
             }
             throw new IllegalArgumentException();

@@ -54,8 +54,8 @@ public final class Math2 {
      * sinon v.
      */
     public static int clamp(int min, int v, int max) {
-        if (min > max) throw new IllegalArgumentException();
-        else if (v < min) return min;
+        checkArgument(max>=min);
+        if (v < min) return min;
         else if (v > max) return max;
         else return v;
     }
@@ -73,8 +73,8 @@ public final class Math2 {
      * sinon v.
      */
     public static double clamp(double min, double v, double max) {
-        if (min > max) throw new IllegalArgumentException();
-        else if (v < min) return min;
+        checkArgument(max>=min);
+        if (v < min) return min;
         else if (v > max) return max;
         else return v;
     }
@@ -112,7 +112,7 @@ public final class Math2 {
      * @return le carré de la norme du vecteur u.
      */
     public static double squaredNorm(double uX, double uY) {
-        return uX * uX + uY * uY;
+        return pow( norm(uX, uY), 2);
     }
 
     /**
@@ -124,7 +124,7 @@ public final class Math2 {
      * @return la norme du vecteur u.
      */
     public static double norm(double uX, double uY) {
-        return sqrt(squaredNorm(uX, uY));
+        return sqrt(pow(uX,2) + pow(uY,2));
     }
 
     /**
