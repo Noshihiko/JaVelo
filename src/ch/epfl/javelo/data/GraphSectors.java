@@ -9,7 +9,7 @@ import java.util.*;
 import static ch.epfl.javelo.Math2.clamp;
 
 /**
- * Représente le tableau contenant les 16384 secteurs de JaVelo
+ * Représente le tableau contenant les 16384 secteurs de JaVelo.
  *
  * @param buffer Mémoire tampon contenant la valeur des attributs de la totalité des secteurs
  * @author Camille Espieux (324248)
@@ -32,14 +32,16 @@ public record GraphSectors(ByteBuffer buffer) {
     }
 
     /**
-     * Cherche tous les secteurs contenus dans le carré centré en un point
+     * Cherche tous les secteurs contenus dans le carré centré en un point.
      *
      * @param center   Le point donné
      * @param distance La distance entre le point et un des côtés du carré
-     * @return la liste de tous les secteurs ayant une intersection avec le carré centré au point donné
+     *
+     * @return la liste de tous les secteurs ayant une intersection avec le carré centré au point donné.
      */
     public List<Sector> sectorsInArea(PointCh center, double distance) {
         int secteur = 0;
+
         //liste des sectors contenus dans le carré
         List<Sector> sectorsIntersect = new ArrayList<>();
 
