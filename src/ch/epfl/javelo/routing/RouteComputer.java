@@ -13,7 +13,6 @@ import java.util.*;
  * @author Chiara Freneix (329552)
  */
 
-//ajouter un final ?
 public class RouteComputer {
     private Graph graph;
     private CostFunction costFunction;
@@ -40,6 +39,7 @@ public class RouteComputer {
         PriorityQueue<WeightedNode> en_exploration = new PriorityQueue<>();
         float[] distance = new float[nbrNodes];
         int[] predecesseur = new int[nbrNodes];
+
         Arrays.fill(distance, Float.POSITIVE_INFINITY);
         Arrays.fill(predecesseur, 0);
         distance[startNodeId] = 0;

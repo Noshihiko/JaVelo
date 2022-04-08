@@ -18,7 +18,7 @@ public final class ElevationProfile {
     private final int arrayLength;
     private final double min;
     private final double max;
-    private double totalAscent, totalDescent;
+    private final double totalAscent, totalDescent;
 
     /**
      * Constructeur de la classe qui construit le profil en long d'un itinéraire de longueur length.
@@ -35,6 +35,7 @@ public final class ElevationProfile {
         arrayLength = this.elevationSamples.length;
         DoubleSummaryStatistics s = new DoubleSummaryStatistics();
         double elevationDifference;
+        double totAsc=0, totDesc=0;
 
         s.accept(this.elevationSamples[0]);
         for (int i = 1; i < arrayLength; ++i) {
@@ -43,12 +44,14 @@ public final class ElevationProfile {
             elevationDifference = this.elevationSamples[i] - this.elevationSamples[i - 1];
 
             if (elevationDifference > 0) {
-                totalAscent += elevationDifference;
+                totAsc += elevationDifference;
 
             } else if (elevationDifference < 0) {
-                totalDescent -= elevationDifference;
+                totDesc -= elevationDifference;
             }
         }
+        totalDescent = totDesc;
+        totalAscent = totAsc;
         min = s.getMin();
         max = s.getMax();
     }

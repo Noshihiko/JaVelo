@@ -153,6 +153,17 @@ public record GraphEdges(ByteBuffer edgesBuffer, IntBuffer profileIds, ShortBuff
 
     }
 
+    /**
+     * Decompresse le code en fonction du format de compression
+     *
+     * @param compressionRate indique combien de valeure sont contenue en un short
+     * @param bitsPerValue combien de bits est utilisée pour representer une valeure
+     * @param numberSamples nombre d'échantillons
+     * @param index index d'ou on commence pour recuperer les valeures
+     *
+     * @return un profil d'échantillons decompressés
+     */
+    
     private float[] decompression(int compressionRate, int bitsPerValue, int numberSamples, int index) {
         float[] profileSamples = new float[numberSamples];
         profileSamples[0] = asFloat((elevations.get(index)));
