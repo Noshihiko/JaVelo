@@ -163,7 +163,7 @@ public record GraphEdges(ByteBuffer edgesBuffer, IntBuffer profileIds, ShortBuff
      *
      * @return un profil d'échantillons decompressés
      */
-    
+
     private float[] decompression(int compressionRate, int bitsPerValue, int numberSamples, int index) {
         float[] profileSamples = new float[numberSamples];
         profileSamples[0] = asFloat((elevations.get(index)));

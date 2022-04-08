@@ -7,7 +7,7 @@ import ch.epfl.javelo.projection.PointCh;
 import java.util.*;
 
 /**
- * Représente le profil en long d'un itinéraire simple ou multiple
+ * Retourne un itineraire le plus court et plus adapté pour les vélos
  *
  * @author Camille Espieux (324248)
  * @author Chiara Freneix (329552)
@@ -17,11 +17,27 @@ public class RouteComputer {
     private Graph graph;
     private CostFunction costFunction;
 
+    /**
+     * Constructeur publique de RouteComputer
+     *
+     * @param graph graph dans lequel on va chercher le parcours
+     * @param costFunction fonction attribuant un cout particulier aux aretes en fonctions de criteres specifiques
+     */
+
     public RouteComputer(Graph graph, CostFunction costFunction) {
         this.graph = graph;
         this.costFunction = costFunction;
 
     }
+
+    /**
+     * Cree un enregistrement contenant un noeud et sa distance
+     *
+     * @param nodeId noeud associé à la distance
+     * @param distance distance au noeud
+     *
+     * @return un enregistrement d'un noeud et sa distance associée
+     */
 
     record WeightedNode(int nodeId, float distance)
             implements Comparable<WeightedNode> {
@@ -30,6 +46,14 @@ public class RouteComputer {
             return Float.compare(this.distance, that.distance);
         }
     }
+
+    /**
+     * Trouve le chemin le plus court entre deux noeuds dans le graph
+     *
+     * @param startNodeId 
+     * @param endNodeId
+     * @return
+     */
 
 
     public Route bestRouteBetween(int startNodeId, int endNodeId) {
