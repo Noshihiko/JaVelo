@@ -249,7 +249,7 @@ public class ElevationProfileComputerTest2 {
         PointCh fromPoint = new PointCh(2485000, 1075000);
         PointCh toPointCh = new PointCh(2485100, 1075100);
         double length = 100;
-        float[] samples = {500, 502, 505, 510, 500, 520, 510, Float.NaN, Float.NaN, Float.NaN, };
+        float[] samples = {500, 502, 505, 510, 500, 520, 510, Float.NaN, Float.NaN, Float.NaN, Float.NaN};
         DoubleUnaryOperator a = Functions.sampled(samples, 100);
         Edge edge = new Edge(fromNodeId, toNodeId, fromPoint, toPointCh, length, a);
         List<Edge> edges = new ArrayList<>();

@@ -2,11 +2,16 @@ package ch.epfl.javelo.routing;
 
 import ch.epfl.javelo.Preconditions;
 import ch.epfl.javelo.data.Graph;
-import ch.epfl.javelo.data.GraphEdges;
-import ch.epfl.javelo.data.GraphNodes;
 import ch.epfl.javelo.projection.PointCh;
 
 import java.util.*;
+
+/**
+ * Représente le profil en long d'un itinéraire simple ou multiple
+ *
+ * @author Camille Espieux (324248)
+ * @author Chiara Freneix (329552)
+ */
 
 //ajouter un final ?
 public class RouteComputer {

@@ -35,6 +35,7 @@ public final class ElevationProfile {
         arrayLength = this.elevationSamples.length;
         DoubleSummaryStatistics s = new DoubleSummaryStatistics();
 
+        s.accept(this.elevationSamples[0]);
         for (int i = 1; i < arrayLength; ++i) {
             s.accept(this.elevationSamples[i]);
             if ((this.elevationSamples[i] - this.elevationSamples[i - 1]) > 0) {
