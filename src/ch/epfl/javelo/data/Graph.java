@@ -11,7 +11,7 @@ import java.util.*;
 import java.util.function.DoubleUnaryOperator;
 
 /**
- * Représente le graphe JaVelo
+ * Représente le graphe JaVelo.
  *
  * @author Camille Espieux (324248)
  * @author Chiara Freneix (329552)
@@ -37,6 +37,23 @@ public final class Graph {
         this.sectors = sectors;
         this.edges = edges;
         this.attributeSets = List.copyOf(attributeSets);
+    }
+
+    /**
+     * Permet de créer un ByteBuffer que l'on convertit et qu'on utilise comme attribut pour créer nos différents objets.
+     *
+     * @param basePath chemin pour accéder aux fichiers dans le répertoire
+     * @param nameFile nom du fichier dont on cherche à récupérer le contenu
+     * @throws IOException en cas d'erreur d'entrée/sortie, p. ex. si l'un des fichiers attendus n'existe pas
+     *
+     * @return un ByteBuffer utilisé dans loadFrom.
+     */
+    private static ByteBuffer bufferFile(Path basePath, String nameFile) throws IOException {
+        ByteBuffer buffer;
+        try (FileChannel channel = FileChannel.open(basePath.resolve(nameFile))) {
+            buffer = channel.map(FileChannel.MapMode.READ_ONLY, 0, channel.size());
+        }
+        return buffer;
     }
 
     /**
@@ -67,35 +84,19 @@ public final class Graph {
     }
 
     /**
-     * Permet de créer un ByteBuffer que l'on convertit et qu'on utilise comme attribut pour créer nos différents objets
-     *
-     * @param basePath chemin pour accéder aux fichiers dans le répertoire
-     * @param nameFile nom du fichier dont on cherche à récupérer le contenu
-     * @return un ByteBuffer utilisé dans loadFrom
-     * @throws IOException en cas d'erreur d'entrée/sortie, p. ex. si l'un des fichiers attendus n'existe pas
-     */
-    private static ByteBuffer bufferFile(Path basePath, String nameFile) throws IOException {
-        ByteBuffer buffer;
-        try (FileChannel channel = FileChannel.open(basePath.resolve(nameFile))) {
-            buffer = channel.map(FileChannel.MapMode.READ_ONLY, 0, channel.size());
-        }
-        return buffer;
-    }
-
-    /**
-     * Donne le nombre total de nœuds dans le graphe
-     * @return le nombre total de nœuds dans le graphe
+     * Donne le nombre total de nœuds dans le graphe.
+     * @return le nombre total de nœuds dans le graphe.
      */
     public int nodeCount() {
         return nodes.count();
     }
 
     /**
-     * Donne la position du nœud d'identité donnée
+     * Donne la position du nœud d'identité donnée.
      *
      * @param nodeId identité du nœud dont on cherche la position
      *
-     * @return la position du nœud d'identité donnée
+     * @return la position du nœud d'identité donnée.
      */
     public PointCh nodePoint(int nodeId) {
         return new PointCh(nodes.nodeE(nodeId), nodes.nodeN(nodeId));
