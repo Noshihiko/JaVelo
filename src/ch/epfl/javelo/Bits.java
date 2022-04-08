@@ -10,7 +10,13 @@ import static ch.epfl.javelo.Preconditions.checkArgument;
  */
 public final class Bits {
 
-    private Bits() {
+    //Constructeur privé de Bits
+    private Bits() {}
+
+    //Fait le premier changement avec un masque
+    private static int r(int value, int start, int length) {
+        if (length == 0) return 0;
+        return value << (Integer.SIZE - (length + start));
     }
 
     /**
@@ -26,8 +32,7 @@ public final class Bits {
      */
     public static int extractSigned(int value, int start, int length) {
         checkArgument((0 <= length) && (0 <= start) && ((length + start) <= Integer.SIZE));
-        if (length == 0) return 0;
-        int r = value << (Integer.SIZE - (length + start));
+        int r = r(value, start, length);
 
         return r >> (Integer.SIZE - length);
     }
@@ -45,9 +50,8 @@ public final class Bits {
      */
     public static int extractUnsigned(int value, int start, int length) {
         checkArgument((0 <= start) && ((length + start) <= Integer.SIZE) && (length < Integer.SIZE) && (0 <= length));
-        if (length == 0) return 0;
-        int r = value << (Integer.SIZE - (length + start));
+        int r = r(value, start, length);
 
-        return (r >>> (Integer.SIZE - length));
+        return r >>> (Integer.SIZE - length);
     }
 }
