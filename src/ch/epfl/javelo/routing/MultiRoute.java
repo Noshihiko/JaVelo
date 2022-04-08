@@ -50,7 +50,6 @@ public class MultiRoute implements Route {
             position -= routeList.get(index).length();
             index += 1;
         }
-
         return indexMulti;
     }
 
@@ -177,14 +176,13 @@ public class MultiRoute implements Route {
         double position = 0;
         double distance = 0;
 
-        for (Route aClass : routeList) {
-            checkIf = pointClosest.distanceToReference()
-                    > aClass.pointClosestTo(point).distanceToReference();
+        for (Route route : routeList) {
+            checkIf = pointClosest.distanceToReference() > route.pointClosestTo(point).distanceToReference();
 
             if (checkIf) {
-                pointClosest = aClass.pointClosestTo(point);
+                pointClosest = route.pointClosestTo(point);
                 position = distance + pointClosest.position();
-                distance += aClass.length();
+                distance += route.length();
             }
         }
         return new RoutePoint(pointClosest.point(), position, pointClosest.distanceToReference());

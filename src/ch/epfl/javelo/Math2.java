@@ -108,7 +108,7 @@ public final class Math2 {
      * @return le carré de la norme du vecteur u.
      */
     public static double squaredNorm(double uX, double uY) {
-        return pow( norm(uX, uY), 2);
+        return pow(norm(uX, uY), 2);
     }
 
     /**
