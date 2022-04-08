@@ -123,10 +123,10 @@ public record GraphEdges(ByteBuffer edgesBuffer, IntBuffer profileIds, ShortBuff
                     profileSamples[i] = asFloat(Short.toUnsignedInt(elevations.get(index + i)));
                 }
             }
-            case COMPRESSED_IN_Q4_4 -> profileSamples = decompression(OFFSET_VALUE_PER_SHORT_Q4_4, OFFSET_BITS_PER_VALUE_COMPRESSED_Q4_4, numberSamples, index).clone();
+            case COMPRESSED_IN_Q4_4 -> profileSamples = decompression(OFFSET_VALUE_PER_SHORT_Q4_4, numberSamples, index).clone();
 
 
-            case COMPRESSED_IN_Q0_4 -> profileSamples = decompression(OFFSET_VALUE_PER_SHORT_Q0_4, OFFSET_BITS_PER_VALUE_COMPRESSED_Q0_4, numberSamples, index).clone();
+            case COMPRESSED_IN_Q0_4 -> profileSamples = decompression(OFFSET_VALUE_PER_SHORT_Q0_4, numberSamples, index).clone();
 
         }
         if (isInverted) {
@@ -157,14 +157,14 @@ public record GraphEdges(ByteBuffer edgesBuffer, IntBuffer profileIds, ShortBuff
      * Decompresse le code en fonction du format de compression
      *
      * @param compressionRate indique combien de valeure sont contenue en un short
-     * @param bitsPerValue combien de bits est utilisée pour representer une valeure
      * @param numberSamples nombre d'échantillons
      * @param index index d'ou on commence pour recuperer les valeures
      *
      * @return un profil d'échantillons decompressés
      */
 
-    private float[] decompression(int compressionRate, int bitsPerValue, int numberSamples, int index) {
+    private float[] decompression(int compressionRate, int numberSamples, int index) {
+        int bitsPerValue = Short.SIZE / compressionRate;
         float[] profileSamples = new float[numberSamples];
         profileSamples[0] = asFloat((elevations.get(index)));
         for (int i = 0; i < numberSamples - 1; ++i) {

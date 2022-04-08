@@ -64,15 +64,17 @@ public class RouteComputer {
         PointCh endPointCh = graph.nodePoint(endNodeId);
         PriorityQueue<WeightedNode> en_exploration = new PriorityQueue<>();
         float[] distance = new float[nbrNodes];
-        int[] predecesseur = new int[nbrNodes];
+        int[] predecessor = new int[nbrNodes];
 
         Arrays.fill(distance, Float.POSITIVE_INFINITY);
-        Arrays.fill(predecesseur, 0);
+        Arrays.fill(predecessor, 0);
 
         distance[startNodeId] = 0;
         en_exploration.add(new WeightedNode(startNodeId, distance[startNodeId]));
         int actualNodeExploredId = startNodeId;
+
         //********************* trouve noeud à explorer ******************
+
         while (actualNodeExploredId != endNodeId) {
             //*************** mise a jour tblo exploration : quel noeud il reste a explorer ***********
             for (int i = 0; i < graph.nodeOutDegree(actualNodeExploredId); ++i) {
@@ -89,7 +91,7 @@ public class RouteComputer {
                     if (d < distance[ToNodeId]) {
 
                         distance[ToNodeId] = d;
-                        predecesseur[ToNodeId] = actualNodeExploredId;
+                        predecessor[ToNodeId] = actualNodeExploredId;
                         en_exploration.add(new WeightedNode(ToNodeId, distance[ToNodeId]
                                 + (float) nextPointCh.distanceTo(endPointCh)));
                     }
@@ -104,14 +106,17 @@ public class RouteComputer {
 
             } while (distance[actualNodeExploredId] == Float.NEGATIVE_INFINITY);
         }
-        //************************+ remplissage tableau route la plus courte **************
+        return creationRoute(startNodeId, endNodeId, predecessor);
+    }
+
+    private Route creationRoute(int startNodeId, int endNodeId, int[] predecessor) {
         int actualNodeId = endNodeId;
         List<Edge> edges = new ArrayList<>();
 
         //******
         while (actualNodeId != startNodeId) {
 
-            int prevNodeId = predecesseur[actualNodeId];
+            int prevNodeId = predecessor[actualNodeId];
             for (int i = 0; i < graph.nodeOutDegree(prevNodeId); ++i) {
 
                 int EdgeId = graph.nodeOutEdgeId(prevNodeId, i);
@@ -127,6 +132,7 @@ public class RouteComputer {
         Collections.reverse(edges);
 
         return new SingleRoute(edges);
-        //********
     }
+
+
 }

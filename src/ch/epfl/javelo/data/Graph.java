@@ -19,10 +19,10 @@ import java.util.function.DoubleUnaryOperator;
 public final class Graph {
     private static final int OFFSET_NODE_CLOSEST = -1;
 
-    public GraphNodes nodes;
-    public GraphSectors sectors;
-    public GraphEdges edges;
-    public List<AttributeSet> attributeSets;
+    private final GraphNodes nodes;
+    private final GraphSectors sectors;
+    private final GraphEdges edges;
+    private final List<AttributeSet> attributeSets;
 
     /**
      * Constructeur de Graph
@@ -64,6 +64,7 @@ public final class Graph {
      *
      * @return le graphe JaVelo obtenu à partir des fichiers se trouvant dans le répertoire dont le chemin d'accès est basePath.
      */
+    
     public static Graph loadFrom(Path basePath) throws IOException {
         //création des différents attributs à l'aide des fichiers contenus dans "lausanne"
         GraphNodes nodes = new GraphNodes((bufferFile(basePath, "nodes.bin")).asIntBuffer());
@@ -87,6 +88,7 @@ public final class Graph {
      * Donne le nombre total de nœuds dans le graphe.
      * @return le nombre total de nœuds dans le graphe.
      */
+
     public int nodeCount() {
         return nodes.count();
     }
@@ -98,6 +100,7 @@ public final class Graph {
      *
      * @return la position du nœud d'identité donnée.
      */
+
     public PointCh nodePoint(int nodeId) {
         return new PointCh(nodes.nodeE(nodeId), nodes.nodeN(nodeId));
     }
@@ -109,6 +112,7 @@ public final class Graph {
      *
      * @return le nombre d'arêtes sortant du nœud d'identité donnée.
      */
+
     public int nodeOutDegree(int nodeId) {
         return nodes.outDegree(nodeId);
     }
@@ -121,6 +125,7 @@ public final class Graph {
      *
      * @return l'identité de l'edgeIndex-ième arête sortant du nœud d'identité nodeId.
      */
+
     public int nodeOutEdgeId(int nodeId, int edgeIndex) {
         return nodes.edgeId(nodeId, edgeIndex);
     }

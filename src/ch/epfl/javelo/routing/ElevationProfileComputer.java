@@ -30,11 +30,13 @@ public final class ElevationProfileComputer {
 
     public static ElevationProfile elevationProfile(Route route, double maxStepLength) {
         checkArgument(maxStepLength > 0);
+
         int numberOfSamples = (int) (Math.ceil(route.length() / maxStepLength) + 1);
         float[] routeProfile = new float[numberOfSamples];
+        float maxLength = (float) (route.length() / (numberOfSamples - 1));
+
         float firstValidValue = 0, lastValidValue = 0;
         int positionLastValidValue = 0, positionFirstValidValue = -1;
-        float maxLength = (float) (route.length() / (numberOfSamples - 1));
 
         //*****************************Premier remplissage ****************************************
         //Passe le tableau et remplace les NaN au debut par la premiere valeure valide
@@ -43,12 +45,16 @@ public final class ElevationProfileComputer {
 
             routeProfile[i] = (float) route.elevationAt(i * maxLength);
             if (positionFirstValidValue < 0 && !isNaN(routeProfile[i])) {
+
                 firstValidValue = routeProfile[i];
                 positionFirstValidValue = i;
+
                 lastValidValue = routeProfile[i];
                 positionLastValidValue = i;
             }
+
             if (positionLastValidValue < i && !isNaN(routeProfile[i])) {
+
                 lastValidValue = routeProfile[i];
                 positionLastValidValue = i;
             }
@@ -69,6 +75,7 @@ public final class ElevationProfileComputer {
             for (int i = 0; i < numberOfSamples - 1; ++i) {
                 count = i + 1;
                 if (!isNaN(routeProfile[i]) && isNaN(routeProfile[i + 1])) {
+
                     latestValidValue = routeProfile[i];
                     positionLatestValidValue = i;
                 }
@@ -76,8 +83,10 @@ public final class ElevationProfileComputer {
                     while (isNaN(routeProfile[count])) {
                         count++;
                     }
+
                     nextValidValue = routeProfile[count];
                     positionNextValidValue = count;
+
                     for (int j = i; j < count; ++j) {
                         float spacing = (float) (j - positionLatestValidValue) / (positionNextValidValue - positionLatestValidValue);
                         routeProfile[j] = (float) Math2.interpolate(latestValidValue, nextValidValue, spacing);
@@ -87,7 +96,6 @@ public final class ElevationProfileComputer {
                 }
             }
         }
-
         return new ElevationProfile(route.length(), routeProfile);
     }
 }
