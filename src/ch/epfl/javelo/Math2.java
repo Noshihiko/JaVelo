@@ -54,11 +54,9 @@ public final class Math2 {
      * sinon v.
      */
     public static int clamp(int min, int v, int max) {
-        checkArgument(max>=min);
-        if (v < min) return min;
-        else if (v > max) return max;
-        else return v;
+        return (v < min) ? min : Math.min(v, max);
     }
+
 
     /**
      * Limite une valeur décimale à un intervalle.
@@ -73,10 +71,8 @@ public final class Math2 {
      * sinon v.
      */
     public static double clamp(double min, double v, double max) {
-        checkArgument(max>=min);
-        if (v < min) return min;
-        else if (v > max) return max;
-        else return v;
+        checkArgument(min < max);
+        return (v < min) ? min : Math.min(v, max);
     }
 
     /**
