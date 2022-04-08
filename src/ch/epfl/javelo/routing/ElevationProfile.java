@@ -34,14 +34,19 @@ public final class ElevationProfile {
         this.elevationSamples = elevationSamples.clone();
         arrayLength = this.elevationSamples.length;
         DoubleSummaryStatistics s = new DoubleSummaryStatistics();
+        double elevationDifference;
 
         s.accept(this.elevationSamples[0]);
         for (int i = 1; i < arrayLength; ++i) {
             s.accept(this.elevationSamples[i]);
-            if ((this.elevationSamples[i] - this.elevationSamples[i - 1]) > 0) {
-                totalAscent += this.elevationSamples[i] - this.elevationSamples[i - 1];
-            } else if ((this.elevationSamples[i] - this.elevationSamples[i - 1]) < 0) {
-                totalDescent += this.elevationSamples[i - 1] - this.elevationSamples[i];
+
+            elevationDifference = this.elevationSamples[i] - this.elevationSamples[i - 1];
+
+            if (elevationDifference > 0) {
+                totalAscent += elevationDifference;
+
+            } else if (elevationDifference < 0) {
+                totalDescent -= elevationDifference;
             }
         }
         min = s.getMin();

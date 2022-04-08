@@ -24,6 +24,7 @@ public final class ElevationProfileComputer {
      *
      * @param route         route dont on veut construire le profil en long
      * @param maxStepLength maximum d'espacement en mètres entre les echantillons du profil
+     *
      * @return le profil en long de l'itineraire
      */
 
