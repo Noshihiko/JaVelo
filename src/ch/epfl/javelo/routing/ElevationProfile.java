@@ -13,21 +13,21 @@ import static ch.epfl.javelo.Preconditions.checkArgument;
  */
 
 public final class ElevationProfile {
-    private double length;
-    private float[] elevationSamples;
-    private int arrayLength;
-    private double min, max;
+    private final double length;
+    private final float[] elevationSamples;
+    private final int arrayLength;
+    private final double min;
+    private final double max;
     private double totalAscent, totalDescent;
 
     /**
-     * Constructeur de la classe qui construit le profil en long d'un itinéraire de longueur length
+     * Constructeur de la classe qui construit le profil en long d'un itinéraire de longueur length.
      *
      * @param length           longueur de l'itinéraire
      * @param elevationSamples échantillons d'altitude, répartis uniformément le long de l'itinéraire
      * @throws IllegalArgumentException si la longueur est négative ou nulle,
      *                                  ou si le tableau d'échantillons contient moins de 2 éléments
      */
-
     public ElevationProfile(double length, float[] elevationSamples) {
         checkArgument(length > 0 && elevationSamples.length >= 2);
         this.length = length;
@@ -51,66 +51,55 @@ public final class ElevationProfile {
         }
         min = s.getMin();
         max = s.getMax();
-
     }
 
     /**
-     * Retourne la longueur du profil en mètres
-     *
-     * @return la longueur du profil en mètres
+     * Retourne la longueur du profil en mètres.
+     * @return la longueur du profil en mètres.
      */
-
     public double length() {
         return this.length;
     }
 
     /**
-     * Retourne l'altitude minimum du profil en mètres
-     *
-     * @return l'altitude minimum du profil en mètres
+     * Retourne l'altitude minimum du profil en mètres.
+     * @return l'altitude minimum du profil en mètres.
      */
-
     public double minElevation() {
         return min;
     }
 
     /**
-     * Retourne l'altitude maximum du profil en mètres
-     *
-     * @return l'altitude maximum du profil en mètres
+     * Retourne l'altitude maximum du profil en mètres.
+     * @return l'altitude maximum du profil en mètres.
      */
-
     public double maxElevation() {
         return max;
     }
 
     /**
-     * Retourne le dénivelé positif total du profil en mètres
-     *
-     * @return le dénivelé positif total du profil en mètres
+     * Retourne le dénivelé positif total du profil en mètres.
+     * @return le dénivelé positif total du profil en mètres.
      */
-
     public double totalAscent() {
         return totalAscent;
     }
 
     /**
-     * Retourne le dénivelé négatif total du profil en mètres
-     *
-     * @return le dénivelé négatif total du profil en mètres
+     * Retourne le dénivelé négatif total du profil en mètres.
+     * @return le dénivelé négatif total du profil en mètres.
      */
-
     public double totalDescent() {
         return totalDescent;
     }
 
     /**
-     * Retourne l'altitude du profil à la position donnée
+     * Retourne l'altitude du profil à la position donnée.
      *
      * @param position position à laquelle on veut connaître l'altitude
-     * @return l'altitude du profil à la position donnée
+     *
+     * @return l'altitude du profil à la position donnée.
      */
-
     public double elevationAt(double position) {
         return sampled(this.elevationSamples, length).applyAsDouble(position);
     }
