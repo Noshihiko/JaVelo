@@ -30,9 +30,11 @@ public final class ElevationProfile {
      */
     public ElevationProfile(double length, float[] elevationSamples) {
         checkArgument(length > 0 && elevationSamples.length >= 2);
+
         this.length = length;
         this.elevationSamples = elevationSamples.clone();
         arrayLength = this.elevationSamples.length;
+
         DoubleSummaryStatistics s = new DoubleSummaryStatistics();
         double elevationDifference;
         double totAsc=0, totDesc=0;

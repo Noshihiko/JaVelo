@@ -20,7 +20,7 @@ public class RouteComputer {
     /**
      * Constructeur publique de RouteComputer
      *
-     * @param graph graph dans lequel on va chercher le parcours
+     * @param graph        graph dans lequel on va chercher le parcours
      * @param costFunction fonction attribuant un cout particulier aux aretes en fonctions de criteres specifiques
      */
 
@@ -31,33 +31,35 @@ public class RouteComputer {
     }
 
     /**
-     * Cree un enregistrement contenant un noeud et sa distance
-     *
-     * @param nodeId noeud associé à la distance
-     * @param distance distance au noeud
-     *
-     * @return un enregistrement d'un noeud et sa distance associée
-     */
-
-    record WeightedNode(int nodeId, float distance)
-            implements Comparable<WeightedNode> {
-        @Override
-        public int compareTo(WeightedNode that) {
-            return Float.compare(this.distance, that.distance);
-        }
-    }
-
-    /**
      * Trouve le chemin le plus court entre deux noeuds dans le graph
      *
-     * @param startNodeId 
-     * @param endNodeId
-     * @return
+     * @param startNodeId noeud de depart de l'itineraire
+     * @param endNodeId   noeud d'arrivè de l'itineraire
+     * @return une single route representant l'itineraire le plus court et optimisé entre les deux noeuds
+     * @throws IllegalArgumentException si le noeud d'arrivé est egal au  noeud de départ
      */
 
 
     public Route bestRouteBetween(int startNodeId, int endNodeId) {
+
+        /**
+         * Cree un enregistrement contenant un noeud et sa distance
+         *
+         * @param nodeId   noeud associé à la distance
+         * @param distance distance au noeud
+         * @return un enregistrement d'un noeud et sa distance associée
+         */
+
+        record WeightedNode(int nodeId, float distance)
+                implements Comparable<WeightedNode> {
+            @Override
+            public int compareTo(WeightedNode that) {
+                return Float.compare(this.distance, that.distance);
+            }
+        }
+
         Preconditions.checkArgument(startNodeId != endNodeId);
+
         int nbrNodes = graph.nodeCount();
         PointCh endPointCh = graph.nodePoint(endNodeId);
         PriorityQueue<WeightedNode> en_exploration = new PriorityQueue<>();
@@ -66,22 +68,26 @@ public class RouteComputer {
 
         Arrays.fill(distance, Float.POSITIVE_INFINITY);
         Arrays.fill(predecesseur, 0);
+
         distance[startNodeId] = 0;
         en_exploration.add(new WeightedNode(startNodeId, distance[startNodeId]));
-
         int actualNodeExploredId = startNodeId;
         //********************* trouve noeud à explorer ******************
         while (actualNodeExploredId != endNodeId) {
             //*************** mise a jour tblo exploration : quel noeud il reste a explorer ***********
             for (int i = 0; i < graph.nodeOutDegree(actualNodeExploredId); ++i) {
+
                 int edgeId = graph.nodeOutEdgeId(actualNodeExploredId, i);
                 int ToNodeId = graph.edgeTargetNodeId(edgeId);
 
                 if (distance[ToNodeId] != Float.NEGATIVE_INFINITY) {
+
                     PointCh nextPointCh = graph.nodePoint(ToNodeId);
                     float d = (float) ((costFunction.costFactor(actualNodeExploredId, edgeId) * graph.edgeLength(edgeId))
                             + distance[actualNodeExploredId]);
+
                     if (d < distance[ToNodeId]) {
+
                         distance[ToNodeId] = d;
                         predecesseur[ToNodeId] = actualNodeExploredId;
                         en_exploration.add(new WeightedNode(ToNodeId, distance[ToNodeId]
@@ -93,7 +99,9 @@ public class RouteComputer {
 
             do {
                 if (en_exploration.isEmpty()) return null;
+
                 else actualNodeExploredId = en_exploration.remove().nodeId;
+
             } while (distance[actualNodeExploredId] == Float.NEGATIVE_INFINITY);
         }
         //************************+ remplissage tableau route la plus courte **************
@@ -102,10 +110,13 @@ public class RouteComputer {
 
         //******
         while (actualNodeId != startNodeId) {
+
             int prevNodeId = predecesseur[actualNodeId];
             for (int i = 0; i < graph.nodeOutDegree(prevNodeId); ++i) {
+
                 int EdgeId = graph.nodeOutEdgeId(prevNodeId, i);
                 int ToNodeId = graph.edgeTargetNodeId(EdgeId);
+
                 if (ToNodeId == actualNodeId) {
                     edges.add(Edge.of(graph, EdgeId, prevNodeId, actualNodeId));
                     break;
