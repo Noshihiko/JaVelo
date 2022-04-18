@@ -38,19 +38,32 @@ public record MapViewParameters(int zoom, double x, double y) {
     }
 
     public MapViewParameters withMinXY(double x, double y){
-        return null;
+        //retourne une instance de MapViewParameters identique au récepteur,
+        //si ce n'est que les coordonnées du coin haut-gauche sont celles passées en arguments à la méthode
+        if ((this.x == x)&&(this.y == y)) {
+            return new MapViewParameters(this.zoom, x, y);
+        } else {
+            return null;
+        }
     }
 
     public PointWebMercator pointAt(double x, double y){
-        return null;
+        //prend en arguments les coordonnées x et y d'un point,
+        // exprimées par rapport au coin haut-gauche de la portion de carte affichée à l'écran
+        // et retourne ce point sous la forme d'une instance de PointWebMercator
+        return PointWebMercator.of(this.zoom, x, y);
     }
 
-    public double viewX(PointWebMercator that){
-        return 0;
+
+    //prennent en argument un point Web Mercator et retournent la position x ou y correspondante,
+    //exprimée par rapport au coin haut-gauche de la portion de carte affichée à l'écran
+    public int viewX(PointWebMercator that){
+        return (int) that.x() / (256 * this.zoom);
+        //ou alors juste par 256 ou alors par le x du coin haut-gauche ?? jsp go demander
     }
 
-    public double viewY(PointWebMercator that){
-        return 0;
+    public int viewY(PointWebMercator that){
+        return (int) that.y() / (256 * this.zoom);
     }
 
 }
