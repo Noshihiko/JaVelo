@@ -58,12 +58,12 @@ public record MapViewParameters(int zoom, double x, double y) {
     //prennent en argument un point Web Mercator et retournent la position x ou y correspondante,
     //exprimée par rapport au coin haut-gauche de la portion de carte affichée à l'écran
     public int viewX(PointWebMercator that){
-        return (int) that.x() / (256 * this.zoom);
+        return (int) (that.x() - topLeft().getX());
         //ou alors juste par 256 ou alors par le x du coin haut-gauche ?? jsp go demander
     }
 
     public int viewY(PointWebMercator that){
-        return (int) that.y() / (256 * this.zoom);
+        return (int) (that.y() - topLeft().getY());
     }
 
 }
