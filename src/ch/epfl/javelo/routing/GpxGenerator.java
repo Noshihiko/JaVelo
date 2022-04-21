@@ -56,29 +56,24 @@ public class GpxGenerator {
         Element rte = doc.createElement("route");
         name.appendChild(rte);
 
-        /*
-        @1010
-        @1082
-        @1087
-        Dans cette méthode, pour ajouter les points, on utilise une forLoop qui en parallèle incrémente une variable position avec la length de l'edge qui suit le point en question pour donner la bonne position à elevationAt pour le point qui suit mais
-        donc on aimerait savoir s'il y a une manière plus simple .
-        Non, c’est la bonne solution (qui est très simple si vous
-         utilisez un itérateur pour parcourir les arêtes).
-        for (int i = 0; i < route.edges().size(); ++i){
-            route.edges().get(i).
+        for (int i=0; i < route.points().size(); ++i){
+            String a = "";
+            String b = "";
+
             Element rtept = doc.createElement("point");
+            rtept.setAttribute("coordinates", String.format(a, route.points().get(i).lon() + " " + route.points().get(i).lat()));
             rte.appendChild(rtept);
 
             Element ele = doc.createElement("elevation");
+            ele.setAttribute("elevation", String.format(b, profile.elevationAt(route.edges().get(i).length()) ));
             rtept.appendChild(ele);
         }
-
-         */
 
         return doc;
     }
 
     public static void writeGpx(String nameFile, Route route, ElevationProfile profile) throws IOException {
+        /*
         try {
             Document doc = //TODO;
             Writer w = //TODO ;
@@ -90,12 +85,9 @@ public class GpxGenerator {
             transformer.transform(new DOMSource(doc),
                     new StreamResult(w));
         } catch (TransformerConfigurationException e) {
-            throw new Error(e);
+            throw new Error(e); //Should never happen
         }
+
+         */
     }
-
-
-
-
-
 }
