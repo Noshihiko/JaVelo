@@ -1,23 +1,19 @@
 package ch.epfl.javelo.routing;
 
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
+import org.w3c.dom.*;
 
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
-import javax.xml.transform.OutputKeys;
-import javax.xml.transform.Transformer;
-import javax.xml.transform.TransformerConfigurationException;
-import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.*;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
-import java.io.IOException;
-import java.io.Writer;
+import java.io.*;
+import java.nio.file.*;
+
 
 public class GpxGenerator {
 
     private GpxGenerator(){}
-
 
     private static Document newDocument() {
         try {
@@ -34,15 +30,15 @@ public class GpxGenerator {
         Document doc = newDocument(); // voir plus bas
 
         Element root = doc
-                .createElementNS("http://www.topografix.com/GPX/1/1",
+                .createElementNS("https://www.topografix.com/GPX/1/1",
                         "gpx");
         doc.appendChild(root);
 
         root.setAttributeNS(
                 "http://www.w3.org/2001/XMLSchema-instance",
                 "xsi:schemaLocation",
-                "http://www.topografix.com/GPX/1/1 "
-                        + "http://www.topografix.com/GPX/1/1/gpx.xsd");
+                "https://www.topografix.com/GPX/1/1 "
+                        + "https://www.topografix.com/GPX/1/1/gpx.xsd");
         root.setAttribute("version", "1.1");
         root.setAttribute("creator", "JaVelo");
 
@@ -73,10 +69,13 @@ public class GpxGenerator {
     }
 
     public static void writeGpx(String nameFile, Route route, ElevationProfile profile) throws IOException {
-        /*
+
         try {
-            Document doc = //TODO;
-            Writer w = //TODO ;
+            //pas sure de ça
+            Document doc = createGpx(route, profile);
+
+            //faut il rajouter des options ou c'est suffisant
+            Writer w = Files.newBufferedWriter(Path.of(nameFile));
 
             Transformer transformer = TransformerFactory
                     .newDefaultInstance()
@@ -84,10 +83,10 @@ public class GpxGenerator {
             transformer.setOutputProperty(OutputKeys.INDENT, "yes");
             transformer.transform(new DOMSource(doc),
                     new StreamResult(w));
-        } catch (TransformerConfigurationException e) {
+        } catch (TransformerException e) {
             throw new Error(e); //Should never happen
         }
 
-         */
+
     }
 }
