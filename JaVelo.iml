@@ -11,6 +11,7 @@
       <sourceFolder url="file://$MODULE_DIR$/testProf4" isTestSource="true" />
       <sourceFolder url="file://$MODULE_DIR$/testProf5" isTestSource="true" />
       <sourceFolder url="file://$MODULE_DIR$/testProf6" isTestSource="true" />
+      <sourceFolder url="file://$MODULE_DIR$/resources" type="java-resource" />
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />

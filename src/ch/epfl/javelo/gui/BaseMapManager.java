@@ -1,25 +1,38 @@
 package ch.epfl.javelo.gui;
 
 import javafx.application.Platform;
+import javafx.beans.property.ObjectProperty;
 import javafx.scene.Node;
+import javafx.scene.Scene;
+import javafx.scene.canvas.Canvas;
+import javafx.scene.layout.Pane;
+import javafx.stage.Stage;
+import org.junit.jupiter.api.Order;
+
+
+import static javafx.application.Application.launch;
 
 public final class BaseMapManager {
     public boolean redrawNeeded;
-    public Node canvas;
 
-    public BaseMapManager(Node canvas){
+    public BaseMapManager(TileManager tiles, WaypointsManager points, ObjectProperty<MapViewParameters> parameters){
+        Canvas canvas = new Canvas();
+        Pane pane = new Pane(canvas);
+        //pane.setMinSize(); peut-être pas besoin de le faire
+        //pane.setMaxSize();
+
+        canvas.widthProperty().bind(pane.widthProperty());
+        canvas.heightProperty().bind(pane.heightProperty());
+
         canvas.sceneProperty().addListener((p, oldS, newS) -> {
             assert oldS == null;
             newS.addPreLayoutPulseListener(this::redrawIfNeeded);
         });
+
+        
     }
 
-    /*la carte est dessinée sur une instance de Canvas, elle-même
-    placée dans un panneau de type Pane
-    Utiliser des liens JavaFX bindings pour faire en sorte que
-    sa largeur et hauteur soient toujours égales à celles du panneau :
-    canvas.widthProperty().bind(pane.widthProperty());
-
+    /*
      pour dessin carte :
      utiliser getGraphicsContext2D
      ensuite utiliser drawImage pour dessiner les tuiles visibles
@@ -37,7 +50,6 @@ public final class BaseMapManager {
        + Méthode permettant de demander un re-dessin
      Appeler la méthode redrawOnNextPulse lorsqu'un re-dessin est nécessaire
      */
-    public void pane(){}
 
     private void redrawIfNeeded() {
         if (!redrawNeeded) return;

@@ -1,9 +1,6 @@
 package ch.epfl.javelo.routing;
 
-
-import ch.epfl.javelo.projection.PointCh;
 import org.junit.jupiter.api.Test;
-import ch.epfl.javelo.routing.*;
 
 import static org.junit.jupiter.api.Assertions.*;
 

@@ -13,11 +13,21 @@ import javafx.stage.Stage;
 
 import java.nio.file.Path;
 import java.util.function.Consumer;
-/*
-public class testProf8 extends Application {
+
+public class TestTileManager extends Application {
 
     public static void main(String[] args) { launch(args); }
 
+    @Override
+    public void start(Stage primaryStage) throws Exception {
+        TileManager tm = new TileManager(
+                Path.of("."), "tile.openstreetmap.org");
+        Image tileImage = tm.imageForTileAt(
+                new TileManager.TileId(19, 271725, 185422));
+        Platform.exit();
+    }
+
+    /*
     @Override
     public void start(Stage primaryStage) throws Exception {
         Graph graph = Graph.loadFrom(Path.of("lausanne"));
@@ -61,6 +71,7 @@ public class testProf8 extends Application {
         @Override
         public void accept(String s) { System.out.println(s); }
     }
+    */
 }
 
- */
+
