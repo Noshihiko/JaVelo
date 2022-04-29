@@ -25,23 +25,28 @@ public final class TileManager {
     }
 
     public Image imageForTileAt(TileId tileId) throws IOException {
+        //si l'image se trouve dans le cache memoire alors il la retourne directement
         if(cacheMemoire.containsKey(tileId)) {
             return cacheMemoire.get(tileId);
         }
         else {
+        //Si la taille du cachememoire est depassé on enlève l'element le moins utilisé
              while (cacheMemoire.size() >= 100) {
                     cacheMemoire.remove(cacheMemoire.keySet().iterator().next());
                 }
             }
+            //ecriture du chemin d'accès pour acceder a l'image de la tuile voulue
             Path access = path.resolve(String.valueOf(tileId.zoomLevel)).resolve(String.valueOf(tileId.x)).resolve((tileId.y)+".png");
 
             if (Files.exists(access)) {
+                //si l'image est dans l'hard disk alors on la recupère
                 try (FileInputStream i = new FileInputStream(access.toFile())) {
                     Image image = new Image(i);
                     cacheMemoire.put(tileId, image);
                     return image;
                 }
             }
+            //si l'image n'est pas dans l'hard disk on va chercher sur le web
             else {
                 URL u = new URL(
                         "https://tile.openstreetmap.org/"+tileId.zoomLevel + "/" + tileId.x +"/" +tileId.y +".png");
