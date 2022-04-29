@@ -2,24 +2,26 @@ package ch.epfl.javelo.gui;
 
 import javafx.application.Platform;
 import javafx.beans.property.ObjectProperty;
-import javafx.scene.Node;
-import javafx.scene.Scene;
 import javafx.scene.canvas.Canvas;
+import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.layout.Pane;
-import javafx.stage.Stage;
-import org.junit.jupiter.api.Order;
-
-
-import static javafx.application.Application.launch;
+import java.io.IOException;
 
 public final class BaseMapManager {
+    public TileManager tiles;
+    public WaypointsManager  points;
+    public ObjectProperty<MapViewParameters> parameters;
+
+    public Pane pane;
+    public Canvas canvas;
+    public TileManager.TileId tilesId;
+
     public boolean redrawNeeded;
+    private int canvasSize;
 
     public BaseMapManager(TileManager tiles, WaypointsManager points, ObjectProperty<MapViewParameters> parameters){
-        Canvas canvas = new Canvas();
-        Pane pane = new Pane(canvas);
-        //pane.setMinSize(); peut-être pas besoin de le faire
-        //pane.setMaxSize();
+        this.canvas = new Canvas();
+        this.pane = new Pane(canvas);
 
         canvas.widthProperty().bind(pane.widthProperty());
         canvas.heightProperty().bind(pane.heightProperty());
@@ -29,38 +31,37 @@ public final class BaseMapManager {
             newS.addPreLayoutPulseListener(this::redrawIfNeeded);
         });
 
-        
+        this.tiles = tiles;
+        this.points = points;
+        this.parameters = parameters;
+
+        canvasSize = (int) Math.pow(2, parameters.get().zoom());
     }
 
-    /*
-     pour dessin carte :
-     utiliser getGraphicsContext2D
-     ensuite utiliser drawImage pour dessiner les tuiles visibles
-     (tuiles obtenues du gestionnaire de tuiles, si exception la tuile
-     n'est pas dessinée)
-
-     re-dessin carte :
-     elle doit-être redessinée si niveau de zoom/coin haut-gauche
-     change ou dimensions du canevas changent
-     il faut qu'il y ait un laps d'attente, car coûteux :
-     attendre le prochain battement (pulse) JavaFX :
-     attribut booléen redrawNeeded true ssi un re-dessin est nécessaire
-     + méthode privée donnée redrawIfNeeded()
-       Méthode devant être appelée à chaque battement (constructeur : texte ajouté)
-       + Méthode permettant de demander un re-dessin
-     Appeler la méthode redrawOnNextPulse lorsqu'un re-dessin est nécessaire
-     */
+    public Pane pane(){
+        return this.pane;
+    }
 
     private void redrawIfNeeded() {
         if (!redrawNeeded) return;
         redrawNeeded = false;
 
-        // … à faire : dessin de la carte
+        GraphicsContext context = canvas.getGraphicsContext2D();
+
+        try {
+            for(int i = 0; i < canvasSize; ++i) {
+                for (int j = 0; j < canvasSize; ++j) {
+                    tilesId = new TileManager.TileId(parameters.get().zoom(), i, j);
+                    context.drawImage(tiles.imageForTileAt(tilesId), i, j);
+                }
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     private void redrawOnNextPulse() {
         redrawNeeded = true;
         Platform.requestNextPulse();
     }
-
 }
