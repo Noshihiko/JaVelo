@@ -71,7 +71,7 @@ public final class Math2 {
      * sinon v.
      */
     public static double clamp(double min, double v, double max) {
-        checkArgument(min < max);
+        checkArgument(min <= max);
         return (v < min) ? min : Math.min(v, max);
     }
 
@@ -136,6 +136,8 @@ public final class Math2 {
      * @return la longueur de la projection des vecteurs AP et AB.
      */
     public static double projectionLength(double aX, double aY, double bX, double bY, double pX, double pY) {
-        return dotProduct(pX - aX, pY - aY, bX - aX, bY - aY) / norm(bX - aX, bY - aY);
+        double vX = bX - aX;
+        double vY = bY - aY;
+        return dotProduct(pX - aX, pY - aY, vX, vY) / norm(vX, vY);
     }
 }

@@ -1,5 +1,5 @@
 package ch.epfl.javelo.gui;
 
-public record Waypoint(double position, int nodeId) {
+import ch.epfl.javelo.projection.PointCh;
 
-}
+public record Waypoint(PointCh pointCh, int nodeId){}
