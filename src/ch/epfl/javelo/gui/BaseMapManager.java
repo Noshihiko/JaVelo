@@ -1,10 +1,13 @@
 package ch.epfl.javelo.gui;
 
+import ch.epfl.javelo.projection.PointWebMercator;
 import javafx.application.Platform;
 import javafx.beans.property.ObjectProperty;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.layout.Pane;
+import javafx.geometry.Point2D;
+
 import java.io.IOException;
 
 public final class BaseMapManager {
@@ -29,6 +32,37 @@ public final class BaseMapManager {
         canvas.sceneProperty().addListener((p, oldS, newS) -> {
             assert oldS == null;
             newS.addPreLayoutPulseListener(this::redrawIfNeeded);
+        });
+
+        pane.setOnScroll(event -> {
+            int zoomLvl = (int)(parameters.get().zoom() + event.getDeltaY());
+
+            PointWebMercator mouseBefore = new PointWebMercator(event.getX(), event.getY());
+            mouseBefore = new PointWebMercator(mouseBefore.xAtZoomLevel(zoomLvl), mouseBefore.yAtZoomLevel(zoomLvl));
+
+            Point2D mouse = parameters.get().topLeft();
+            double x = (mouse.getX() - mouseBefore.x())/zoomLvl;
+            double y = (mouse.getY() - mouseBefore.y())/zoomLvl;
+            //Point2D mouseAfter = new Point2D(mouseBefore.lon(), mouseBefore.lat());
+
+            parameters.setValue(new MapViewParameters(zoomLvl,x,y));
+            //pane.contains(mouseAfter);
+        });
+
+        pane.setOnMousePressed(event -> {
+            //TODO
+        });
+
+        pane.setOnMouseDragged(event -> {
+            //TODO
+        });
+
+        pane.setOnMouseReleased(event -> {
+            //TODO
+        });
+
+        pane.setOnMouseClicked(event -> {
+            //TODO
         });
 
         this.tiles = tiles;

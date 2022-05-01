@@ -19,7 +19,7 @@ import java.util.function.Consumer;
 public class TestTileManager extends Application {
 
     public static void main(String[] args) { launch(args); }
-
+    /*
     @Override
     public void start(Stage primaryStage) throws Exception {
         TileManager tm = new TileManager(
@@ -29,7 +29,8 @@ public class TestTileManager extends Application {
         Platform.exit();
     }
 
-    /*
+     */
+
     @Override
     public void start(Stage primaryStage) throws Exception {
         Graph graph = Graph.loadFrom(Path.of("lausanne"));
@@ -42,17 +43,23 @@ public class TestTileManager extends Application {
                 new MapViewParameters(12, 543200, 370650);
         ObjectProperty<MapViewParameters> mapViewParametersP =
                 new SimpleObjectProperty<>(mapViewParameters);
+
         ObservableList<Waypoint> waypoints =
                 FXCollections.observableArrayList(
                         new Waypoint(new PointCh(2532697, 1152350), 159049),
                         new Waypoint(new PointCh(2538659, 1154350), 117669));
+
+
         Consumer<String> errorConsumer = new ErrorConsumer();
+
 
         WaypointsManager waypointsManager =
                 new WaypointsManager(graph,
                         mapViewParametersP,
                         waypoints,
                         errorConsumer);
+
+
         BaseMapManager baseMapManager =
                 new BaseMapManager(tileManager,
                         waypointsManager,
@@ -73,7 +80,7 @@ public class TestTileManager extends Application {
         @Override
         public void accept(String s) { System.out.println(s); }
     }
-    */
+
 }
 
 

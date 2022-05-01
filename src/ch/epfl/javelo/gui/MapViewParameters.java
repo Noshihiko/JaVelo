@@ -38,7 +38,6 @@ public record MapViewParameters(int zoom, double x, double y) {
     //prennent en argument un point Web Mercator et retournent la position x ou y correspondante,
     //exprimée par rapport au coin haut-gauche de la portion de carte affichée à l'écran
     public int viewX(PointWebMercator that){
-
         return (int) (that.x() - topLeft().getX());
     }
 

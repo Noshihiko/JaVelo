@@ -30,7 +30,7 @@ public final class TileManager {
             return cacheMemoire.get(tileId);
         }
         else {
-        //Si la taille du cachememoire est depassé on enlève l'element le moins utilisé
+        //Si la taille du cache-memoire est depassé on enlève l'element le moins utilisé
              while (cacheMemoire.size() >= 100) {
                     cacheMemoire.remove(cacheMemoire.keySet().iterator().next());
                 }
