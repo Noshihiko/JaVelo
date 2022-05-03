@@ -1,7 +1,6 @@
 package ch.epfl.javelo.gui;
 
 import ch.epfl.javelo.Math2;
-import ch.epfl.javelo.projection.PointCh;
 import ch.epfl.javelo.projection.PointWebMercator;
 import javafx.application.Platform;
 import javafx.beans.property.ObjectProperty;
@@ -9,6 +8,7 @@ import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.layout.Pane;
 import javafx.geometry.Point2D;
+import javafx.scene.paint.Color;
 
 import java.io.IOException;
 
@@ -20,38 +20,39 @@ public final class BaseMapManager {
     public Pane pane;
     public Canvas canvas;
     public TileManager.TileId tilesId;
-
-    public boolean redrawNeeded;
-    private int canvasSize;
-
     private Point2D draggedPoint;
 
+    public boolean redrawNeeded;
+    private final int MAP_PIXEL = 256;
+
     public BaseMapManager(TileManager tiles, WaypointsManager points, ObjectProperty<MapViewParameters> parameters){
-        this.canvas = new Canvas();
-        this.pane = new Pane(canvas);
         this.tiles = tiles;
         this.points = points;
         this.parameters = parameters;
 
+        this.canvas = new Canvas();
+        this.pane = new Pane(canvas);
+
         canvas.widthProperty().bind(pane.widthProperty());
         canvas.heightProperty().bind(pane.heightProperty());
 
-        canvas.sceneProperty().addListener((p, oldS, newS) -> {
-            assert oldS == null;
-            newS.addPreLayoutPulseListener(this::redrawIfNeeded);
-        });
+        canvas.widthProperty().addListener(o -> redrawOnNextPulse());
+        canvas.heightProperty().addListener(o -> redrawOnNextPulse());
 
         pane.setOnScroll(event -> {
             int zoomLvl = (int)(parameters.get().zoom() + event.getDeltaY());
             zoomLvl = Math2.clamp(8, zoomLvl, 19);
 
-            PointWebMercator mouseBefore = new PointWebMercator(event.getX(), event.getY());
-            mouseBefore = new PointWebMercator(mouseBefore.xAtZoomLevel(zoomLvl), mouseBefore.yAtZoomLevel(zoomLvl));
+            //PointWebMercator mouse = new PointWebMercator(event.getX(), event.getY());
+            //mouse = new PointWebMercator(mouse.xAtZoomLevel(zoomLvl), mouse.yAtZoomLevel(zoomLvl));
 
-            java.awt.geom.Point2D mouse = parameters.get().topLeft();
-            double x1 = (mouse.getX() - mouseBefore.x())/Math.pow(2,zoomLvl);
-            double y1 = (mouse.getY() - mouseBefore.y())/Math.pow(2,zoomLvl);
-            //Point2D mouseAfter = new Point2D(mouseBefore.lon(), mouseBefore.lat());
+            PointWebMercator topLeftBeforeZoom = new PointWebMercator(parameters.get().topLeft().getX(), parameters.get().topLeft().getY());
+
+            //double x1 = (topLeft.getX() - mouse.x())/Math.pow(2,zoomLvl);
+            //double y1 = (topLeft.getY() - mouse.y())/Math.pow(2,zoomLvl);
+
+            double x1 = topLeftBeforeZoom.xAtZoomLevel(zoomLvl);
+            double y1 = topLeftBeforeZoom.yAtZoomLevel(zoomLvl);
 
             parameters.setValue(new MapViewParameters(zoomLvl, x1, y1));
             //pane.contains(mouseAfter);
@@ -59,14 +60,14 @@ public final class BaseMapManager {
 
         pane.setOnMousePressed(event -> {
             draggedPoint = new Point2D(event.getX(), event.getY());
+            System.out.println("test");
         });
 
         pane.setOnMouseDragged(event -> {
-            draggedPoint.subtract(event.getX(), event.getY());
+            draggedPoint=draggedPoint.subtract(event.getX(), event.getY());
             double x = parameters.get().x() + draggedPoint.getX();
             double y = parameters.get().y() + draggedPoint.getY();
-
-            parameters.setValue(new MapViewParameters(parameters.get().zoom(), x, y));
+            parameters.setValue(parameters.get().withMinXY(x,y));
         });
 
         pane.setOnMouseReleased(event -> {
@@ -74,24 +75,23 @@ public final class BaseMapManager {
         });
 
         pane.setOnMouseClicked(event -> {
-            if (!event.isStillSincePress()) {
-                PointCh clicked = new PointCh(event.getX(), event.getY());
-
-                //comment fait-on pour récup le nodeId ??
-                int nodeId = 0;
-                //faut-il modifier seulement points ou faut-il également rajouter
-                //quelque chose à "parameters"?
-                points.listPoints.add(new Waypoint(clicked, nodeId));
+            if (event.isStillSincePress()) {
+                points.addWaypoint(parameters.get().x()+event.getX(), parameters.get().y()+event.getY());
             }
         });
 
-        canvasSize = (int) Math.pow(2, parameters.get().zoom());
-        /*
-        parameters.addListener(() -> {
-
+        canvas.sceneProperty().addListener((p, oldS, newS) -> {
+            assert oldS == null;
+            newS.addPreLayoutPulseListener(this::redrawIfNeeded);
         });
 
+        /*
+        parameters.addListener(o -> {
+           redrawOnNextPulse();
+        });
          */
+
+        redrawOnNextPulse();
 
     }
 
@@ -102,31 +102,55 @@ public final class BaseMapManager {
     private void redrawIfNeeded() {
         if (!redrawNeeded) return;
         redrawNeeded = false;
-        //constante pour 256 pixels à créer
-        try {
-            GraphicsContext context = canvas.getGraphicsContext2D();
-            java.awt.geom.Point2D topLeft = parameters.get().topLeft();
-            java.awt.geom.Point2D downRight = new java.awt.geom.Point2D.Double(topLeft.getX() + pane.getWidth(),topLeft.getY() - pane.getHeight());
 
-            int xFirstTile = Math.floorDiv((int)topLeft.getX(), 256);
-            int yFirstTile = Math.floorDiv((int)topLeft.getY(), 256);
+        GraphicsContext context = canvas.getGraphicsContext2D();
+       // Point2D topLeft = parameters.get().topLeft();
+       // Point2D downRight = new Point2D(topLeft.getX() + pane.getWidth(),topLeft.getY() - pane.getHeight());
+        int minX = (int)(parameters.get().x() / MAP_PIXEL);
+        int minY = (int)(parameters.get().y() / MAP_PIXEL);
 
-            int xLastTile = Math2.ceilDiv((int)downRight.getX(), 256);
-            int yLastTile = Math2.ceilDiv((int)downRight.getY(), 256);
+        int maxX = (int)(minX + pane.getWidth() / MAP_PIXEL);
+        int maxY = (int)(minY + pane.getHeight() / MAP_PIXEL);
 
+        //int xFirstTile = (int)(topLeft.getX() / MAP_PIXEL);
+        //int yFirstTile = (int)(topLeft.getY() / MAP_PIXEL);
 
-            for (int i = xFirstTile; i < xLastTile; ++i){
-                for (int j = yFirstTile; j > yLastTile; ++j){
-                    double coorX = i*256 - topLeft.getX();
-                    double coorY = j*256 - topLeft.getY();
+        //int xLastTile = Math2.ceilDiv((int)downRight.getX(), MAP_PIXEL);
+        //int yLastTile = Math2.ceilDiv((int)downRight.getY(), MAP_PIXEL);
+        context.clearRect(0,0, canvas.getWidth(), canvas.getHeight());
 
-                    tilesId = new TileManager.TileId(parameters.get().zoom(), i, j);
-                    context.drawImage(tiles.imageForTileAt(tilesId), coorX, coorY);
+        for (int i = minX; i <= maxX; ++i){
+            for (int j = minY; j <= maxY; ++j){
+                double coorX = i * MAP_PIXEL - parameters.get().x();
+                double coorY = j * MAP_PIXEL - parameters.get().y();
+
+                tilesId = new TileManager.TileId(parameters.get().zoom(), i, j);
+
+                if (TileManager.TileId.isValid(parameters.get().zoom(), i, j)) {
+                    try {
+                        System.out.println(pane.getHeight());
+                        System.out.println(canvas.getWidth());
+                        System.out.println(canvas.getHeight());
+
+                        context.drawImage(tiles.imageForTileAt(tilesId), coorX, coorY);
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
                 }
+                else System.out.println("pas de tileId");
             }
+
+        }
+
+
+        /*
+        try {
+            tilesId = new TileManager.TileId(12, 2121, 1447);
+            context.drawImage(tiles.imageForTileAt(tilesId),0 , 0);
         } catch (IOException e) {
             e.printStackTrace();
         }
+         */
     }
 
     private void redrawOnNextPulse() {

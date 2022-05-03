@@ -16,12 +16,13 @@ public final class TileManager {
     public final static int INITIAL_CAPACITY = 100;
     public final static float LOAD_FACTOR = (float) 0.75;
     public final static boolean ACCESS_ORDER = true;
+    public final int TILE_SIZE = 256;
     private final Path path;
 
     LinkedHashMap<TileId, Image> cacheMemoire = new LinkedHashMap<TileId, Image>(INITIAL_CAPACITY, LOAD_FACTOR, ACCESS_ORDER);
 
     public TileManager(Path path, String serverName) {
-    this.path = path;
+        this.path = path;
     }
 
     public Image imageForTileAt(TileId tileId) throws IOException {

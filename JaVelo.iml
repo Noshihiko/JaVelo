@@ -12,10 +12,11 @@
       <sourceFolder url="file://$MODULE_DIR$/testProf5" isTestSource="true" />
       <sourceFolder url="file://$MODULE_DIR$/testProf6" isTestSource="true" />
       <sourceFolder url="file://$MODULE_DIR$/resources" type="java-resource" />
+      <sourceFolder url="file://$MODULE_DIR$/testProf8" isTestSource="true" />
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
     <orderEntry type="library" name="junit.jupiter" level="project" />
-    <orderEntry type="library" exported="" name="OpenJFX 18" level="application" />
+    <orderEntry type="library" name="OpenJFX 18" level="application" />
   </component>
 </module>
