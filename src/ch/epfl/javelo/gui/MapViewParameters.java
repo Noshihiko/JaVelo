@@ -5,6 +5,7 @@ import ch.epfl.javelo.projection.PointWebMercator;
 import ch.epfl.javelo.projection.WebMercator;
 import javafx.geometry.Point2D;
 
+
 public record MapViewParameters(int zoom, double x, double y) {
     private static PointWebMercator p;
 
@@ -17,7 +18,7 @@ public record MapViewParameters(int zoom, double x, double y) {
     }
 
     public Point2D topLeft() {
-        return new Point2D((int)(p.lon()), (int)(p.lat()));
+        return new Point2D(x,y);
     }
 
     public MapViewParameters withMinXY(double x, double y){
@@ -38,7 +39,6 @@ public record MapViewParameters(int zoom, double x, double y) {
     //prennent en argument un point Web Mercator et retournent la position x ou y correspondante,
     //exprimée par rapport au coin haut-gauche de la portion de carte affichée à l'écran
     public int viewX(PointWebMercator that){
-
         return (int) (that.x() - topLeft().getX());
     }
 

@@ -16,12 +16,13 @@ public final class TileManager {
     public final static int INITIAL_CAPACITY = 100;
     public final static float LOAD_FACTOR = (float) 0.75;
     public final static boolean ACCESS_ORDER = true;
+    public final int TILE_SIZE = 256;
     private final Path path;
 
     LinkedHashMap<TileId, Image> cacheMemoire = new LinkedHashMap<TileId, Image>(INITIAL_CAPACITY, LOAD_FACTOR, ACCESS_ORDER);
 
     public TileManager(Path path, String serverName) {
-    this.path = path;
+        this.path = path;
     }
 
     public Image imageForTileAt(TileId tileId) throws IOException {
@@ -30,7 +31,7 @@ public final class TileManager {
             return cacheMemoire.get(tileId);
         }
         else {
-        //Si la taille du cachememoire est depassé on enlève l'element le moins utilisé
+        //Si la taille du cache-memoire est depassé on enlève l'element le moins utilisé
              while (cacheMemoire.size() >= 100) {
                     cacheMemoire.remove(cacheMemoire.keySet().iterator().next());
                 }
@@ -56,6 +57,8 @@ public final class TileManager {
                 try (InputStream i = c.getInputStream()) {
                     FileOutputStream a = new FileOutputStream(access.toFile());
                     i.transferTo(a);
+                }
+                try(FileInputStream i = new FileInputStream(access.toFile())){
                     Image image = new Image(i);
                     cacheMemoire.put(tileId, image);
                     return image;

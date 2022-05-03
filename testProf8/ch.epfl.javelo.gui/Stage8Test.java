@@ -13,9 +13,8 @@ import javafx.stage.Stage;
 
 import java.nio.file.Path;
 import java.util.function.Consumer;
-/*
-public class testProf8 extends Application {
 
+public final class Stage8Test extends Application {
     public static void main(String[] args) { launch(args); }
 
     @Override
@@ -62,5 +61,3 @@ public class testProf8 extends Application {
         public void accept(String s) { System.out.println(s); }
     }
 }
-
- */

@@ -12,7 +12,6 @@ import java.nio.file.*;
 
 
 public class GpxGenerator {
-
     private GpxGenerator(){}
 
     private static Document newDocument() {
@@ -55,13 +54,15 @@ public class GpxGenerator {
         for (int i=0; i < route.points().size(); ++i){
             String a = "";
             String b = "";
+            String c = "";
 
             Element rtept = doc.createElement("point");
-            rtept.setAttribute("coordinates", String.format(a, route.points().get(i).lon() + " " + route.points().get(i).lat()));
+            rtept.setAttribute("longitude", String.format(a, route.points().get(i).lon() ));
+            rtept.setAttribute("latitude", String.format(b, route.points().get(i).lat()));
             rte.appendChild(rtept);
 
             Element ele = doc.createElement("elevation");
-            ele.setAttribute("elevation", String.format(b, profile.elevationAt(route.edges().get(i).length()) ));
+            ele.setAttribute("elevation", String.format(c, profile.elevationAt(route.edges().get(i).length()) ));
             rtept.appendChild(ele);
         }
 
@@ -73,8 +74,6 @@ public class GpxGenerator {
         try {
             //pas sure de ça
             Document doc = createGpx(route, profile);
-
-            //faut il rajouter des options ou c'est suffisant
             Writer w = Files.newBufferedWriter(Path.of(nameFile));
 
             Transformer transformer = TransformerFactory
@@ -86,7 +85,5 @@ public class GpxGenerator {
         } catch (TransformerException e) {
             throw new Error(e); //Should never happen
         }
-
-
     }
 }
