@@ -52,7 +52,6 @@ public final class WaypointsManager {
         //->nouveau pt ch avec cooordonnee d'un node trouve
 
         parameters.get().pointAt(x, y);
-        PointCh newPoint = new PointCh(x, y);
 
         PointCh newPoint = PointWebMercator.of(parameters.get().zoom(),x,y).toPointCh();
 
