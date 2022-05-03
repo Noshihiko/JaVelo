@@ -37,22 +37,24 @@ public final class BaseMapManager {
         canvas.heightProperty().bind(pane.heightProperty());
 
         pane.setOnScroll(event -> {
-            int zoomLvl = (int)(parameters.get().zoom() + event.getDeltaY());
+            int zoomLvl = parameters.get().zoom() + Math.floorDiv((int) event.getDeltaY(),26);
             zoomLvl = Math2.clamp(8, zoomLvl, 19);
 
             //PointWebMercator mouse = new PointWebMercator(event.getX(), event.getY());
             //mouse = new PointWebMercator(mouse.xAtZoomLevel(zoomLvl), mouse.yAtZoomLevel(zoomLvl));
 
-            PointWebMercator topLeftBeforeZoom = new PointWebMercator(parameters.get().topLeft().getX(), parameters.get().topLeft().getY());
+            PointWebMercator topLeftBeforeZoom = PointWebMercator.of(parameters.get().zoom(), parameters.get().x(), parameters.get().y());
 
             //double x1 = (topLeft.getX() - mouse.x())/Math.pow(2,zoomLvl);
             //double y1 = (topLeft.getY() - mouse.y())/Math.pow(2,zoomLvl);
 
             double x1 = topLeftBeforeZoom.xAtZoomLevel(zoomLvl);
             double y1 = topLeftBeforeZoom.yAtZoomLevel(zoomLvl);
-
+            System.out.println("Zoom "+ zoomLvl +", x " + x1 +", y " + y1);
             parameters.setValue(new MapViewParameters(zoomLvl, x1, y1));
             //pane.contains(mouseAfter);
+
+            redrawOnNextPulse();
         });
 
         pane.setOnMousePressed(event -> {
@@ -61,10 +63,14 @@ public final class BaseMapManager {
 
         pane.setOnMouseDragged(event -> {
             draggedPoint=draggedPoint.subtract(event.getX(), event.getY());
+
             double x = parameters.get().x() + draggedPoint.getX();
             double y = parameters.get().y() + draggedPoint.getY();
+
             parameters.setValue(parameters.get().withMinXY(x,y));
+
             draggedPoint=new Point2D(event.getX(), event.getY());
+
             redrawOnNextPulse();
         });
 
@@ -72,10 +78,13 @@ public final class BaseMapManager {
             draggedPoint = null;
         });
 
+        //ça marche mais rien ne s'affiche
         pane.setOnMouseClicked(event -> {
             if (event.isStillSincePress()) {
                 points.addWaypoint(parameters.get().x()+event.getX(), parameters.get().y()+event.getY());
+                System.out.println("test");
             }
+            redrawOnNextPulse();
         });
 
         canvas.sceneProperty().addListener((p, oldS, newS) -> {
@@ -83,10 +92,7 @@ public final class BaseMapManager {
             newS.addPreLayoutPulseListener(this::redrawIfNeeded);
         });
 
-        parameters.addListener(o -> {
-           redrawOnNextPulse();
-        });
-
+        parameters.addListener(o -> redrawOnNextPulse());
         canvas.widthProperty().addListener(o -> redrawOnNextPulse());
         canvas.heightProperty().addListener(o -> redrawOnNextPulse());
 
@@ -108,7 +114,7 @@ public final class BaseMapManager {
         int maxX = (int)((parameters.get().x() + pane.getWidth()) / MAP_PIXEL);
         int maxY = (int)((parameters.get().y()+ pane.getHeight()) / MAP_PIXEL);
 
-        context.clearRect(0,0, canvas.getWidth(), canvas.getHeight());
+        //context.clearRect(0,0, canvas.getWidth(), canvas.getHeight());
 
         for (int i = minX; i <= maxX; ++i){
             for (int j = minY; j <= maxY; ++j){
@@ -124,9 +130,7 @@ public final class BaseMapManager {
                         e.printStackTrace();
                     }
                 }
-                else System.out.println("pas de tileId");
             }
-
         }
 
 
