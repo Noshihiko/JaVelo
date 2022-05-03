@@ -57,6 +57,8 @@ public final class TileManager {
                 try (InputStream i = c.getInputStream()) {
                     FileOutputStream a = new FileOutputStream(access.toFile());
                     i.transferTo(a);
+                }
+                try(FileInputStream i = new FileInputStream(access.toFile())){
                     Image image = new Image(i);
                     cacheMemoire.put(tileId, image);
                     return image;

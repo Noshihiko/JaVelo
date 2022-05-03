@@ -36,9 +36,6 @@ public final class BaseMapManager {
         canvas.widthProperty().bind(pane.widthProperty());
         canvas.heightProperty().bind(pane.heightProperty());
 
-        canvas.widthProperty().addListener(o -> redrawOnNextPulse());
-        canvas.heightProperty().addListener(o -> redrawOnNextPulse());
-
         pane.setOnScroll(event -> {
             int zoomLvl = (int)(parameters.get().zoom() + event.getDeltaY());
             zoomLvl = Math2.clamp(8, zoomLvl, 19);
@@ -60,7 +57,6 @@ public final class BaseMapManager {
 
         pane.setOnMousePressed(event -> {
             draggedPoint = new Point2D(event.getX(), event.getY());
-            System.out.println("test");
         });
 
         pane.setOnMouseDragged(event -> {
@@ -68,6 +64,8 @@ public final class BaseMapManager {
             double x = parameters.get().x() + draggedPoint.getX();
             double y = parameters.get().y() + draggedPoint.getY();
             parameters.setValue(parameters.get().withMinXY(x,y));
+            draggedPoint=new Point2D(event.getX(), event.getY());
+            redrawOnNextPulse();
         });
 
         pane.setOnMouseReleased(event -> {
@@ -85,13 +83,12 @@ public final class BaseMapManager {
             newS.addPreLayoutPulseListener(this::redrawIfNeeded);
         });
 
-        /*
         parameters.addListener(o -> {
            redrawOnNextPulse();
         });
-         */
 
-        redrawOnNextPulse();
+        canvas.widthProperty().addListener(o -> redrawOnNextPulse());
+        canvas.heightProperty().addListener(o -> redrawOnNextPulse());
 
     }
 
@@ -104,19 +101,13 @@ public final class BaseMapManager {
         redrawNeeded = false;
 
         GraphicsContext context = canvas.getGraphicsContext2D();
-       // Point2D topLeft = parameters.get().topLeft();
-       // Point2D downRight = new Point2D(topLeft.getX() + pane.getWidth(),topLeft.getY() - pane.getHeight());
+
         int minX = (int)(parameters.get().x() / MAP_PIXEL);
         int minY = (int)(parameters.get().y() / MAP_PIXEL);
 
-        int maxX = (int)(minX + pane.getWidth() / MAP_PIXEL);
-        int maxY = (int)(minY + pane.getHeight() / MAP_PIXEL);
+        int maxX = (int)((parameters.get().x() + pane.getWidth()) / MAP_PIXEL);
+        int maxY = (int)((parameters.get().y()+ pane.getHeight()) / MAP_PIXEL);
 
-        //int xFirstTile = (int)(topLeft.getX() / MAP_PIXEL);
-        //int yFirstTile = (int)(topLeft.getY() / MAP_PIXEL);
-
-        //int xLastTile = Math2.ceilDiv((int)downRight.getX(), MAP_PIXEL);
-        //int yLastTile = Math2.ceilDiv((int)downRight.getY(), MAP_PIXEL);
         context.clearRect(0,0, canvas.getWidth(), canvas.getHeight());
 
         for (int i = minX; i <= maxX; ++i){
@@ -128,10 +119,6 @@ public final class BaseMapManager {
 
                 if (TileManager.TileId.isValid(parameters.get().zoom(), i, j)) {
                     try {
-                        System.out.println(pane.getHeight());
-                        System.out.println(canvas.getWidth());
-                        System.out.println(canvas.getHeight());
-
                         context.drawImage(tiles.imageForTileAt(tilesId), coorX, coorY);
                     } catch (IOException e) {
                         e.printStackTrace();

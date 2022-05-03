@@ -2,18 +2,21 @@ package ch.epfl.javelo.gui;
 
 import ch.epfl.javelo.data.Graph;
 import ch.epfl.javelo.projection.PointCh;
+import ch.epfl.javelo.projection.PointWebMercator;
 import javafx.beans.property.ObjectProperty;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
+import javafx.scene.layout.Pane;
 
 import java.util.function.Consumer;
 
 public final class WaypointsManager {
+    public Pane pane = new Pane();
     public final Graph reseauRoutier;
     public final ObjectProperty<MapViewParameters> parameters;
     public final ObservableList<Waypoint> listPoints;
     public final Consumer<String> error;
-
+    /*
     listPoints.addListener(new ListChangeListener() {
         @Override
         public void onChanged(ListChangeListener.Change change) {
@@ -21,24 +24,27 @@ public final class WaypointsManager {
         }
     }
 
+     */
+
     public WaypointsManager(Graph reseauRoutier, ObjectProperty<MapViewParameters> parameters, ObservableList<Waypoint> listPoints, Consumer<String> error){
         this.reseauRoutier = reseauRoutier;
         this.parameters = parameters;
         this.listPoints = listPoints;
         this.error = error;
+        pane.setPickOnBounds(false);
     }
 
-    public listPoint.listener()
+   // public listPoint.listener()
 
-    public pane(){
-
+    public Pane pane(){
+        return this.pane;
     }
 
     public void addWaypoint(double x, double y) {
         //waypoint a la position d'un node le plus proche ds 1000m a l'aide de node closest to avec distance 500m
         //si trouve pas ecrit l'erreur ds l'enonce
         //->nouveau pt ch avec cooordonnee d'un node trouve
-        PointCh newPoint = new PointCh(x, y);
+        PointCh newPoint = PointWebMercator.of(parameters.get().zoom(),x,y).toPointCh();
         int nodeClosestId = reseauRoutier.nodeClosestTo(newPoint, 500);
         if (nodeClosestId == -1) {
             error.accept("Aucune route à proximité !");
