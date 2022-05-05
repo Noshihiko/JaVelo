@@ -7,7 +7,7 @@ import ch.epfl.javelo.projection.PointCh;
 import java.util.*;
 
 /**
- * Retourne un itineraire le plus court et plus adapté pour les vélos
+ * Retourne un itinéraire le plus court et plus adapté pour les vélos
  *
  * @author Camille Espieux (324248)
  * @author Chiara Freneix (329552)
@@ -18,10 +18,10 @@ public class RouteComputer {
     private CostFunction costFunction;
 
     /**
-     * Constructeur publique de RouteComputer
+     * Constructeur public de RouteComputer
      *
      * @param graph        graph dans lequel on va chercher le parcours
-     * @param costFunction fonction attribuant un cout particulier aux aretes en fonctions de criteres specifiques
+     * @param costFunction fonction attribuant un cout particulier aux arêtes en fonction de critères spécifiques
      */
 
     public RouteComputer(Graph graph, CostFunction costFunction) {
@@ -31,23 +31,23 @@ public class RouteComputer {
     }
 
     /**
-     * Trouve le chemin le plus court entre deux noeuds dans le graph
+     * Trouve le chemin le plus court entre deux nœuds dans le graph
      *
-     * @param startNodeId noeud de depart de l'itineraire
-     * @param endNodeId   noeud d'arrivè de l'itineraire
-     * @return une single route representant l'itineraire le plus court et optimisé entre les deux noeuds
-     * @throws IllegalArgumentException si le noeud d'arrivé est egal au  noeud de départ
+     * @param startNodeId nœud de depart de l'itinéraire
+     * @param endNodeId   nœud d'arrivée de l'itinéraire
+     * @return une singleRoute représentant l'itinéraire le plus court et optimisé entre les deux nœuds
+     * @throws IllegalArgumentException si le nœud d'arrivée est égal au nœud de départ
      */
 
 
     public Route bestRouteBetween(int startNodeId, int endNodeId) {
 
         /**
-         * Cree un enregistrement contenant un noeud et sa distance
+         * Cree un enregistrement contenant un nœud et sa distance
          *
-         * @param nodeId   noeud associé à la distance
-         * @param distance distance au noeud
-         * @return un enregistrement d'un noeud et sa distance associée
+         * @param nodeId   nœud associé à la distance
+         * @param distance distance au nœud
+         * @return un enregistrement d'un nœud et sa distance associée
          */
 
         record WeightedNode(int nodeId, float distance)
@@ -76,7 +76,7 @@ public class RouteComputer {
         //********************* trouve noeud à explorer ******************
 
         while (actualNodeExploredId != endNodeId) {
-            //*************** mise a jour tblo exploration : quel noeud il reste a explorer ***********
+            //*************** mis à jour tableau exploration : quel nœud il reste à explorer ***********
             for (int i = 0; i < graph.nodeOutDegree(actualNodeExploredId); ++i) {
 
                 int edgeId = graph.nodeOutEdgeId(actualNodeExploredId, i);
@@ -110,13 +110,13 @@ public class RouteComputer {
     }
 
     /**
-     * Reconstitue une route correspondant à l'itineraire le plus court et optimisé entre deux noeuds
+     * Reconstitue une route correspondant à l'itinéraire le plus court et optimisé entre deux nœuds
      *
      * @param startNodeId noeud de depart
-     * @param endNodeId noeud d'arrivée
-     * @param predecessor tableau de predecesseurs pour chaque noeud
+     * @param endNodeId nœud d'arrivée
+     * @param predecessor tableau de prédécesseurs pour chaque nœud
      *
-     * @return une single route correspondant à l'itineraire le plus court et optimisé entre les deux noeuds
+     * @return une single route correspondant à l'itinéraire le plus court et optimisé entre les deux nœuds
      */
 
     private Route creationRoute(int startNodeId, int endNodeId, int[] predecessor) {
