@@ -4,20 +4,26 @@ import ch.epfl.javelo.routing.*;
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.ReadOnlyObjectProperty;
-import javafx.collections.FXCollections;
+import javafx.beans.property.SimpleObjectProperty;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
+import javafx.util.Pair;
+
+import java.util.LinkedHashMap;
 
 public final class RouteBean {
     //public ou pv?
     RouteComputer path;
 
-    public ObservableList<Waypoint> waypoints = FXCollections.observableArrayList();
+    //public ObservableList<Waypoint> waypoints = FXCollections.observableArrayList();
+    public ObservableList<Waypoint> waypoints = null;
     public DoubleProperty highlightedPosition;
     //pourquoi devons-nous les mettre en public si on ne veut pas qu'ils
     //soient accessibles depuis l'extérieur ?
-    private ObjectProperty<Route> route = null;
-    private ObjectProperty<ElevationProfile> elevationProfile = null;
+    private ObjectProperty<Route> route = new SimpleObjectProperty<>();
+    private ObjectProperty<ElevationProfile> elevationProfile = new SimpleObjectProperty<>();
+
+    private LinkedHashMap<Pair<Integer, Integer>, Route> memoryRoute = new LinkedHashMap<>(20);
 
     private int MAX_STEP_LENGTH = 5;
 
@@ -26,7 +32,12 @@ public final class RouteBean {
 
         waypoints.addListener((ListChangeListener<? super Waypoint>) o -> {
             elevationProfile.setValue(ElevationProfileComputer.elevationProfile(route.get(), MAX_STEP_LENGTH ));
-            route.setValue();
+            if(//TODO getRoute()!= null
+            ) {
+            route.setValue(new MultiRoute());
+            } else {
+                route.set(null);
+            }
             /*
  Lors d'un changement, le meilleur itinéraire (simple)
 reliant chaque point de passage à son successeur est déterminé
@@ -82,6 +93,10 @@ même manière que pour le cache mémoire des tuiles.
         return this.waypoints;
     }
 
-    //1349, 1353, 1356, 1370, 1377, 1391, 1396, 1405, 1409
+    public void route(){
+
+    }
+
+    //1349, 1353, 1391
 
 }
