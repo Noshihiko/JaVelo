@@ -4,23 +4,18 @@ import ch.epfl.javelo.data.Graph;
 import ch.epfl.javelo.projection.PointCh;
 import ch.epfl.javelo.projection.PointWebMercator;
 import javafx.beans.property.ObjectProperty;
-import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
 
 import javafx.scene.Group;
 import javafx.scene.layout.Pane;
 import javafx.scene.shape.SVGPath;
-
-import javafx.scene.layout.Pane;
-
-
-import java.util.Collection;
 import java.util.function.Consumer;
+
 
 public final class WaypointsManager {
     public final Graph reseauRoutier;
     public final ObjectProperty<MapViewParameters> parameters;
-    public final ObservableList<Waypoint> listPoints;
+    public final ObservableList<Waypoint> listWaypoints;
     public final Consumer<String> error;
     private Pane pane;
 
@@ -28,22 +23,14 @@ public final class WaypointsManager {
     public WaypointsManager(Graph reseauRoutier, ObjectProperty<MapViewParameters> parameters, ObservableList<Waypoint> listPoints, Consumer<String> error){
         this.reseauRoutier = reseauRoutier;
         this.parameters = parameters;
-        this.listPoints = listPoints;
+        this.listWaypoints = listPoints;
         this.error = error;
         pane.setPickOnBounds(false);
-
-
-        listPoints.addListener(observable -> lambdas);
-
     }
-
-
 
     public Pane pane(){
         return pane;
     }
-
-
 
 
     public void addWaypoint(double x, double y) {
@@ -51,37 +38,83 @@ public final class WaypointsManager {
         //si trouve pas ecrit l'erreur ds l'enonce
         //->nouveau pt ch avec cooordonnee d'un node trouve
 
-        parameters.get().pointAt(x, y);
-        PointCh newPoint = new PointCh(x, y);
+        listWaypoints.add(CreateNewWaypoint(x, y));
 
-        PointCh newPoint = PointWebMercator.of(parameters.get().zoom(),x,y).toPointCh();
+        /*PointCh newPoint = parameters.get().pointAt(x, y).toPointCh();
 
         int nodeClosestId = reseauRoutier.nodeClosestTo(newPoint, 500);
         if (nodeClosestId == -1) {
             error.accept("Aucune route à proximité !");
         }
         else {
-            listPoints.add(new Waypoint(newPoint, nodeClosestId));
+            listWaypoints.add(new Waypoint(newPoint, nodeClosestId));
+        }*/
+
+
+    }
+
+    private Waypoint CreateNewWaypoint(double x, double y) {
+
+        PointCh newPoint = parameters.get().pointAt(x, y).toPointCh();
+
+        int nodeClosestId = reseauRoutier.nodeClosestTo(newPoint, 500);
+        if (nodeClosestId == -1) {
+            error.accept("Aucune route à proximité !");
         }
-
-
-        //listener ds waypoint mnager a utiliser avec observable list et listener va dire ca a changer et effecteur ce qu'il ya  uìds le listener: en gros ca va dire que si les waypoint changent ca recalcule òle route
+        else return new Waypoint(newPoint, nodeClosestId);
+        return null;
     }
 
 
-    private void Path(){
-            for (int i=0; i<listPoints.size(); ++i) {
-                addGroup(listPoints.get(i));
+    private void CreateGroupPerWaypoint(){
+            for (int i=0; i<listWaypoints.size(); ++i) {
+                DrawWaypoint(listWaypoints.get(i), i);
             }
     }
 
-    private void addGroup(Waypoint w){
+    private void DrawWaypoint(Waypoint w, int index){
+        //creer un ensemble des groupes correspondants aux waypoints ?
         Group newGroup = new Group();
         pane().getChildren().add(newGroup);
 
         PointWebMercator point = PointWebMercator.ofPointCh(w.pointCh());
         double x = parameters.get().viewX(point);
         double y = parameters.get().viewY(point);
+
+        newGroup.setOnMouseClicked(event -> {
+            listWaypoints.remove(index);
+            pane().getChildren().remove(newGroup);
+        });
+
+        //?? Ca sert a quoi au juste si tte facon on a pas acces a ces info en dehors
+        /*newGroup.setOnMousePressed(event -> {
+            if(event.isStillSincePress()) {
+                double newX = event.getX();
+                double newY = event.getY();
+            }
+        });*/
+
+        newGroup.setOnMouseDragged(event -> {
+            newGroup.setLayoutX(event.getSceneX());
+            newGroup.setLayoutY(event.getSceneY());
+
+            newGroup.setTranslateX(event.getSceneX());
+            newGroup.setTranslateY(event.getSceneY());
+        });
+
+        newGroup.setOnMouseReleased(event-> {
+            if(event.isStillSincePress()) {
+                listWaypoints.remove(index);
+                pane().getChildren().remove(newGroup);
+
+            if(!event.isStillSincePress()){
+
+                Waypoint waypointChanged = CreateNewWaypoint(event.getSceneX(), event.getSceneY());
+                listWaypoints.set(index, waypointChanged);
+                ClearListWaypoints();
+
+            }
+        }});
 
         newGroup.setLayoutX(x);
         newGroup.setLayoutY(y);
@@ -100,21 +133,32 @@ public final class WaypointsManager {
         newGroup.getChildren().add(outline);
         newGroup.getChildren().add(interior);
 
-        int i = listPoints.indexOf(w);
+        int i = listWaypoints.indexOf(w);
         String position;
 
         if(i == 0) position = String.valueOf(Position.first);
         else {
-            position = (i==listPoints.size() -1) ? String.valueOf(Position.last) :
+            position = (i==listWaypoints.size() -1) ? String.valueOf(Position.last) :
                     String.valueOf(Position.middle);
         }
         newGroup.getStyleClass().add(position);
+        }
+
+
+    private void ClearListWaypoints() {
+        pane().getChildren().clear();
+    }
+
+    private void CreateNewListWaypoints() {
+        CreateGroupPerWaypoint();
     }
 
     private enum Position {
         first, middle, last;
     }
 
+    }
 
 
-}
+
+
