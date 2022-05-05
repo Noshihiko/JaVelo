@@ -9,7 +9,7 @@ import static ch.epfl.javelo.Preconditions.checkArgument;
 import static java.lang.Double.isNaN;
 
 /**
- * Calcule le profil en long d'un itineraire
+ * Calcule le profil en long d'un itinéraire
  *
  * @author Camille Espieux (324248)
  * @author Chiara Freneix (329552)
@@ -19,13 +19,13 @@ public final class ElevationProfileComputer {
     private ElevationProfileComputer() {}
 
     /**
-     * calcule le profile en long de l'itineraire
+     * calcule le profil en long de l'itinéraire
      *
      * @param route         route dont on veut construire le profil en long
-     * @param maxStepLength maximum d'espacement en mètres entre les echantillons du profil
-     * @throws IllegalArgumentException si maxStepLength est esgale ou inferieure à 0
+     * @param maxStepLength maximum d'espacement en mètres entre les échantillons du profil
+     * @throws IllegalArgumentException si maxStepLength est égale ou inférieure à 0
      *
-     * @return le profil en long de l'itineraire
+     * @return le profil en long de l'itinéraire
      */
 
     public static ElevationProfile elevationProfile(Route route, double maxStepLength) {
@@ -39,8 +39,8 @@ public final class ElevationProfileComputer {
         int positionLastValidValue = 0, positionFirstValidValue = -1;
 
         //*****************************Premier remplissage ****************************************
-        //Passe le tableau et remplace les NaN au debut par la premiere valeure valide
-        // (resp à la fin remplace les NaN par la dernière valeure valide)
+        //Passe le tableau et remplace les NaN au debut par la première valeur valide
+        // (resp à la fin, remplace les NaN par la dernière valeur valide)
         for (int i = 0; i < numberOfSamples; ++i) {
 
             routeProfile[i] = (float) route.elevationAt(i * maxLength);
@@ -66,9 +66,9 @@ public final class ElevationProfileComputer {
             Arrays.fill(routeProfile, 0, positionFirstValidValue, firstValidValue);
             Arrays.fill(routeProfile, positionLastValidValue, numberOfSamples, lastValidValue);
 
-            //******************************Deuxieme remplissage *************************************
-            //Les extremité n'étant plus des valeures NaN, on procède à remplir les valeures NaN se trouvant au milieu de
-            //valeures valides
+            //******************************Deuxième remplissage *************************************
+            //Les extrémités n'étant plus des valeurs NaN, on procède à remplir les valeurs NaN se trouvant au milieu de
+            //valeurs valides
             float latestValidValue = 0, nextValidValue;
             int positionNextValidValue, count, positionLatestValidValue = 0;
 
