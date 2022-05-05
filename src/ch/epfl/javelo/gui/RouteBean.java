@@ -17,15 +17,17 @@ public final class RouteBean {
     public ObjectProperty<Route> route;
     public ObjectProperty<ElevationProfile> elevationProfile;
     private int MAX_STEP_LENGTH = 5;
+
     public RouteBean(RouteComputer path){
         this.path = path;
-        elevationProfile.setValue(ElevationProfileComputer.elevationProfile(route.get(), MAX_STEP_LENGTH ));
         /*
         waypoints.addListener( o -> {
-L'itinéraire et son profil doivent être recalculés chaque fois
-que les points de passage changent, ce qui peut se faire
-facilement en installant un auditeur sur la liste contenant ces
-derniers. Lors d'un changement, le meilleur itinéraire (simple)
+
+            elevationProfile.setValue(ElevationProfileComputer.elevationProfile(route.get(), MAX_STEP_LENGTH ));
+
+L'itinéraire doivent être recalculés chaque fois
+que les points de passage changent.
+ Lors d'un changement, le meilleur itinéraire (simple)
 reliant chaque point de passage à son successeur est déterminé
 et ces itinéraires sont combinés en un unique itinéraire multiple.
 
