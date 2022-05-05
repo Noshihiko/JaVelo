@@ -4,29 +4,30 @@ import ch.epfl.javelo.routing.*;
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.ReadOnlyObjectProperty;
+import javafx.collections.FXCollections;
+import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
 
 public final class RouteBean {
     //public ou pv?
     RouteComputer path;
 
-    public ObservableList<Waypoint> waypoints;
+    public ObservableList<Waypoint> waypoints = FXCollections.observableArrayList();
     public DoubleProperty highlightedPosition;
     //pourquoi devons-nous les mettre en public si on ne veut pas qu'ils
     //soient accessibles depuis l'extérieur ?
-    public ObjectProperty<Route> route;
-    public ObjectProperty<ElevationProfile> elevationProfile;
+    private ObjectProperty<Route> route = null;
+    private ObjectProperty<ElevationProfile> elevationProfile = null;
+
     private int MAX_STEP_LENGTH = 5;
 
     public RouteBean(RouteComputer path){
         this.path = path;
-        /*
-        waypoints.addListener( o -> {
 
+        waypoints.addListener((ListChangeListener<? super Waypoint>) o -> {
             elevationProfile.setValue(ElevationProfileComputer.elevationProfile(route.get(), MAX_STEP_LENGTH ));
-
-L'itinéraire doivent être recalculés chaque fois
-que les points de passage changent.
+            route.setValue();
+            /*
  Lors d'un changement, le meilleur itinéraire (simple)
 reliant chaque point de passage à son successeur est déterminé
 et ces itinéraires sont combinés en un unique itinéraire multiple.
@@ -47,9 +48,12 @@ incontrôlée, et nous vous conseillons donc soit de n'y stocker
 que les itinéraires (simples) correspondant à l'itinéraire
 (multiple) courant, soit de limiter sa taille en procédant de la
 même manière que pour le cache mémoire des tuiles.
-        } );
 
          */
+
+        });
+
+
 
 
     }
@@ -66,11 +70,18 @@ même manière que pour le cache mémoire des tuiles.
         highlightedPosition.setValue(newValue);
     }
 
-    public ReadOnlyObjectProperty<Route> castRoute(ObjectProperty<Route> route){
+    public ReadOnlyObjectProperty<Route> routeProperty(ObjectProperty<Route> route){
         return this.route = route;
     }
 
-    public ReadOnlyObjectProperty<ElevationProfile> castElevationProfile(ObjectProperty<ElevationProfile> elevationProfile){
+    public ReadOnlyObjectProperty<ElevationProfile> elevationProfileProperty(ObjectProperty<ElevationProfile> elevationProfile){
         return this.elevationProfile = elevationProfile;
     }
+
+    public ObservableList<Waypoint> getWaypoint(){
+        return this.waypoints;
+    }
+
+    //1349, 1353, 1356, 1370, 1377, 1391, 1396, 1405, 1409
+
 }
