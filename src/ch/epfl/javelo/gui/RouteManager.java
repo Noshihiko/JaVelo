@@ -1,4 +1,4 @@
-package ch.epfl.javelo.gui;
+/*package ch.epfl.javelo.gui;
 
 import javafx.beans.property.ReadOnlyObjectProperty;
 
@@ -14,4 +14,4 @@ public final class RouteManager {
         this.parameters = parameters;
         this.error = error;
     }
-}
+}*/

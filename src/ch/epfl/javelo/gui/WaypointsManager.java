@@ -25,6 +25,9 @@ public final class WaypointsManager {
         this.parameters = parameters;
         this.listWaypoints = listPoints;
         this.error = error;
+
+        pane = new Pane();
+
         pane.setPickOnBounds(false);
     }
 
@@ -37,7 +40,7 @@ public final class WaypointsManager {
         //waypoint a la position d'un node le plus proche ds 1000m a l'aide de node closest to avec distance 500m
         //si trouve pas ecrit l'erreur ds l'enonce
         //->nouveau pt ch avec cooordonnee d'un node trouve
-        
+
         listWaypoints.add(CreateNewWaypoint(x, y));
 
         /*PointCh newPoint = parameters.get().pointAt(x, y).toPointCh();

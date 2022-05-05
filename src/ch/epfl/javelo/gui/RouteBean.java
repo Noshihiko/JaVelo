@@ -1,4 +1,4 @@
-package ch.epfl.javelo.gui;
+/*package ch.epfl.javelo.gui;
 
 import ch.epfl.javelo.routing.*;
 import javafx.beans.property.DoubleProperty;
@@ -62,7 +62,7 @@ même manière que pour le cache mémoire des tuiles.
 
          */
 
-        });
+  /*      });
 
 
 
@@ -99,4 +99,4 @@ même manière que pour le cache mémoire des tuiles.
 
     //1349, 1353, 1391
 
-}
+}*/

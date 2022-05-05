@@ -72,7 +72,7 @@ public final class BaseMapManager {
 
         pane.setOnMouseClicked(event -> {
             if (event.isStillSincePress()) {
-                points.addWaypoint(parameters.get().x()+event.getX(), parameters.get().y()+event.getY());
+                points.addWaypoint(event.getX(), event.getY());
             }
             redrawOnNextPulse();
         });
