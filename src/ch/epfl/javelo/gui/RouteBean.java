@@ -48,7 +48,6 @@ public final class RouteBean {
         });
 
         checkArgument();
-
     }
 
     public DoubleProperty highlightedPositionProperty(){
@@ -80,19 +79,20 @@ public final class RouteBean {
     }
 
     private void checkArgument() {
-        List<Waypoint> checkPoints= new ArrayList<>();
-        MultiRoute checkRoute = new MultiRoute(null);
-
-        for (int i = 0; i < route.get().edges().size(); ++i) {
-        checkPoints.add(waypoints.get(i),
-                waypoints.get(i+1));
-
-            if (waypoints.size() < 2  || route.get().edges().isEmpty()) {
-                route = null;
-                elevationProfile = null;
-              //  break;
-            }
+        if (waypoints.size() < 2 || route.get().edges()== null) {
+            route = null;
+            elevationProfile = null;
         }
+
+        /*
+        La propriété contenant la position mise en évidence
+        contient soit un nombre valide donnant cette position
+        —exprimée en mètres depuis le départ de l'itinéraire—
+        soit NaN dans le cas où aucune position ne doit être
+        mise en évidence.
+        => c'est fait automatiquement non ?
+         */
+/*
     }
     //1349, 1353, 1391
 
