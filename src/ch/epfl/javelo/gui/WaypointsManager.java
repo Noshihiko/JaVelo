@@ -57,29 +57,25 @@ public final class WaypointsManager {
         //si trouve pas ecrit l'erreur ds l'enonce
         //->nouveau pt ch avec cooordonnee d'un node trouve
 
-        //double newX = x + MapViewParameters.topLeft().getX();
-
-        listWaypoints.add(CreateNewWaypoint(x, y));
-
-        /*PointCh newPoint = parameters.get().pointAt(x, y).toPointCh();
-
-        int nodeClosestId = reseauRoutier.nodeClosestTo(newPoint, 500);
-        if (nodeClosestId == -1) {
-            error.accept("Aucune route à proximité !");
+         Waypoint NewWaypoint = CreateNewWaypoint(x, y);
+        if (NewWaypoint != null) {
+            listWaypoints.add(NewWaypoint);
         }
-        else {
-            listWaypoints.add(new Waypoint(newPoint, nodeClosestId));
-        }*/
     }
 
     private Waypoint CreateNewWaypoint(double x, double y) {
-
+        //************************** TEST *******************************
         System.out.println(x +"et "+y);
+        //************************** TEST *******************************
 
         PointCh newPoint = parameters.get().pointAt(x, y).toPointCh();
 
         int nodeClosestId = reseauRoutier.nodeClosestTo(newPoint, 500);
+
+        //************************** TEST *******************************
         System.out.println("node Id: " +nodeClosestId);
+        //************************** TEST *******************************
+
         if (nodeClosestId == -1) {
             error.accept("Aucune route à proximité !");
         }
@@ -98,41 +94,28 @@ public final class WaypointsManager {
 
     private void DrawWaypoint(Waypoint w, int index){
         //creer un ensemble des groupes correspondants aux waypoints ?
+
+        //************************** TEST *******************************
         System.out.println("test 3 index waypoint: " +index);
+        //************************** TEST *******************************
         Group newGroup = new Group();
         pane().getChildren().add(newGroup);
 
         PointWebMercator point = PointWebMercator.ofPointCh(w.pointCh());
         double x = parameters.get().viewX(point);
         double y = parameters.get().viewY(point);
-        System.out.println("x " +x);
-        System.out.println("y " +y);
-
-        newGroup.setOnMouseClicked(event -> {
-            listWaypoints.remove(index);
-            pane().getChildren().remove(newGroup);
-        });
-
-        //?? Ca sert a quoi au juste si tte facon on a pas acces a ces info en dehors
-        /*newGroup.setOnMousePressed(event -> {
-            if(event.isStillSincePress()) {
-                double newX = event.getX();
-                double newY = event.getY();
-            }
-        });*/
 
         newGroup.setOnMouseDragged(event -> {
             newGroup.setLayoutX(event.getSceneX());
             newGroup.setLayoutY(event.getSceneY());
 
-            newGroup.setTranslateX(event.getSceneX());
-            newGroup.setTranslateY(event.getSceneY());
         });
 
         newGroup.setOnMouseReleased(event-> {
             if(event.isStillSincePress()) {
                 listWaypoints.remove(index);
                 pane().getChildren().remove(newGroup);
+            }
 
             if(!event.isStillSincePress()){
 
@@ -143,7 +126,7 @@ public final class WaypointsManager {
                 CreateNewListWaypoints();
 
             }
-        }});
+        });
 
         newGroup.setLayoutX(x);
         newGroup.setLayoutY(y);
