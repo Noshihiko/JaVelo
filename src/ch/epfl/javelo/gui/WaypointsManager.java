@@ -51,9 +51,10 @@ public final class WaypointsManager {
         //->nouveau pt ch avec cooordonnee d'un node trouve
 
         //double newX = x + MapViewParameters.topLeft().getX();
-
-        listWaypoints.add(CreateNewWaypoint(x, y));
-
+         Waypoint NewWaypoint = CreateNewWaypoint(x, y);
+        if (NewWaypoint != null) {
+            listWaypoints.add(NewWaypoint);
+        }
         /*PointCh newPoint = parameters.get().pointAt(x, y).toPointCh();
 
         int nodeClosestId = reseauRoutier.nodeClosestTo(newPoint, 500);
@@ -66,13 +67,18 @@ public final class WaypointsManager {
     }
 
     private Waypoint CreateNewWaypoint(double x, double y) {
-
+        //************************** TEST *******************************
         System.out.println(x +"et "+y);
+        //************************** TEST *******************************
 
         PointCh newPoint = parameters.get().pointAt(x, y).toPointCh();
 
         int nodeClosestId = reseauRoutier.nodeClosestTo(newPoint, 500);
+
+        //************************** TEST *******************************
         System.out.println("node Id: " +nodeClosestId);
+        //************************** TEST *******************************
+
         if (nodeClosestId == -1) {
             error.accept("Aucune route à proximité !");
         }
@@ -91,15 +97,21 @@ public final class WaypointsManager {
 
     private void DrawWaypoint(Waypoint w, int index){
         //creer un ensemble des groupes correspondants aux waypoints ?
+
+        //************************** TEST *******************************
         System.out.println("test 3 index waypoint: " +index);
+        //************************** TEST *******************************
         Group newGroup = new Group();
         pane().getChildren().add(newGroup);
 
         PointWebMercator point = PointWebMercator.ofPointCh(w.pointCh());
         double x = parameters.get().viewX(point);
         double y = parameters.get().viewY(point);
+
+        //************************** TEST *******************************
         System.out.println("x " +x);
         System.out.println("y " +y);
+        //************************** TEST *******************************
 
         newGroup.setOnMouseClicked(event -> {
             listWaypoints.remove(index);
@@ -115,8 +127,8 @@ public final class WaypointsManager {
         });*/
 
         newGroup.setOnMouseDragged(event -> {
-            newGroup.setLayoutX(event.getSceneX());
-            newGroup.setLayoutY(event.getSceneY());
+            //newGroup.setLayoutX(event.getX());
+            //ewGroup.setLayoutY(event.getY());
 
             newGroup.setTranslateX(event.getSceneX());
             newGroup.setTranslateY(event.getSceneY());
@@ -126,6 +138,7 @@ public final class WaypointsManager {
             if(event.isStillSincePress()) {
                 listWaypoints.remove(index);
                 pane().getChildren().remove(newGroup);
+            }
 
             if(!event.isStillSincePress()){
 
@@ -136,7 +149,7 @@ public final class WaypointsManager {
                 CreateNewListWaypoints();
 
             }
-        }});
+        });
 
         newGroup.setLayoutX(x);
         newGroup.setLayoutY(y);
