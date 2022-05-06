@@ -1,4 +1,6 @@
-/*package ch.epfl.javelo.gui;
+/*
+package ch.epfl.javelo.gui;
+
 
 import ch.epfl.javelo.routing.*;
 import javafx.beans.property.DoubleProperty;
@@ -12,19 +14,17 @@ import javafx.util.Pair;
 import java.util.LinkedHashMap;
 
 public final class RouteBean {
-    //public ou pv?
     RouteComputer path;
 
-    //public ObservableList<Waypoint> waypoints = FXCollections.observableArrayList();
-    public ObservableList<Waypoint> waypoints = null;
-    public DoubleProperty highlightedPosition;
-    //pourquoi devons-nous les mettre en public si on ne veut pas qu'ils
-    //soient accessibles depuis l'extérieur ?
     private ObjectProperty<Route> route = new SimpleObjectProperty<>();
     private ObjectProperty<ElevationProfile> elevationProfile = new SimpleObjectProperty<>();
+    //private ObservableList<Waypoint> waypoints = FXCollections.observableArrayList();
+
+    //seules propriétés modifiables depuis l'extérieur :
+    private ObservableList<Waypoint> waypoints = null;
+    private DoubleProperty highlightedPosition;
 
     private LinkedHashMap<Pair<Integer, Integer>, Route> memoryRoute = new LinkedHashMap<>(20);
-
     private int MAX_STEP_LENGTH = 5;
 
     public RouteBean(RouteComputer path){
@@ -61,12 +61,9 @@ que les itinéraires (simples) correspondant à l'itinéraire
 même manière que pour le cache mémoire des tuiles.
 
          */
-
-  /*      });
-
-
-
-
+/*
+        });
+        checkArgument();
     }
 
     public DoubleProperty highlightedPositionProperty(){
@@ -81,11 +78,11 @@ même manière que pour le cache mémoire des tuiles.
         highlightedPosition.setValue(newValue);
     }
 
-    public ReadOnlyObjectProperty<Route> routeProperty(ObjectProperty<Route> route){
+    public ReadOnlyObjectProperty<Route> getRoute(ObjectProperty<Route> route){
         return this.route = route;
     }
 
-    public ReadOnlyObjectProperty<ElevationProfile> elevationProfileProperty(ObjectProperty<ElevationProfile> elevationProfile){
+    public ReadOnlyObjectProperty<ElevationProfile> getElevationProfileProperty(ObjectProperty<ElevationProfile> elevationProfile){
         return this.elevationProfile = elevationProfile;
     }
 
@@ -97,6 +94,14 @@ même manière que pour le cache mémoire des tuiles.
 
     }
 
+    private void checkArgument() {
+        // s'il existe au moins une paire de points de passage entre lesquels aucun itinéraire ne peut être trouvé
+        if (waypoints.size() < 2 ||   ){
+            route = null;
+            elevationProfile = null;
+        }
+    }
     //1349, 1353, 1391
 
-}*/
+}
+*/
