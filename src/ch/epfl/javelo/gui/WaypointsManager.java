@@ -57,20 +57,10 @@ public final class WaypointsManager {
         //si trouve pas ecrit l'erreur ds l'enonce
         //->nouveau pt ch avec cooordonnee d'un node trouve
 
-        //double newX = x + MapViewParameters.topLeft().getX();
          Waypoint NewWaypoint = CreateNewWaypoint(x, y);
         if (NewWaypoint != null) {
             listWaypoints.add(NewWaypoint);
         }
-        /*PointCh newPoint = parameters.get().pointAt(x, y).toPointCh();
-
-        int nodeClosestId = reseauRoutier.nodeClosestTo(newPoint, 500);
-        if (nodeClosestId == -1) {
-            error.accept("Aucune route à proximité !");
-        }
-        else {
-            listWaypoints.add(new Waypoint(newPoint, nodeClosestId));
-        }*/
     }
 
     private Waypoint CreateNewWaypoint(double x, double y) {
@@ -115,30 +105,10 @@ public final class WaypointsManager {
         double x = parameters.get().viewX(point);
         double y = parameters.get().viewY(point);
 
-        //************************** TEST *******************************
-        System.out.println("x " +x);
-        System.out.println("y " +y);
-        //************************** TEST *******************************
-
-        newGroup.setOnMouseClicked(event -> {
-            listWaypoints.remove(index);
-            pane().getChildren().remove(newGroup);
-        });
-
-        //?? Ca sert a quoi au juste si tte facon on a pas acces a ces info en dehors
-        /*newGroup.setOnMousePressed(event -> {
-            if(event.isStillSincePress()) {
-                double newX = event.getX();
-                double newY = event.getY();
-            }
-        });*/
-
         newGroup.setOnMouseDragged(event -> {
-            //newGroup.setLayoutX(event.getX());
-            //ewGroup.setLayoutY(event.getY());
+            newGroup.setLayoutX(event.getSceneX());
+            newGroup.setLayoutY(event.getSceneY());
 
-            newGroup.setTranslateX(event.getSceneX());
-            newGroup.setTranslateY(event.getSceneY());
         });
 
         newGroup.setOnMouseReleased(event-> {
