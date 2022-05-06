@@ -41,6 +41,8 @@ public final class WaypointsManager {
         //si trouve pas ecrit l'erreur ds l'enonce
         //->nouveau pt ch avec cooordonnee d'un node trouve
 
+        //double newX = x + MapViewParameters.topLeft().getX();
+
         listWaypoints.add(CreateNewWaypoint(x, y));
 
         /*PointCh newPoint = parameters.get().pointAt(x, y).toPointCh();
@@ -52,8 +54,6 @@ public final class WaypointsManager {
         else {
             listWaypoints.add(new Waypoint(newPoint, nodeClosestId));
         }*/
-
-
     }
 
     private Waypoint CreateNewWaypoint(double x, double y) {
@@ -74,6 +74,7 @@ public final class WaypointsManager {
                 DrawWaypoint(listWaypoints.get(i), i);
             }
     }
+
 
     private void DrawWaypoint(Waypoint w, int index){
         //creer un ensemble des groupes correspondants aux waypoints ?
