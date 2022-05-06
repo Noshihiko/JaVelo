@@ -3,7 +3,6 @@ package ch.epfl.javelo.gui;
 import ch.epfl.javelo.data.Graph;
 import ch.epfl.javelo.projection.PointCh;
 import ch.epfl.javelo.projection.PointWebMercator;
-import javafx.beans.InvalidationListener;
 import javafx.beans.property.ObjectProperty;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
@@ -29,20 +28,18 @@ public final class WaypointsManager {
         this.error = error;
 
         pane = new Pane();
-
         pane.setPickOnBounds(false);
 
         listWaypoints.addListener((ListChangeListener<? super Waypoint>) Observable -> {
-            System.out.println("test 1 listener liswaypoint");
-            ClearListWaypoints();
-            CreateNewListWaypoints();
+            clearListWaypoints();
+            createNewListWaypoints();
 
         });
 
         parameters.addListener(Observable -> {
             //on veut juste repositionner les marqueurs
-            ClearListWaypoints();
-            CreateNewListWaypoints();
+            clearListWaypoints();
+            createNewListWaypoints();
         });
 
     }
@@ -57,15 +54,15 @@ public final class WaypointsManager {
         //si trouve pas ecrit l'erreur ds l'enonce
         //->nouveau pt ch avec cooordonnee d'un node trouve
 
-         Waypoint NewWaypoint = CreateNewWaypoint(x, y);
+         Waypoint NewWaypoint = createNewWaypoint(x, y);
         if (NewWaypoint != null) {
             listWaypoints.add(NewWaypoint);
         }
     }
 
-    private Waypoint CreateNewWaypoint(double x, double y) {
+    private Waypoint createNewWaypoint(double x, double y) {
         //************************** TEST *******************************
-        System.out.println(x +"et "+y);
+        System.out.println(x +"et "+y);// *******************************
         //************************** TEST *******************************
 
         PointCh newPoint = parameters.get().pointAt(x, y).toPointCh();
@@ -73,7 +70,7 @@ public final class WaypointsManager {
         int nodeClosestId = reseauRoutier.nodeClosestTo(newPoint, 500);
 
         //************************** TEST *******************************
-        System.out.println("node Id: " +nodeClosestId);
+        System.out.println("node Id: " +nodeClosestId);// ***************
         //************************** TEST *******************************
 
         if (nodeClosestId == -1) {
@@ -84,15 +81,15 @@ public final class WaypointsManager {
     }
 
 
-    private void CreateGroupPerWaypoint(){
+    private void createGroupPerWaypoint(){
             for (int i=0; i<listWaypoints.size(); ++i) {
                 System.out.println(listWaypoints.get(i));
-                DrawWaypoint(listWaypoints.get(i), i);
+                drawWaypoint(listWaypoints.get(i), i);
             }
     }
 
 
-    private void DrawWaypoint(Waypoint w, int index){
+    private void drawWaypoint(Waypoint w, int index){
         //creer un ensemble des groupes correspondants aux waypoints ?
 
         //************************** TEST *******************************
@@ -119,11 +116,11 @@ public final class WaypointsManager {
 
             if(!event.isStillSincePress()){
 
-                Waypoint waypointChanged = CreateNewWaypoint(event.getSceneX(), event.getSceneY());
+                Waypoint waypointChanged = createNewWaypoint(event.getSceneX(), event.getSceneY());
                 System.out.println(event.getSceneX() +event.getSceneY() );
                 listWaypoints.set(index, waypointChanged);
-                ClearListWaypoints();
-                CreateNewListWaypoints();
+                clearListWaypoints();
+                createNewListWaypoints();
 
             }
         });
@@ -156,20 +153,19 @@ public final class WaypointsManager {
         }
 
 
-    private void ClearListWaypoints() {
+    private void clearListWaypoints() {
         pane().getChildren().clear();
     }
 
-    private void CreateNewListWaypoints() {
-        CreateGroupPerWaypoint();
-        //System.out.println("test 2 createnewlistwaypoint");
+    private void createNewListWaypoints() {
+        createGroupPerWaypoint();
     }
 
     private enum Position {
         first, middle, last;
     }
 
-    }
+}
 
 
 
