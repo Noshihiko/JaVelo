@@ -31,8 +31,8 @@ public record MapViewParameters(int zoom, double x, double y) {
         //prend en arguments les coordonnées x et y d'un point,
         // exprimées par rapport au coin haut-gauche de la portion de carte affichée à l'écran
         // et retourne ce point sous la forme d'une instance de PointWebMercator
-        x = WebMercator.lon(x + topLeft().getX());
-        y = WebMercator.lat(y + topLeft().getY());
+        x = WebMercator.lon(x + this.x);
+        y = WebMercator.lat(y + this.y);
         return new PointWebMercator(x, y);
     }
 
