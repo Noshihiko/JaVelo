@@ -73,6 +73,7 @@ public final class BaseMapManager {
         pane.setOnMouseClicked(event -> {
             if (event.isStillSincePress()) {
                 points.addWaypoint(event.getX(), event.getY());
+                System.out.println("test 0 basemap");
             }
             redrawOnNextPulse();
         });
