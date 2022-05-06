@@ -67,9 +67,12 @@ public final class WaypointsManager {
 
     private Waypoint CreateNewWaypoint(double x, double y) {
 
+        System.out.println(x +"et "+y);
+
         PointCh newPoint = parameters.get().pointAt(x, y).toPointCh();
 
         int nodeClosestId = reseauRoutier.nodeClosestTo(newPoint, 500);
+        System.out.println("node Id: " +nodeClosestId);
         if (nodeClosestId == -1) {
             error.accept("Aucune route à proximité !");
         }
@@ -80,6 +83,7 @@ public final class WaypointsManager {
 
     private void CreateGroupPerWaypoint(){
             for (int i=0; i<listWaypoints.size(); ++i) {
+                System.out.println(listWaypoints.get(i));
                 DrawWaypoint(listWaypoints.get(i), i);
             }
     }
@@ -87,12 +91,15 @@ public final class WaypointsManager {
 
     private void DrawWaypoint(Waypoint w, int index){
         //creer un ensemble des groupes correspondants aux waypoints ?
+        System.out.println("test 3 index waypoint: " +index);
         Group newGroup = new Group();
         pane().getChildren().add(newGroup);
 
         PointWebMercator point = PointWebMercator.ofPointCh(w.pointCh());
         double x = parameters.get().viewX(point);
         double y = parameters.get().viewY(point);
+        System.out.println("x " +x);
+        System.out.println("y " +y);
 
         newGroup.setOnMouseClicked(event -> {
             listWaypoints.remove(index);
@@ -165,7 +172,7 @@ public final class WaypointsManager {
 
     private void CreateNewListWaypoints() {
         CreateGroupPerWaypoint();
-        //System.out.println("test 2 createnewlistwaypoint");
+        System.out.println("test 2 createnewlistwaypoint");
     }
 
     private enum Position {
