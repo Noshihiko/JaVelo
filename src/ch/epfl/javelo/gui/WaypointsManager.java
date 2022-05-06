@@ -38,6 +38,13 @@ public final class WaypointsManager {
             CreateNewListWaypoints();
 
         });
+
+        parameters.addListener(Observable -> {
+            //on veut juste repositionner les marqueurs
+            ClearListWaypoints();
+            CreateNewListWaypoints();
+        });
+
     }
 
     public Pane pane(){
@@ -185,7 +192,7 @@ public final class WaypointsManager {
 
     private void CreateNewListWaypoints() {
         CreateGroupPerWaypoint();
-        System.out.println("test 2 createnewlistwaypoint");
+        //System.out.println("test 2 createnewlistwaypoint");
     }
 
     private enum Position {

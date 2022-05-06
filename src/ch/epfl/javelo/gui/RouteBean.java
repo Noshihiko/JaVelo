@@ -11,7 +11,9 @@ import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
 import javafx.util.Pair;
 
+import java.util.ArrayList;
 import java.util.LinkedHashMap;
+import java.util.List;
 
 public final class RouteBean {
     RouteComputer path;
@@ -32,37 +34,19 @@ public final class RouteBean {
 
         waypoints.addListener((ListChangeListener<? super Waypoint>) o -> {
             elevationProfile.setValue(ElevationProfileComputer.elevationProfile(route.get(), MAX_STEP_LENGTH ));
+
+            /*
             if(//TODO getRoute()!= null
             ) {
             route.setValue(new MultiRoute());
             } else {
                 route.set(null);
             }
-            /*
- Lors d'un changement, le meilleur itinéraire (simple)
-reliant chaque point de passage à son successeur est déterminé
-et ces itinéraires sont combinés en un unique itinéraire multiple.
 
-Le calcul d'un itinéraire étant une opération coûteuse, il est
-toutefois important d'éviter le recalcul d'itinéraires déjà
-calculés. Pour ce faire, nous vous conseillons d'utiliser un petit
- cache mémoire représenté par une table associant à une paire de
-  nœuds le meilleur itinéraire (simple) les reliant.
-
-Chaque fois qu'un itinéraire (simple) doit être calculé, la table
-est consultée, et si elle contient l'itinéraire, il en est
-simplement extrait. Sinon, il est calculé au moyen du calculateur
-d'itinéraire et le résultat inséré dans la table.
-
-Bien entendu, il ne faut pas que la table grossisse de manière
-incontrôlée, et nous vous conseillons donc soit de n'y stocker
-que les itinéraires (simples) correspondant à l'itinéraire
-(multiple) courant, soit de limiter sa taille en procédant de la
-même manière que pour le cache mémoire des tuiles.
-
-         */
+             */
 /*
         });
+
         checkArgument();
     }
 
@@ -95,11 +79,20 @@ même manière que pour le cache mémoire des tuiles.
     }
 
     private void checkArgument() {
-        // s'il existe au moins une paire de points de passage entre lesquels aucun itinéraire ne peut être trouvé
-        if (waypoints.size() < 2 ||   ){
+        if (waypoints.size() < 2 || route.get().edges()== null) {
             route = null;
             elevationProfile = null;
         }
+
+        /*
+        La propriété contenant la position mise en évidence
+        contient soit un nombre valide donnant cette position
+        —exprimée en mètres depuis le départ de l'itinéraire—
+        soit NaN dans le cas où aucune position ne doit être
+        mise en évidence.
+        => c'est fait automatiquement non ?
+         */
+/*
     }
     //1349, 1353, 1391
 
