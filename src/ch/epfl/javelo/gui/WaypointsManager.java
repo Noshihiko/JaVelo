@@ -62,7 +62,7 @@ public final class WaypointsManager {
 
     private Waypoint createNewWaypoint(double x, double y) {
         //************************** TEST *******************************
-        System.out.println(x +"et "+y);// *******************************
+        //System.out.println(x +"et "+y);// *******************************
         //************************** TEST *******************************
 
         PointCh newPoint = parameters.get().pointAt(x, y).toPointCh();
@@ -70,7 +70,7 @@ public final class WaypointsManager {
         int nodeClosestId = reseauRoutier.nodeClosestTo(newPoint, 500);
 
         //************************** TEST *******************************
-        System.out.println("node Id: " +nodeClosestId);// ***************
+        //System.out.println("node Id: " +nodeClosestId);// ***************
         //************************** TEST *******************************
 
         if (nodeClosestId == -1) {
@@ -83,7 +83,7 @@ public final class WaypointsManager {
 
     private void createGroupPerWaypoint(){
             for (int i=0; i<listWaypoints.size(); ++i) {
-                System.out.println(listWaypoints.get(i));
+               // System.out.println(listWaypoints.get(i));
                 drawWaypoint(listWaypoints.get(i), i);
             }
     }
@@ -93,7 +93,7 @@ public final class WaypointsManager {
         //creer un ensemble des groupes correspondants aux waypoints ?
 
         //************************** TEST *******************************
-        System.out.println("test 3 index waypoint: " +index);
+        //System.out.println("test 3 index waypoint: " +index);
         //************************** TEST *******************************
         Group newGroup = new Group();
         pane().getChildren().add(newGroup);
@@ -117,7 +117,7 @@ public final class WaypointsManager {
             if(!event.isStillSincePress()){
 
                 Waypoint waypointChanged = createNewWaypoint(event.getSceneX(), event.getSceneY());
-                System.out.println(event.getSceneX() +event.getSceneY() );
+                //System.out.println(event.getSceneX() +event.getSceneY() );
                 listWaypoints.set(index, waypointChanged);
                 clearListWaypoints();
                 createNewListWaypoints();

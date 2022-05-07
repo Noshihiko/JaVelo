@@ -36,11 +36,16 @@ public final class BaseMapManager {
         canvas.heightProperty().bind(pane.heightProperty());
 
         pane.setOnScroll(event -> {
-            int VALUE_ONE_SCROLL = 26;
-            int zoomLvl = parameters.get().zoom() + Math.floorDiv((int) event.getDeltaY(),VALUE_ONE_SCROLL);
-            zoomLvl = Math2.clamp(8, zoomLvl, 19);
 
-            PointWebMercator mouseBeforeZoom = PointWebMercator.of(parameters.get().zoom(),parameters.get().x()+event.getX(),parameters.get().y()+event.getY());
+            int VALUE_ONE_SCROLL = 26;
+            int ZOOM_MIN = 8;
+            int ZOOM_MAX = 19;
+
+            int zoomLvl = parameters.get().zoom() + Math.floorDiv((int) event.getDeltaY(),VALUE_ONE_SCROLL);
+            zoomLvl = Math2.clamp(ZOOM_MIN, zoomLvl, ZOOM_MAX);
+
+            PointWebMercator mouseBeforeZoom = PointWebMercator.of(parameters.get().zoom(),
+                    parameters.get().x() + event.getX(), parameters.get().y() + event.getY());
 
             double xMAfter = mouseBeforeZoom.xAtZoomLevel(zoomLvl);
             double yMAfter = mouseBeforeZoom.yAtZoomLevel(zoomLvl);
@@ -48,7 +53,7 @@ public final class BaseMapManager {
             double xTLAfter= xMAfter - event.getX();
             double yTLAfter = yMAfter - event.getY();
 
-            System.out.println(zoomLvl);
+            System.out.println("zoom : " + zoomLvl);
             parameters.setValue(new MapViewParameters(zoomLvl, xTLAfter, yTLAfter));
 
             redrawOnNextPulse();
