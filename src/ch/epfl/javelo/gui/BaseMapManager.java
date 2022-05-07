@@ -48,6 +48,7 @@ public final class BaseMapManager {
             double xTLAfter= xMAfter - event.getX();
             double yTLAfter = yMAfter - event.getY();
 
+            System.out.println(zoomLvl);
             parameters.setValue(new MapViewParameters(zoomLvl, xTLAfter, yTLAfter));
 
             redrawOnNextPulse();
