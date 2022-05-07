@@ -31,9 +31,6 @@ public record MapViewParameters(int zoom, double x, double y) {
         //prend en arguments les coordonnées x et y d'un point,
         // exprimées par rapport au coin haut-gauche de la portion de carte affichée à l'écran
         // et retourne ce point sous la forme d'une instance de PointWebMercator
-
-        //x = WebMercator.lon(x + topLeft().getX());
-        //y = WebMercator.lat(y + topLeft().getY());
         return PointWebMercator.of(zoom, x + this.x, y + this.y);
     }
 
@@ -41,12 +38,10 @@ public record MapViewParameters(int zoom, double x, double y) {
     //exprimée par rapport au coin haut-gauche de la portion de carte affichée à l'écran
     public int viewX(PointWebMercator that){
         return (int) (that.xAtZoomLevel(this.zoom) - topLeft().getX());
-        //return (int) (that.x() - topLeft().getX());
     }
 
     public int viewY(PointWebMercator that){
         return (int) (that.yAtZoomLevel(this.zoom) - topLeft().getY());
-        //return (int) (that.y() - topLeft().getY());
     }
 
 }
