@@ -1,4 +1,4 @@
-/*package ch.epfl.javelo.gui;
+package ch.epfl.javelo.gui;
 
 import ch.epfl.javelo.projection.PointCh;
 import ch.epfl.javelo.projection.PointWebMercator;
@@ -75,4 +75,4 @@ public final class RouteManager {
 
 
 
-}*/
+}
