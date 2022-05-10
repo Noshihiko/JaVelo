@@ -34,22 +34,27 @@ public final class RouteManager {
         disk.setId("highlight");
         paneItinerary.getChildren().add(itinerary);
         paneItinerary.getChildren().add(disk);
-        l faut noter que la polyligne et le disque sont toujours présents dans le graphe de scène,
+
+        if(RouteBean.get().Route() == null) {
+            disk.setVisible(false);
+            itinerary.setVisible(false);
+        }
+        /*l faut noter que la polyligne et le disque sont toujours présents dans le graphe de scène,
         mais il ne sont pas toujours visible. Par exemple, si aucun itinéraire n'existe pas c.-à-d.
-        si la propriété route du bean contient null — alors ni l'un ni l'autre ne sont visibles.
+        si la propriété route du bean contient null — alors ni l'un ni l'autre ne sont visibles.*/
 
 
         //tblo points: tblopointarretes creer dans route bean de types { x0, y0, x1, y1, ... } : routeBean.getPoints ?
-        itinerary.getPoints().addAll(conversionCord(RouteBean.Route().points()));
-
-        path.routeProperty().addListener(event->{
-
-        });
+        itinerary.getPoints().addAll(conversionCord(RouteBean.get().Route().points()));
 
         paneItinerary.addEventHandler(observable -> {
             itinerary.setLayoutX(itinerary.getLayoutX() + parameters.get().topLeft().getX());
             itinerary.setLayoutX(itinerary.getLayoutY() + parameters.get().topLeft().getY());
         });
+
+        disk.setOnMouseClicked(event -> {
+            RouteBean.get().waypoints.add(new Waypoint())
+        })
 
     }
 

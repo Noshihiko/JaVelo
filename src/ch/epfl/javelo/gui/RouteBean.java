@@ -1,4 +1,3 @@
-/*
 package ch.epfl.javelo.gui;
 
 
