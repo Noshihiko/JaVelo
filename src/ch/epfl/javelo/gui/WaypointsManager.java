@@ -54,6 +54,8 @@ public final class WaypointsManager {
         //si trouve pas ecrit l'erreur ds l'enonce
         //->nouveau pt ch avec cooordonnee d'un node trouve
 
+
+        //A CHECKER: SI LES COORDONNES SONT VALIDES
          Waypoint NewWaypoint = createNewWaypoint(x, y);
         if (NewWaypoint != null) {
             listWaypoints.add(NewWaypoint);
@@ -61,17 +63,10 @@ public final class WaypointsManager {
     }
 
     private Waypoint createNewWaypoint(double x, double y) {
-        //************************** TEST *******************************
-        //System.out.println(x +"et "+y);// *******************************
-        //************************** TEST *******************************
 
         PointCh newPoint = parameters.get().pointAt(x, y).toPointCh();
 
         int nodeClosestId = reseauRoutier.nodeClosestTo(newPoint, 500);
-
-        //************************** TEST *******************************
-        //System.out.println("node Id: " +nodeClosestId);// ***************
-        //************************** TEST *******************************
 
         if (nodeClosestId == -1) {
             error.accept("Aucune route à proximité !");
@@ -83,7 +78,6 @@ public final class WaypointsManager {
 
     private void createGroupPerWaypoint(){
             for (int i=0; i<listWaypoints.size(); ++i) {
-               // System.out.println(listWaypoints.get(i));
                 drawWaypoint(listWaypoints.get(i), i);
             }
     }
@@ -92,9 +86,6 @@ public final class WaypointsManager {
     private void drawWaypoint(Waypoint w, int index){
         //creer un ensemble des groupes correspondants aux waypoints ?
 
-        //************************** TEST *******************************
-        //System.out.println("test 3 index waypoint: " +index);
-        //************************** TEST *******************************
         Group newGroup = new Group();
         pane().getChildren().add(newGroup);
 
@@ -117,11 +108,9 @@ public final class WaypointsManager {
             if(!event.isStillSincePress()){
 
                 Waypoint waypointChanged = createNewWaypoint(event.getSceneX(), event.getSceneY());
-                //System.out.println(event.getSceneX() +event.getSceneY() );
                 listWaypoints.set(index, waypointChanged);
                 clearListWaypoints();
                 createNewListWaypoints();
-
             }
         });
 
@@ -144,6 +133,7 @@ public final class WaypointsManager {
 
         String position;
 
+        //Mettre des costes/variables a la place de 0 et du dernier element ?
         if(index == 0) position = String.valueOf(Position.first);
         else {
             position = (index==listWaypoints.size() -1) ? String.valueOf(Position.last) :
