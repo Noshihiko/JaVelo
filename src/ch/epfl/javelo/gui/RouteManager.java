@@ -2,26 +2,25 @@ package ch.epfl.javelo.gui;
 
 import ch.epfl.javelo.projection.PointCh;
 import ch.epfl.javelo.projection.PointWebMercator;
-import ch.epfl.javelo.routing.Route;
+
 import javafx.beans.property.ReadOnlyObjectProperty;
 import javafx.scene.layout.Pane;
 import javafx.scene.shape.Circle;
 import javafx.scene.shape.Polyline;
 
-import java.awt.*;
 import java.util.ArrayList;
 import java.util.function.Consumer;
 
 public final class RouteManager {
     RouteBean path;
     ReadOnlyObjectProperty<MapViewParameters> parameters;
-    Consumer<Error> error;
+    Consumer<String> error;
     private Pane paneItinerary;
     Polyline itinerary;
     Circle disk;
     private final double RADIUS_OF_DISK = 5;
 
-    public RouteManager(RouteBean path, ReadOnlyObjectProperty<MapViewParameters> parameters, Consumer<Error> error){
+    public RouteManager(RouteBean path, ReadOnlyObjectProperty<MapViewParameters> parameters, Consumer<String> error) {
         this.path = path;
         this.parameters = parameters;
         this.error = error;
@@ -35,27 +34,80 @@ public final class RouteManager {
         paneItinerary.getChildren().add(itinerary);
         paneItinerary.getChildren().add(disk);
 
-        if(RouteBean.get().Route() == null) {
-            disk.setVisible(false);
-            itinerary.setVisible(false);
-        }
-        /*l faut noter que la polyligne et le disque sont toujours présents dans le graphe de scène,
+        createItinerary();
+
+        //*******************************************************************
+         /*l faut noter que la polyligne et le disque sont toujours présents dans le graphe de scène,
         mais il ne sont pas toujours visible. Par exemple, si aucun itinéraire n'existe pas c.-à-d.
         si la propriété route du bean contient null — alors ni l'un ni l'autre ne sont visibles.*/
-
-
-        //tblo points: tblopointarretes creer dans route bean de types { x0, y0, x1, y1, ... } : routeBean.getPoints ?
-        itinerary.getPoints().addAll(conversionCord(RouteBean.get().Route().points()));
-
-        paneItinerary.addEventHandler(observable -> {
-            itinerary.setLayoutX(itinerary.getLayoutX() + parameters.get().topLeft().getX());
-            itinerary.setLayoutX(itinerary.getLayoutY() + parameters.get().topLeft().getY());
+        //autre listener je me souviens plus sur quoi :((
+        RouteBean.highlightedPosition().addListener(event -> {
+            //est ce quand je set a false, je dois reset a vrai qqe part ????
+            if (RouteBean.getRoute() == null) {
+                changeDiskAndItineraryLayout();
+            }
         });
+        //*******************************************************************
 
+
+        //*******************************************************************
+        //changement ou reconstruction si ca bouge et ou si c'est zoomer
+        parameters.addListener((object, old, now) -> {
+            disk.setVisible(true);
+            itinerary.setVisible(true);
+
+            if (old.zoom() == now.zoom())
+                moveItinerary();
+
+            else if (old.zoom() != now.zoom()) {
+                createItinerary();
+            }
+        });
+        //*******************************************************************
+
+
+        //*******************************************************************
         disk.setOnMouseClicked(event -> {
-            RouteBean.get().waypoints.add(new Waypoint())
-        })
+            //point ch position souris
+            PointCh newPoint = parameters.get().pointAt(event.getSceneX(), event.getSceneY()).toPointCh();
 
+            //pointch.indefOfSegmentAt(route de route bean); = index du waypoint
+            int index = newPoint.indexOfSegmentAt(RouteBean.getRoute());
+
+            //node closest to to find thye node id
+            int nodeId = nodeClosestTo(newPoint, 100);
+            boolean check=true;
+
+            for (Waypoint i :RouteBean.get().waypoints) {
+                if (RouteBean.get().waypoints.get(i).nodeId() == nodeId) {
+                    error.accept("Un point de passage est déjà présent à cet endroit !");
+                    check=false;
+                    break;
+                }
+            }
+            if( check )
+            //listewaypoimts.add(index, waypiint)
+            RouteBean.get().waypoints.add(index, new Waypoint(newPoint, nodeId));
+
+            //higlighted position de route bean -> position sur le route du highlited point (point ch)
+
+        });
+        //*******************************************************************
+    }
+
+    private void moveItinerary() {
+        itinerary.setLayoutX(itinerary.getLayoutX() + parameters.get().topLeft().getX());
+        itinerary.setLayoutX(itinerary.getLayoutY() + parameters.get().topLeft().getY());
+    }
+
+    private void changeDiskAndItineraryLayout() {
+        disk.setVisible(false);
+        itinerary.setVisible(false);
+    }
+
+    private void createItinerary() {
+        itinerary.getPoints().clear();
+        itinerary.getPoints().addAll(conversionCord(RouteBean.getRoute().get().points()));
     }
 
     private double[] conversionCord (ArrayList<PointCh> listPoints) {

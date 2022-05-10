@@ -10,7 +10,6 @@ import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
 import javafx.util.Pair;
 
-import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 
