@@ -9,6 +9,7 @@ import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
 import javafx.util.Pair;
 
+import java.security.Key;
 import java.util.LinkedHashMap;
 import java.util.List;
 
@@ -18,16 +19,16 @@ public final class RouteBean {
 
     //propriétés publiques en lecture seule :
     private ObjectProperty<Route> route = new SimpleObjectProperty<>();
-    public ObjectProperty<ElevationProfile> elevationProfile = new SimpleObjectProperty<>();
+    private ObjectProperty<ElevationProfile> elevationProfile = new SimpleObjectProperty<>();
 
     //seules propriétés modifiables depuis l'extérieur :
-    //private ObservableList<Waypoint> waypoints = FXCollections.observableArrayList();
-    public ObservableList<Waypoint> waypoints = null;
+    private ObservableList<Waypoint> waypoints;
     private DoubleProperty highlightedPosition;
 
     //cache-mémoire des routes
     //TODO : demander pour le initialCapacity
     private LinkedHashMap<Pair<Integer, Integer>, Route> memoryRoute = new LinkedHashMap<>(20);
+
     private int MAX_STEP_LENGTH = 5;
 
     public RouteBean(RouteComputer path){
@@ -76,14 +77,14 @@ public final class RouteBean {
         highlightedPosition.setValue(newValue);
     }
 
-    public ReadOnlyObjectProperty<Route> getRoute(ObjectProperty<Route> route){
-        return this.route = route;
+    public ReadOnlyObjectProperty<Route> getRoute(){
+        return route;
     }
 
-    public ReadOnlyObjectProperty<ElevationProfile> getElevationProfileProperty(ObjectProperty<ElevationProfile> elevationProfile){
-        return this.elevationProfile = elevationProfile;
+    public ReadOnlyObjectProperty<ElevationProfile> getElevationProfileProperty(){
+        return elevationProfile;
     }
-    // Vu que c'est deja en public je pense pas ça serve
+
     public ObservableList<Waypoint> getWaypoint(){
         return waypoints;
     }
