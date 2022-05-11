@@ -1,15 +1,12 @@
 package ch.epfl.javelo.gui;
 
 import ch.epfl.javelo.routing.*;
-import javafx.beans.property.DoubleProperty;
-import javafx.beans.property.ObjectProperty;
-import javafx.beans.property.ReadOnlyObjectProperty;
-import javafx.beans.property.SimpleObjectProperty;
+import javafx.beans.property.*;
+import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
 import javafx.util.Pair;
 
-import java.security.Key;
 import java.util.LinkedHashMap;
 import java.util.List;
 
@@ -22,8 +19,8 @@ public final class RouteBean {
     private ObjectProperty<ElevationProfile> elevationProfile = new SimpleObjectProperty<>();
 
     //seules propriétés modifiables depuis l'extérieur :
-    private ObservableList<Waypoint> waypoints;
-    private DoubleProperty highlightedPosition;
+    private ObservableList<Waypoint> waypoints = FXCollections.observableArrayList();
+    private DoubleProperty highlightedPosition = new SimpleDoubleProperty();
 
     //cache-mémoire des routes
     //TODO : demander pour le initialCapacity
@@ -33,36 +30,9 @@ public final class RouteBean {
 
     public RouteBean(RouteComputer path){
         this.path = path;
-
         waypoints.addListener((ListChangeListener<? super Waypoint>) observable -> {
-            List<Route> r = null;
-            Route a;
-            Pair<Integer,Integer> k;
-
-            //crée une SingleRoute pour chaque paire de points si elle n'est pas déjà dans le cache mémoire et la rajoute
-            //à une liste de routes
-            for (int i = 0; i < waypoints.size() - 1; ++i) {
-                k = new Pair<>(i, i+1);
-
-                if (memoryRoute.containsKey(k)) {
-                    r.add(memoryRoute.get(k));
-                } else {
-                    r.add(path.bestRouteBetween(waypoints.get(i).nodeId(), waypoints.get(i+1).nodeId()));
-                    if (memoryRoute.size() > 100) {
-                        memoryRoute.remove(memoryRoute.keySet().iterator().next());
-                    }
-                    memoryRoute.put(k, r.get(r.size() - 1));
-                }
-            }
-
-            //conditions permettant de recalculer la route et le profil d'élévation
-            if (waypoints.size() < 2){
-                route.set(null);
-                elevationProfile.set(null);
-            } else {
-                elevationProfile.setValue(ElevationProfileComputer.elevationProfile(route.get(), MAX_STEP_LENGTH));
-                route.set(new MultiRoute(r));
-            }
+            System.out.println("test");
+            listener();
         });
     }
 
@@ -95,7 +65,34 @@ public final class RouteBean {
         return path;
     }
 
-    //TODO
-    public void indexOfSegmentAt(Route route){
+    private void listener(){
+        List<Route> r = null;
+        Route a;
+        Pair<Integer,Integer> k;
+
+        //crée une SingleRoute pour chaque paire de points si elle n'est pas déjà dans le cache mémoire et la rajoute
+        //à une liste de routes
+        for (int i = 0; i < waypoints.size() - 1; ++i) {
+            k = new Pair<>(i, i+1);
+
+            if (memoryRoute.containsKey(k)) {
+                r.add(memoryRoute.get(k));
+            } else {
+                r.add(path.bestRouteBetween(waypoints.get(i).nodeId(), waypoints.get(i+1).nodeId()));
+                if (memoryRoute.size() > 100) {
+                    memoryRoute.remove(memoryRoute.keySet().iterator().next());
+                }
+                memoryRoute.put(k, r.get(r.size() - 1));
+            }
+        }
+
+        //conditions permettant de recalculer la route et le profil d'élévation
+        if (waypoints.size() < 2){
+            route.set(null);
+            elevationProfile.set(null);
+        } else {
+            elevationProfile.setValue(ElevationProfileComputer.elevationProfile(route.get(), MAX_STEP_LENGTH));
+            route.set(new MultiRoute(r));
+        }
     }
 }

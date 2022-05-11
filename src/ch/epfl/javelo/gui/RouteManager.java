@@ -30,7 +30,10 @@ public final class RouteManager {
         paneItinerary = new Pane();
         paneItinerary.setPickOnBounds(false);
 
+        itinerary = new Polyline();
         itinerary.setId("Route");
+
+        disk = new Circle();
         disk.setRadius(RADIUS_OF_DISK);
         disk.setId("highlight");
         paneItinerary.getChildren().add(itinerary);
