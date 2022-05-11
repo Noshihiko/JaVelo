@@ -41,9 +41,9 @@ public final class RouteManager {
         mais il ne sont pas toujours visible. Par exemple, si aucun itinéraire n'existe pas c.-à-d.
         si la propriété route du bean contient null — alors ni l'un ni l'autre ne sont visibles.*/
         //autre listener je me souviens plus sur quoi :((
-        RouteBean.highlightedPosition().addListener(event -> {
+        path.highlightedPosition().addListener(event -> {
             //est ce quand je set a false, je dois reset a vrai qqe part ????
-            if (RouteBean.getRoute() == null) {
+            if (path.waypoints == null) {
                 changeDiskAndItineraryLayout();
             }
         });
@@ -72,14 +72,14 @@ public final class RouteManager {
             PointCh newPoint = parameters.get().pointAt(event.getSceneX(), event.getSceneY()).toPointCh();
 
             //pointch.indefOfSegmentAt(route de route bean); = index du waypoint
-            int index = newPoint.indexOfSegmentAt(RouteBean.getRoute());
+            int index = newPoint.indexOfSegmentAt(path.waypoints);
 
             //node closest to to find thye node id
             int nodeId = nodeClosestTo(newPoint, 100);
             boolean check=true;
 
-            for (Waypoint i :RouteBean.get().waypoints) {
-                if (RouteBean.get().waypoints.get(i).nodeId() == nodeId) {
+            for (Waypoint i :path.waypoints) {
+                if (i.nodeId() == nodeId) {
                     error.accept("Un point de passage est déjà présent à cet endroit !");
                     check=false;
                     break;
@@ -87,7 +87,7 @@ public final class RouteManager {
             }
             if( check )
             //listewaypoimts.add(index, waypiint)
-            RouteBean.get().waypoints.add(index, new Waypoint(newPoint, nodeId));
+                path.waypoints.add(index, new Waypoint(newPoint, nodeId));
 
             //higlighted position de route bean -> position sur le route du highlited point (point ch)
 
@@ -107,7 +107,7 @@ public final class RouteManager {
 
     private void createItinerary() {
         itinerary.getPoints().clear();
-        itinerary.getPoints().addAll(conversionCord(RouteBean.getRoute().get().points()));
+        itinerary.getPoints().addAll(conversionCord(path.waypoints.points()));
     }
 
     private double[] conversionCord (ArrayList<PointCh> listPoints) {

@@ -19,23 +19,23 @@ public final class RouteBean {
 
     //propriétés publiques en lecture seule :
     private ObjectProperty<Route> route = new SimpleObjectProperty<>();
-    private ObjectProperty<ElevationProfile> elevationProfile = new SimpleObjectProperty<>();
+    public ObjectProperty<ElevationProfile> elevationProfile = new SimpleObjectProperty<>();
 
     //seules propriétés modifiables depuis l'extérieur :
     //private ObservableList<Waypoint> waypoints = FXCollections.observableArrayList();
-    private ObservableList<Waypoint> waypoints = null;
+    public ObservableList<Waypoint> waypoints = null;
     private DoubleProperty highlightedPosition;
 
     //cache-mémoire des routes
     //TODO : demander pour le initialCapacity
     private LinkedHashMap<Pair<Integer, Integer>, Route> memoryRoute = new LinkedHashMap<>(20);
-
     private int MAX_STEP_LENGTH = 5;
 
     public RouteBean(RouteComputer path){
         this.path = path;
 
         waypoints.addListener((ListChangeListener<? super Waypoint>) observable -> {
+            //******** creer une methode a part **************************************
             List<Route> r = null;
             Route a;
             Pair<Integer,Integer> k;
@@ -84,7 +84,7 @@ public final class RouteBean {
     public ReadOnlyObjectProperty<ElevationProfile> getElevationProfileProperty(ObjectProperty<ElevationProfile> elevationProfile){
         return this.elevationProfile = elevationProfile;
     }
-
+    // Vu que c'est deja en public je pense pas ça serve
     public ObservableList<Waypoint> getWaypoint(){
         return waypoints;
     }
