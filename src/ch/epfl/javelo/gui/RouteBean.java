@@ -61,6 +61,10 @@ public final class RouteBean {
         return waypoints;
     }
 
+    public void setWaypoint(Waypoint waypoint){
+        waypoints.add(waypoint);
+    }
+
     public RouteComputer getPath(){
         return path;
     }
