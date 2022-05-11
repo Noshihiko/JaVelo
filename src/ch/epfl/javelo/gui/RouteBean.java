@@ -14,7 +14,6 @@ import java.util.List;
 
 //1349, 1391, 1430
 public final class RouteBean {
-    //TODO : pv ou public ?
     private RouteComputer path;
 
     //propriétés publiques en lecture seule :
