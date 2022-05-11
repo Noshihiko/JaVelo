@@ -57,7 +57,6 @@ public final class RouteManager {
         });
        
         path.getRoute().addListener(event -> {
-
         });
 
         
