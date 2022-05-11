@@ -22,8 +22,7 @@ public final class RouteBean {
     private ObjectProperty<ElevationProfile> elevationProfile = new SimpleObjectProperty<>();
 
     //seules propriétés modifiables depuis l'extérieur :
-    //private ObservableList<Waypoint> waypoints = FXCollections.observableArrayList();
-    private ObservableList<Waypoint> waypoints = null;
+    private ObservableList<Waypoint> waypoints;
     private DoubleProperty highlightedPosition;
 
     //cache-mémoire des routes
@@ -77,12 +76,12 @@ public final class RouteBean {
         highlightedPosition.setValue(newValue);
     }
 
-    public ReadOnlyObjectProperty<Route> getRoute(ObjectProperty<Route> route){
-        return this.route = route;
+    public ReadOnlyObjectProperty<Route> getRoute(){
+        return route;
     }
 
-    public ReadOnlyObjectProperty<ElevationProfile> getElevationProfileProperty(ObjectProperty<ElevationProfile> elevationProfile){
-        return this.elevationProfile = elevationProfile;
+    public ReadOnlyObjectProperty<ElevationProfile> getElevationProfileProperty(){
+        return elevationProfile;
     }
 
     public ObservableList<Waypoint> getWaypoint(){
