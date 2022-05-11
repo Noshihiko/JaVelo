@@ -11,7 +11,6 @@ import javafx.scene.layout.Pane;
 import javafx.scene.shape.Circle;
 import javafx.scene.shape.Polyline;
 
-import java.util.ArrayList;
 import java.util.function.Consumer;
 
 public final class RouteManager {
@@ -37,13 +36,7 @@ public final class RouteManager {
         paneItinerary.getChildren().add(itinerary);
         paneItinerary.getChildren().add(disk);
 
-        createItinerary();
-
-        path.highlightedPositionProperty().addListener(event -> {
-            if (path.getWaypoint() == null) {
-                changeDiskAndItineraryLayout();
-            }
-        });
+        reCreateItinerary();
 
         parameters.addListener((object, old, now) -> {
             disk.setVisible(true);
@@ -53,20 +46,28 @@ public final class RouteManager {
                 moveItinerary();
 
             else {
-                createItinerary();
+                reCreateItinerary();
             }
         });
-        //*******************************************************************
-        //path.getRoute().addListener()
 
-        //*******************************************************************
+        path.highlightedPositionProperty().addListener(event -> {
+            if (path.getWaypoint() == null) {
+                changeDiskAndItineraryLayout();
+            }
+        });
+       
+        path.getRoute().addListener(event -> {
+
+        });
+
+        
         disk.setOnMouseClicked(event -> {
-            int nodeId = path.getRoute().nodeClosestTo(path.getHighlightedPosition());
+            int nodeId = path.getRoute().get().nodeClosestTo(path.highlightedPosition());
             Point2D p = disk.localToParent(event.getX(), event.getY());
 
             PointCh newPoint = parameters.get().pointAt(p.getX(), p.getY()).toPointCh();
 
-            int index = path.getRoute().indexOfSegmentAt(path.getHighlightedPosition());
+            int index = path.getRoute().get().indexOfSegmentAt(path.highlightedPosition());
 
             boolean check=true;
 
@@ -80,7 +81,7 @@ public final class RouteManager {
             if( check )
                 path.getWaypoint().add(index, new Waypoint(newPoint, nodeId));
         });
-        //*******************************************************************
+        
     }
 
     private void moveItinerary() {
@@ -93,7 +94,7 @@ public final class RouteManager {
         itinerary.setVisible(false);
     }
 
-    private void createItinerary() {
+    private void reCreateItinerary() {
         itinerary.getPoints().clear();
         itinerary.getPoints().addAll( conversionCord(path.getWaypoint()) );
     }
