@@ -35,11 +35,12 @@ public final class RouteBean {
         this.path = path;
 
         waypoints.addListener((ListChangeListener<? super Waypoint>) observable -> {
-            //******** creer une methode a part **************************************
             List<Route> r = null;
             Route a;
             Pair<Integer,Integer> k;
 
+            //crée une SingleRoute pour chaque paire de points si elle n'est pas déjà dans le cache mémoire et la rajoute
+            //à une liste de routes
             for (int i = 0; i < waypoints.size() - 1; ++i) {
                 k = new Pair<>(i, i+1);
 
@@ -54,6 +55,7 @@ public final class RouteBean {
                 }
             }
 
+            //conditions permettant de recalculer la route et le profil d'élévation
             if (waypoints.size() < 2){
                 route.set(null);
                 elevationProfile.set(null);
