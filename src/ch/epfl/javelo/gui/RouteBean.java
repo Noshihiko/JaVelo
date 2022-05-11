@@ -35,6 +35,7 @@ public final class RouteBean {
         this.path = path;
 
         waypoints.addListener((ListChangeListener<? super Waypoint>) observable -> {
+            //******** creer une methode a part **************************************
             List<Route> r = null;
             Route a;
             Pair<Integer,Integer> k;
