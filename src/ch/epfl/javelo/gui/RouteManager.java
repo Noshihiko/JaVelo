@@ -102,7 +102,7 @@ public final class RouteManager {
         });
         
     }
-
+    /*
     private void moveItinerary() {
         itinerary.setLayoutX(itinerary.getLayoutX() + parameters.get().topLeft().getX());
         itinerary.setLayoutY(itinerary.getLayoutY() + parameters.get().topLeft().getY());
@@ -128,6 +128,8 @@ public final class RouteManager {
 
     }
 
+     */
+
     private void setDiskAndItineraryFalse() {
         disk.setVisible(false);
         itinerary.setVisible(false);
@@ -135,7 +137,7 @@ public final class RouteManager {
 
     private void reCreateItinerary() {
         Double[] liste = conversionCord(routeBean.getWaypoint());
-        System.out.println(liste);
+        //System.out.println(liste);
         itinerary.getPoints().setAll(liste);
 
         itinerary.setLayoutX(parameters.get().x());
@@ -155,14 +157,14 @@ public final class RouteManager {
         for(int i=0; i < arraySize; ++i) {
             //list double
             PointWebMercator point = PointWebMercator.ofPointCh(listPoints.get(i).pointCh());
-            System.out.println("index" +i+" "+ point.xAtZoomLevel(parameters.get().zoom()));
+            //System.out.println("index" +i+" "+ point.xAtZoomLevel(parameters.get().zoom()));
             newListCoordinates[count] = point.xAtZoomLevel(parameters.get().zoom());
             ++count;
             newListCoordinates[count] = point.yAtZoomLevel(parameters.get().zoom());
             ++count;
         }
 
-        System.out.print(newListCoordinates[3]);
+        //System.out.print(newListCoordinates[3]);
 
         return newListCoordinates;
     }
@@ -170,7 +172,5 @@ public final class RouteManager {
     public Pane pane(){
         return paneItinerary;
     }
-
-
 
 }
