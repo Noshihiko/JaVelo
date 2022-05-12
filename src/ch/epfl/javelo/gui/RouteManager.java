@@ -154,19 +154,19 @@ public final class RouteManager {
 
     private Double [] conversionCord (ObservableList<Waypoint> listPoints) {
         int arraySize = listPoints.size();
-        //System.out.println(listPoints.size());
+        System.out.println("size list : " +listPoints.size());
         //ObservableList<Double> newListCoordinates = new SimpleListProperty<>();
+        int count=0;
         Double [] newListCoordinates = new Double[arraySize*2];
 
         for(int i = 0; i < arraySize; ++i) {
-            //list double
             PointWebMercator point = PointWebMercator.ofPointCh(listPoints.get(i).pointCh());
-            //System.out.println("index" +i+" "+ point.xAtZoomLevel(mapParameters.get().zoom()));
-           for (int count = 0; count < arraySize*2; ++count) {
-               newListCoordinates[count] = point.xAtZoomLevel(mapParameters.get().zoom());
-               ++count;
-               newListCoordinates[count] = point.yAtZoomLevel(mapParameters.get().zoom());
-           }
+            newListCoordinates[count] = point.xAtZoomLevel(mapParameters.get().zoom());
+            System.out.println("index : " +count+" "+ point.xAtZoomLevel(mapParameters.get().zoom()));
+            ++count;
+            newListCoordinates[count] = point.yAtZoomLevel(mapParameters.get().zoom());
+            System.out.println("index : " +count+" "+ point.xAtZoomLevel(mapParameters.get().zoom()));
+            ++count;
         }
 
         //System.out.print(newListCoordinates[3]);
