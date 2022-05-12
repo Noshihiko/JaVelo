@@ -15,18 +15,21 @@ import java.util.function.Consumer;
 
 public final class RouteManager {
     private final RouteBean routeBean;
-    //chez Max, pas un read only TODO
-    private final ReadOnlyObjectProperty<MapViewParameters> parameters;
+    private final ReadOnlyObjectProperty<MapViewParameters> mapParameters;
     private final Consumer<String> error;
-    private final Pane paneItinerary;
+
+    //TODO
+    // je pense pas qu'il faille le mettre en pv sinon ça en recrée pas
+    // à demander
+    private Pane paneItinerary;
     private Polyline itinerary;
     private Circle disk;
 
     private final double RADIUS_OF_DISK = 5;
 
-    public RouteManager(RouteBean routeBean, ReadOnlyObjectProperty<MapViewParameters> parameters, Consumer<String> error) {
+    public RouteManager(RouteBean routeBean, ReadOnlyObjectProperty<MapViewParameters> mapParameters, Consumer<String> error) {
         this.routeBean = routeBean;
-        this.parameters = parameters;
+        this.mapParameters = mapParameters;
         this.error = error;
 
         itinerary = new Polyline();
@@ -34,6 +37,7 @@ public final class RouteManager {
 
         disk = new Circle(RADIUS_OF_DISK);
         disk.setId("highlight");
+        disk.setVisible(false);
 
         paneItinerary = new Pane();
         paneItinerary.getChildren().add(itinerary);
@@ -42,7 +46,7 @@ public final class RouteManager {
 
         //reCreateItinerary();
 
-        /*parameters.addListener((object, old, now) -> {
+        /*mapParameters.addListener((object, old, now) -> {
             disk.setVisible(true);
             itinerary.setVisible(true);
 
@@ -54,6 +58,7 @@ public final class RouteManager {
                 displayDiskAndItinerary();
             }
         });*/
+
 
         routeBean.highlightedPositionProperty().addListener(event -> {
             if (routeBean.highlightedPositionProperty() == null) {
@@ -70,8 +75,8 @@ public final class RouteManager {
         });
 
         routeBean.getWaypoint().addListener((InvalidationListener) event -> {
-            System.out.println(" test 1: listener sourie");
-            System.out.println(routeBean.getWaypoint());
+            //System.out.println(" test 1: listener sourie");
+            //System.out.println(routeBean.getWaypoint());
             if(routeBean.getRoute().get() != null ) {
                 System.out.println(" test 2: route non nulle?");
                 reCreateItinerary();
@@ -85,7 +90,7 @@ public final class RouteManager {
             int nodeId = routeBean.getRoute().get().nodeClosestTo(routeBean.highlightedPosition());
             Point2D p = disk.localToParent(event.getX(), event.getY());
 
-            PointCh newPoint = parameters.get().pointAt(p.getX(), p.getY()).toPointCh();
+            PointCh newPoint = mapParameters.get().pointAt(p.getX(), p.getY()).toPointCh();
 
             int index = routeBean.getRoute().get().indexOfSegmentAt(routeBean.highlightedPosition());
 
@@ -102,25 +107,25 @@ public final class RouteManager {
         });
         
     }
-    /*
+
     private void moveItinerary() {
-        itinerary.setLayoutX(itinerary.getLayoutX() + parameters.get().topLeft().getX());
-        itinerary.setLayoutY(itinerary.getLayoutY() + parameters.get().topLeft().getY());
+        itinerary.setLayoutX(itinerary.getLayoutX() + mapParameters.get().topLeft().getX());
+        itinerary.setLayoutY(itinerary.getLayoutY() + mapParameters.get().topLeft().getY());
     }
 
     private void displayDiskAndItinerary(double xItinerary, double yItinerary, double xCircle, double yCircle) {
-        PointCh newPointItinerary = parameters.get().pointAt(xItinerary, yItinerary).toPointCh();
+        PointCh newPointItinerary = mapParameters.get().pointAt(xItinerary, yItinerary).toPointCh();
         PointWebMercator pointI = PointWebMercator.ofPointCh(newPointItinerary);
-        xItinerary = parameters.get().viewX(pointI);
-        yItinerary = parameters.get().viewY(pointI);
+        xItinerary = mapParameters.get().viewX(pointI);
+        yItinerary = mapParameters.get().viewY(pointI);
 
         itinerary.setLayoutX(xItinerary);
         itinerary.setLayoutY(yItinerary);
 
-        PointCh newPointCircle = parameters.get().pointAt(xCircle, yCircle).toPointCh();
+        PointCh newPointCircle = mapParameters.get().pointAt(xCircle, yCircle).toPointCh();
         PointWebMercator pointC = PointWebMercator.ofPointCh(newPointCircle);
-        xCircle = parameters.get().viewX(pointC);
-        yCircle = parameters.get().viewY(pointC);
+        xCircle = mapParameters.get().viewX(pointC);
+        yCircle = mapParameters.get().viewY(pointC);
 
         disk.setLayoutX(xCircle);
         disk.setLayoutY(yCircle);
@@ -128,7 +133,7 @@ public final class RouteManager {
 
     }
 
-     */
+
 
     private void setDiskAndItineraryFalse() {
         disk.setVisible(false);
@@ -140,8 +145,8 @@ public final class RouteManager {
         //System.out.println(liste);
         itinerary.getPoints().setAll(liste);
 
-        itinerary.setLayoutX(parameters.get().x());
-        itinerary.setLayoutY(parameters.get().y());
+        itinerary.setLayoutX(mapParameters.get().x());
+        itinerary.setLayoutY(mapParameters.get().y());
 
         itinerary.setVisible(true);
         disk.setVisible(true);
@@ -149,28 +154,26 @@ public final class RouteManager {
 
     private Double [] conversionCord (ObservableList<Waypoint> listPoints) {
         int arraySize = listPoints.size();
-        System.out.println(listPoints.size());
+        //System.out.println(listPoints.size());
         //ObservableList<Double> newListCoordinates = new SimpleListProperty<>();
         Double [] newListCoordinates = new Double[arraySize*2];
-        int count =0;
 
-        for(int i=0; i < arraySize; ++i) {
+        for(int i = 0; i < arraySize; ++i) {
             //list double
             PointWebMercator point = PointWebMercator.ofPointCh(listPoints.get(i).pointCh());
-            //System.out.println("index" +i+" "+ point.xAtZoomLevel(parameters.get().zoom()));
-            newListCoordinates[count] = point.xAtZoomLevel(parameters.get().zoom());
-            ++count;
-            newListCoordinates[count] = point.yAtZoomLevel(parameters.get().zoom());
-            ++count;
+            //System.out.println("index" +i+" "+ point.xAtZoomLevel(mapParameters.get().zoom()));
+           for (int count = 0; count < arraySize*2; ++count) {
+               newListCoordinates[count] = point.xAtZoomLevel(mapParameters.get().zoom());
+               ++count;
+               newListCoordinates[count] = point.yAtZoomLevel(mapParameters.get().zoom());
+           }
         }
 
         //System.out.print(newListCoordinates[3]);
-
         return newListCoordinates;
     }
 
     public Pane pane(){
         return paneItinerary;
     }
-
 }
