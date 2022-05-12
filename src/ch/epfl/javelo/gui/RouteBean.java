@@ -83,6 +83,7 @@ public final class RouteBean {
             //List<Route> r = new ArrayList<>(null);
             //Route a;
             Pair<Integer,Integer> k;
+            System.out.println("size of waypoint dans routebean : " +waypoints.size());
 
             //crée une SingleRoute pour chaque paire de points si elle n'est pas déjà dans le cache mémoire et la rajoute
             //à une liste de routes
