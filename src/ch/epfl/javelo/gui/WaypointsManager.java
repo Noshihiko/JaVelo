@@ -18,6 +18,7 @@ public final class WaypointsManager {
     public final ObjectProperty<MapViewParameters> parameters;
     public final ObservableList<Waypoint> listWaypoints;
     public final Consumer<String> error;
+
     private Pane pane;
 
 
