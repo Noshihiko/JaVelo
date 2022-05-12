@@ -5,7 +5,6 @@ import ch.epfl.javelo.projection.PointWebMercator;
 
 import javafx.beans.InvalidationListener;
 import javafx.beans.property.ReadOnlyObjectProperty;
-import javafx.beans.property.SimpleListProperty;
 import javafx.collections.ObservableList;
 import javafx.geometry.Point2D;
 import javafx.scene.layout.Pane;
@@ -15,32 +14,31 @@ import javafx.scene.shape.Polyline;
 import java.util.function.Consumer;
 
 public final class RouteManager {
-    private final RouteBean path;
+    private final RouteBean routeBean;
+    //chez Max, pas un read only TODO
     private final ReadOnlyObjectProperty<MapViewParameters> parameters;
     private final Consumer<String> error;
     private final Pane paneItinerary;
     private Polyline itinerary;
     private Circle disk;
+
     private final double RADIUS_OF_DISK = 5;
 
-    public RouteManager(RouteBean path, ReadOnlyObjectProperty<MapViewParameters> parameters, Consumer<String> error) {
-        this.path = path;
+    public RouteManager(RouteBean routeBean, ReadOnlyObjectProperty<MapViewParameters> parameters, Consumer<String> error) {
+        this.routeBean = routeBean;
         this.parameters = parameters;
         this.error = error;
-        this.itinerary = new Polyline();
-        this.disk = new Circle();
-
-        paneItinerary = new Pane();
-        paneItinerary.setPickOnBounds(false);
 
         itinerary = new Polyline();
         itinerary.setId("Route");
 
-        disk = new Circle();
-        disk.setRadius(RADIUS_OF_DISK);
+        disk = new Circle(RADIUS_OF_DISK);
         disk.setId("highlight");
+
+        paneItinerary = new Pane();
         paneItinerary.getChildren().add(itinerary);
         paneItinerary.getChildren().add(disk);
+        paneItinerary.setPickOnBounds(false);
 
         //reCreateItinerary();
 
@@ -57,24 +55,24 @@ public final class RouteManager {
             }
         });*/
 
-        path.highlightedPositionProperty().addListener(event -> {
-            if (path.highlightedPositionProperty() == null) {
+        routeBean.highlightedPositionProperty().addListener(event -> {
+            if (routeBean.highlightedPositionProperty() == null) {
                 setDiskAndItineraryFalse();
             }
             else reCreateItinerary();
         });
        
-        path.getRoute().addListener(event -> {
-            if (path.getWaypoint() == null) {
+        routeBean.getRoute().addListener(event -> {
+            if (routeBean.getWaypoint() == null) {
                 setDiskAndItineraryFalse();
             }
             else reCreateItinerary();
         });
 
-        path.getWaypoint().addListener((InvalidationListener) event -> {
+        routeBean.getWaypoint().addListener((InvalidationListener) event -> {
             System.out.println(" test 1: listener sourie");
-            System.out.println(path.getWaypoint());
-            if(path.getRoute().get() != null ) {
+            System.out.println(routeBean.getWaypoint());
+            if(routeBean.getRoute().get() != null ) {
                 System.out.println(" test 2: route non nulle?");
                 reCreateItinerary();
             }
@@ -84,31 +82,30 @@ public final class RouteManager {
         
         disk.setOnMouseClicked(event -> {
 
-            int nodeId = path.getRoute().get().nodeClosestTo(path.highlightedPosition());
+            int nodeId = routeBean.getRoute().get().nodeClosestTo(routeBean.highlightedPosition());
             Point2D p = disk.localToParent(event.getX(), event.getY());
 
             PointCh newPoint = parameters.get().pointAt(p.getX(), p.getY()).toPointCh();
 
-            int index = path.getRoute().get().indexOfSegmentAt(path.highlightedPosition());
+            int index = routeBean.getRoute().get().indexOfSegmentAt(routeBean.highlightedPosition());
 
             boolean check=true;
 
-            for (Waypoint i :path.getWaypoint()) {
+            for (Waypoint i : routeBean.getWaypoint()) {
                 if (i.nodeId() == nodeId) {
                     error.accept("Un point de passage est déjà présent à cet endroit !");
-                    check=false;
+                    check = false;
                     break;
                 }
             }
-            if( check )
-                path.getWaypoint().add(index, new Waypoint(newPoint, nodeId));
+            if (check) routeBean.getWaypoint().add(index, new Waypoint(newPoint, nodeId));
         });
         
     }
 
     private void moveItinerary() {
         itinerary.setLayoutX(itinerary.getLayoutX() + parameters.get().topLeft().getX());
-        itinerary.setLayoutX(itinerary.getLayoutY() + parameters.get().topLeft().getY());
+        itinerary.setLayoutY(itinerary.getLayoutY() + parameters.get().topLeft().getY());
     }
 
     private void displayDiskAndItinerary(double xItinerary, double yItinerary, double xCircle, double yCircle) {
@@ -137,9 +134,9 @@ public final class RouteManager {
     }
 
     private void reCreateItinerary() {
-        Double[] liste = conversionCord(path.getWaypoint());
+        Double[] liste = conversionCord(routeBean.getWaypoint());
         System.out.println(liste);
-        itinerary.getPoints().setAll( liste );
+        itinerary.getPoints().setAll(liste);
 
         itinerary.setLayoutX(parameters.get().x());
         itinerary.setLayoutY(parameters.get().y());
@@ -153,10 +150,9 @@ public final class RouteManager {
         System.out.println(listPoints.size());
         //ObservableList<Double> newListCoordinates = new SimpleListProperty<>();
         Double [] newListCoordinates = new Double[arraySize*2];
-        newListCoordinates=null;
         int count =0;
 
-        for(int i=0; i<arraySize; ++i) {
+        for(int i=0; i < arraySize; ++i) {
             //list double
             PointWebMercator point = PointWebMercator.ofPointCh(listPoints.get(i).pointCh());
             System.out.println("index" +i+" "+ point.xAtZoomLevel(parameters.get().zoom()));

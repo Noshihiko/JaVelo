@@ -87,9 +87,7 @@ public final class RouteBean {
             //crée une SingleRoute pour chaque paire de points si elle n'est pas déjà dans le cache mémoire et la rajoute
             //à une liste de routes
             if (waypoints.size() < 2) {
-
                 route.set(null);
-
                 elevationProfile.set(null);
             }
             else {
@@ -107,11 +105,12 @@ public final class RouteBean {
                         }
                         memoryRoute.put(k, r.get(r.size() - 1));
 
-                        elevationProfile.setValue(ElevationProfileComputer.elevationProfile(r.get(i), MAX_STEP_LENGTH));
-
-                        route.set(new MultiRoute(r));
-
+                        //elevationProfile.setValue(ElevationProfileComputer.elevationProfile(r.get(i), MAX_STEP_LENGTH));
+                        //route.set(new MultiRoute(r));
                     }
+                    route.set(new MultiRoute(r));
+                    elevationProfile.setValue(ElevationProfileComputer.elevationProfile(route.get(), MAX_STEP_LENGTH));
+
                 }
 
 
