@@ -3,6 +3,7 @@ package ch.epfl.javelo.gui;
 import ch.epfl.javelo.projection.PointCh;
 import ch.epfl.javelo.projection.PointWebMercator;
 
+import javafx.beans.InvalidationListener;
 import javafx.beans.property.ReadOnlyObjectProperty;
 import javafx.beans.property.SimpleListProperty;
 import javafx.collections.ObservableList;
@@ -26,6 +27,8 @@ public final class RouteManager {
         this.path = path;
         this.parameters = parameters;
         this.error = error;
+        this.itinerary = new Polyline();
+        this.disk = new Circle();
 
         paneItinerary = new Pane();
         paneItinerary.setPickOnBounds(false);
@@ -36,9 +39,9 @@ public final class RouteManager {
         paneItinerary.getChildren().add(itinerary);
         paneItinerary.getChildren().add(disk);
 
-        reCreateItinerary();
+        //reCreateItinerary();
 
-        parameters.addListener((object, old, now) -> {
+        /*parameters.addListener((object, old, now) -> {
             disk.setVisible(true);
             itinerary.setVisible(true);
 
@@ -47,20 +50,37 @@ public final class RouteManager {
 
             else {
                 reCreateItinerary();
+                displayDiskAndItinerary();
             }
-        });
+        });*/
 
         path.highlightedPositionProperty().addListener(event -> {
-            if (path.getWaypoint() == null) {
-                changeDiskAndItineraryLayout();
+            if (path.highlightedPositionProperty() == null) {
+                setDiskAndItineraryFalse();
             }
+            else reCreateItinerary();
         });
        
         path.getRoute().addListener(event -> {
+            if (path.getWaypoint() == null) {
+                setDiskAndItineraryFalse();
+            }
+            else reCreateItinerary();
+        });
+
+        path.getWaypoint().addListener((InvalidationListener) event -> {
+            System.out.println(" test 1: listener sourie");
+            System.out.println(path.getWaypoint());
+            if(path.getRoute().get() != null ) {
+                System.out.println(" test 2: route non nulle?");
+                reCreateItinerary();
+            }
+            else setDiskAndItineraryFalse();
         });
 
         
         disk.setOnMouseClicked(event -> {
+
             int nodeId = path.getRoute().get().nodeClosestTo(path.highlightedPosition());
             Point2D p = disk.localToParent(event.getX(), event.getY());
 
@@ -88,25 +108,63 @@ public final class RouteManager {
         itinerary.setLayoutX(itinerary.getLayoutY() + parameters.get().topLeft().getY());
     }
 
-    private void changeDiskAndItineraryLayout() {
+    private void displayDiskAndItinerary(double xItinerary, double yItinerary, double xCircle, double yCircle) {
+        PointCh newPointItinerary = parameters.get().pointAt(xItinerary, yItinerary).toPointCh();
+        PointWebMercator pointI = PointWebMercator.ofPointCh(newPointItinerary);
+        xItinerary = parameters.get().viewX(pointI);
+        yItinerary = parameters.get().viewY(pointI);
+
+        itinerary.setLayoutX(xItinerary);
+        itinerary.setLayoutY(yItinerary);
+
+        PointCh newPointCircle = parameters.get().pointAt(xCircle, yCircle).toPointCh();
+        PointWebMercator pointC = PointWebMercator.ofPointCh(newPointCircle);
+        xCircle = parameters.get().viewX(pointC);
+        yCircle = parameters.get().viewY(pointC);
+
+        disk.setLayoutX(xCircle);
+        disk.setLayoutY(yCircle);
+
+
+    }
+
+    private void setDiskAndItineraryFalse() {
         disk.setVisible(false);
         itinerary.setVisible(false);
     }
 
     private void reCreateItinerary() {
-        itinerary.getPoints().clear();
-        itinerary.getPoints().addAll( conversionCord(path.getWaypoint()) );
+        Double[] liste = conversionCord(path.getWaypoint());
+        System.out.println(liste);
+        itinerary.getPoints().setAll( liste );
+
+        itinerary.setLayoutX(parameters.get().x());
+        itinerary.setLayoutY(parameters.get().y());
+
+        itinerary.setVisible(true);
+        disk.setVisible(true);
     }
 
-    private ObservableList<Double> conversionCord (ObservableList<Waypoint> listPoints) {
+    private Double [] conversionCord (ObservableList<Waypoint> listPoints) {
         int arraySize = listPoints.size();
-        ObservableList<Double> newListCoordinates = new SimpleListProperty<>();
+        System.out.println(listPoints.size());
+        //ObservableList<Double> newListCoordinates = new SimpleListProperty<>();
+        Double [] newListCoordinates = new Double[arraySize*2];
+        newListCoordinates=null;
+        int count =0;
 
         for(int i=0; i<arraySize; ++i) {
+            //list double
             PointWebMercator point = PointWebMercator.ofPointCh(listPoints.get(i).pointCh());
-            newListCoordinates.add(point.xAtZoomLevel(parameters.get().zoom()));
-            newListCoordinates.add(point.yAtZoomLevel(parameters.get().zoom()));
+            System.out.println("index" +i+" "+ point.xAtZoomLevel(parameters.get().zoom()));
+            newListCoordinates[count] = point.xAtZoomLevel(parameters.get().zoom());
+            ++count;
+            newListCoordinates[count] = point.yAtZoomLevel(parameters.get().zoom());
+            ++count;
         }
+
+        System.out.print(newListCoordinates[3]);
+
         return newListCoordinates;
     }
 
