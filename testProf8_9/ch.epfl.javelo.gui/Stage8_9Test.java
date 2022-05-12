@@ -15,7 +15,7 @@ import javafx.stage.Stage;
 import java.nio.file.Path;
 import java.util.function.Consumer;
 
-public final class Stage9Test extends Application {
+public final class Stage8_9Test extends Application {
     /*
     créer une instance de RouteBean,
 remplacer la liste de points de passage (waypoints) par celle de cette instance de RouteBean,
@@ -40,7 +40,7 @@ créer une instance de RouteManager,
         ObjectProperty<MapViewParameters> mapViewParametersP =
                 new SimpleObjectProperty<>(mapViewParameters);
 
-        Consumer<String> errorConsumer = new Stage9Test.ErrorConsumer();
+        Consumer<String> errorConsumer = new Stage8_9Test.ErrorConsumer();
 
         WaypointsManager waypointsManager =
                 new WaypointsManager(graph,

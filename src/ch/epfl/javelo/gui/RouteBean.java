@@ -2,13 +2,17 @@ package ch.epfl.javelo.gui;
 
 import ch.epfl.javelo.routing.*;
 import javafx.beans.InvalidationListener;
+
 import javafx.beans.property.*;
 import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
 import javafx.util.Pair;
 
+
 import java.util.ArrayList;
+
+
 import java.util.LinkedHashMap;
 import java.util.List;
 
@@ -20,8 +24,8 @@ public final class RouteBean {
     private ObjectProperty<ElevationProfile> elevationProfile;
 
     //seules propriétés modifiables depuis l'extérieur :
-    private ObservableList<Waypoint> waypoints;
-    private DoubleProperty highlightedPosition;
+    private ObservableList<Waypoint> waypoints = FXCollections.observableArrayList();
+    private DoubleProperty highlightedPosition = new SimpleDoubleProperty();
 
     //cache-mémoire des routes
     //TODO : demander pour le initialCapacity
@@ -115,6 +119,7 @@ public final class RouteBean {
 
 
             }
+
         });
 
     }
@@ -144,8 +149,12 @@ public final class RouteBean {
         return waypoints;
     }
 
+    public void setWaypoint(Waypoint waypoint){
+        waypoints.add(waypoint);
+    }
+
     public RouteComputer getPath(){
         return path;
     }
 
-}
+    }
