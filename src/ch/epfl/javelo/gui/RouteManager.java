@@ -47,7 +47,7 @@ public final class RouteManager {
 
         //reCreateItinerary();
 
-        /*mapParameters.addListener((object, old, now) -> {
+        mapParameters.addListener((object, old, now) -> {
             disk.setVisible(true);
             itinerary.setVisible(true);
 
@@ -57,7 +57,7 @@ public final class RouteManager {
             else {
                 reCreateItinerary();
             }
-        });*/
+        });
 
         routeBean.getWaypoint().addListener((InvalidationListener) event -> {
             if(routeBean.getRoute().get() != null ) {
@@ -67,7 +67,7 @@ public final class RouteManager {
         });
 
 
-        /*routeBean.highlightedPositionProperty().addListener(event -> {
+        routeBean.highlightedPositionProperty().addListener(event -> {
             if (routeBean.highlightedPositionProperty() == null) {
                 setDiskAndItineraryFalse();
             }
@@ -79,7 +79,7 @@ public final class RouteManager {
                 setDiskAndItineraryFalse();
             }
             else reCreateItinerary();
-        });*/
+        });
 
 
 
@@ -149,7 +149,7 @@ public final class RouteManager {
 
 
         PointWebMercator point = PointWebMercator.ofPointCh(routeBean.getWaypoint().get(routeBean.getWaypoint().size()-1).pointCh());
-
+        System.out.println("dernier WAYPOINT : " +routeBean.getWaypoint().get(routeBean.getWaypoint().size()-1).nodeId());
         System.out.println("dernier WAYPOINT      : " +point.yAtZoomLevel(mapParameters.get().zoom()));
         System.out.println("dernier point de route: " +listeCoord[routeBean.getRoute().get().points().size()*2 - 1]);
 
