@@ -101,7 +101,7 @@ public final class BaseMapManager {
 
         if (!redrawNeeded) return;
         redrawNeeded = false;
-        System.out.println("Redrawifneeded : "+parameters.get().zoom());
+        //System.out.println("Redrawifneeded : "+parameters.get().zoom());
 
         GraphicsContext context = canvas.getGraphicsContext2D();
         double coorX;
@@ -120,6 +120,8 @@ public final class BaseMapManager {
                 coorY = j * MAP_PIXEL - parameters.get().y();
 
                 tilesId = new TileManager.TileId(parameters.get().zoom(), i, j);
+
+                //System.out.println(TileManager.TileId.isValid(parameters.get().zoom(), i, j));
 
                 if (TileManager.TileId.isValid(parameters.get().zoom(), i, j)) {
                     try {
