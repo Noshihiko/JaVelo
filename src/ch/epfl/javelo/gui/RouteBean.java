@@ -74,7 +74,7 @@ public final class RouteBean {
 
                         memoryRoute.put(key, listSingleRoute.get(listSingleRoute.size() - 1));
                     }
-                    System.out.println("single route" + listSingleRoute.contains(null));
+                    System.out.println("single route : " + listSingleRoute.contains(null));
                     route.set(new MultiRoute(listSingleRoute));
 
                     elevationProfile.setValue(ElevationProfileComputer.elevationProfile(route.get(), MAX_STEP_LENGTH));
