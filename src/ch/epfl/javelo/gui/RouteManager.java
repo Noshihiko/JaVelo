@@ -48,8 +48,8 @@ public final class RouteManager {
         //reCreateItinerary();
 
         mapParameters.addListener((object, old, now) -> {
-            disk.setVisible(true);
-            itinerary.setVisible(true);
+            //disk.setVisible(true);
+            //itinerary.setVisible(true);
 
             if (old.zoom() == now.zoom())
                 moveItinerary();
@@ -61,6 +61,7 @@ public final class RouteManager {
 
         routeBean.getWaypoint().addListener((InvalidationListener) event -> {
             if(routeBean.getRoute().get() != null ) {
+                System.out.println("size pointtt : " +routeBean.getWaypoint().size());
                 reCreateItinerary();
             }
             else setDiskAndItineraryFalse();
@@ -80,8 +81,6 @@ public final class RouteManager {
             }
             else reCreateItinerary();
         });
-
-
 
         
         disk.setOnMouseClicked(event -> {
@@ -116,30 +115,16 @@ public final class RouteManager {
         setDiskAndItineraryTrue();
     }
 
-    private void displayDiskAndItinerary() {
-        moveItinerary();
-
-        /*PointCh newPointCircle = mapParameters.get().pointAt(xCircle, yCircle).toPointCh();
-        PointWebMercator pointC = PointWebMercator.ofPointCh(newPointCircle);
-        xCircle = mapParameters.get().viewX(pointC);
-        yCircle = mapParameters.get().viewY(pointC);
-
-        disk.setLayoutX(xCircle);
-        disk.setLayoutY(yCircle);*/
-
-
-    }
-
-
-
     private void setDiskAndItineraryFalse() {
         disk.setVisible(false);
         itinerary.setVisible(false);
     }
 
     private void setDiskAndItineraryTrue() {
-        disk.setVisible(true);
-        itinerary.setVisible(true);
+        if (routeBean.getRoute().get()!= null) {
+            disk.setVisible(true);
+            itinerary.setVisible(true);
+        }
     }
 
     private void reCreateItinerary() {

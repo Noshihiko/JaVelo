@@ -3,6 +3,7 @@ package ch.epfl.javelo.gui;
 import ch.epfl.javelo.routing.*;
 import javafx.beans.InvalidationListener;
 
+import javafx.beans.Observable;
 import javafx.beans.property.*;
 import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
@@ -41,7 +42,7 @@ public final class RouteBean {
         this.waypoints = FXCollections.observableArrayList(new ArrayList<>());
         this.highlightedPosition = new SimpleDoubleProperty(Double.NaN);
 
-        waypoints.addListener((InvalidationListener) event-> {
+        waypoints.addListener((Observable event)-> {
             List<Route> listSingleRoute = new ArrayList<>();
 
             //*********************** TEST ************************
@@ -53,6 +54,7 @@ public final class RouteBean {
             if (waypoints.size() < 2) {
                 route.set(null);
                 elevationProfile.set(null);
+                System.out.println("array size " +waypoints.size());
             }
             else {
 
@@ -65,8 +67,8 @@ public final class RouteBean {
                     } else {
                         listSingleRoute.add(path.bestRouteBetween(key.NodeId1(), key.NodeId2()));
 
-                        System.out.println(" avant dernier waypoint de la route : " +waypoints.get(i).nodeId());
-                        System.out.println(" dernier point de la route : " +waypoints.get(i+1).nodeId());
+                        //System.out.println(" avant dernier waypoint de la route : " +waypoints.get(i).nodeId());
+                        //System.out.println(" dernier point de la route : " +waypoints.get(i+1).nodeId());
 
                         if (memoryRoute.size() > 100) {
                             memoryRoute.remove(memoryRoute.keySet().iterator().next());
@@ -74,7 +76,7 @@ public final class RouteBean {
 
                         memoryRoute.put(key, listSingleRoute.get(listSingleRoute.size() - 1));
                     }
-                    System.out.println("single route" + listSingleRoute.contains(null));
+
                     route.set(new MultiRoute(listSingleRoute));
 
                     elevationProfile.setValue(ElevationProfileComputer.elevationProfile(route.get(), MAX_STEP_LENGTH));
