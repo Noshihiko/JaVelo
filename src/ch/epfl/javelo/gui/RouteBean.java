@@ -29,6 +29,7 @@ public final class RouteBean {
 
     //cache-mémoire des routes
     //TODO : demander pour le initialCapacity
+    
     private LinkedHashMap<Pair<Integer, Integer>, Route> memoryRoute = new LinkedHashMap<>(20);
 
     private int MAX_STEP_LENGTH = 5;
@@ -83,7 +84,12 @@ public final class RouteBean {
             //List<Route> r = new ArrayList<>(null);
             //Route a;
             Pair<Integer,Integer> k;
-            System.out.println("size of waypoint dans routebean : " +waypoints.size());
+            //System.out.println("size of waypoint dans routebean : " +waypoints.size());
+
+            for (int i=0; i<waypoints.size(); ++i){
+                System.out.println(waypoints.get(i).nodeId());
+            }
+
 
             //crée une SingleRoute pour chaque paire de points si elle n'est pas déjà dans le cache mémoire et la rajoute
             //à une liste de routes
@@ -96,30 +102,30 @@ public final class RouteBean {
                 for (int i = 0; i < waypoints.size() - 1; ++i) {
                     k = new Pair<>(i, i+1);
 
-                    if (memoryRoute.containsKey(k)) {
+                    if (memoryRoute.containsKey(k) && memoryRoute.get(k)!=null) {
                         r.add(memoryRoute.get(k));
+                        //System.out.println(memoryRoute.get)
                     } else {
                         //si le deuxieme est nul ca fonctionne quand meme ?
                         r.add(path.bestRouteBetween(waypoints.get(i).nodeId(), waypoints.get(i+1).nodeId()));
+
+                        System.out.println(" avant dernier waypoint de la route : " +waypoints.get(i).nodeId());
+                        System.out.println(" dernier point de la route : " +waypoints.get(i+1).nodeId());
+
                         if (memoryRoute.size() > 100) {
+                            var var = memoryRoute.keySet().iterator().next();
                             memoryRoute.remove(memoryRoute.keySet().iterator().next());
+                            System.out.println(memoryRoute.containsKey(var));
+
                         }
                         memoryRoute.put(k, r.get(r.size() - 1));
 
-                        //elevationProfile.setValue(ElevationProfileComputer.elevationProfile(r.get(i), MAX_STEP_LENGTH));
-                        //route.set(new MultiRoute(r));
                     }
                     route.set(new MultiRoute(r));
                     elevationProfile.setValue(ElevationProfileComputer.elevationProfile(route.get(), MAX_STEP_LENGTH));
 
                 }
-
-
-                //conditions permettant de recalculer la route et le profil d'élévation
-
-
             }
-
         });
 
     }
