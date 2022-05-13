@@ -58,7 +58,8 @@ public final class WaypointsManager {
 
 
         //A CHECKER: SI LES COORDONNES SONT VALIDES
-         Waypoint NewWaypoint = createNewWaypoint(x, y);
+
+        Waypoint NewWaypoint = createNewWaypoint(x, y);
         if (NewWaypoint != null) {
             listWaypoints.add(NewWaypoint);
         }
