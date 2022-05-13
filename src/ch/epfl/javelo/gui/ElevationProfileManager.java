@@ -16,6 +16,8 @@ import javafx.scene.text.Text;
 import javafx.scene.transform.Affine;
 import javafx.scene.transform.Transform;
 
+
+//TODO demander si ok si je fais un addAll quand je bind les children
 public final class ElevationProfileManager {
     ReadOnlyObjectProperty<ElevationProfile> profilePrinted;
     ReadOnlyDoubleProperty position;
@@ -51,7 +53,9 @@ public final class ElevationProfileManager {
         text2 = new Text();
 
         polygon = new Polygon();
-        //TODO coordonnée des points : j'ai pas capté
+
+        double x2 = profilePrinted.get().length() / 1000;
+
         polygon.getPoints().addAll(0.0, 0.0,
                 0.1, 0.1,
                 0.2, 0.2
@@ -71,8 +75,9 @@ public final class ElevationProfileManager {
         group.getChildren().addAll(text1, text2);
         pane.getChildren().addAll(path, group, polygon);
         pane2.getChildren().add(text3);
-        //TODO : borderPane je suis pas sûre de comment le mettre au milieu en bas
-        borderPane.getChildren().addAll(pane,pane2);
+
+        borderPane.centerProperty().set(pane);
+        borderPane.bottomProperty().set(pane2);
 
         //Rectangle contenant le profil
         distanceRectangle = new Insets(10, 10, 20, 40);
@@ -96,6 +101,6 @@ public final class ElevationProfileManager {
     }
 
     public Pane pane() {
-        return pane;
+        return borderPane;
     }
 }
