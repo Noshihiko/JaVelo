@@ -45,13 +45,9 @@ public final class RouteManager {
         paneItinerary.getChildren().add(disk);
         paneItinerary.setPickOnBounds(false);
 
-        //reCreateItinerary();
-
         mapParameters.addListener((object, old, now) -> {
-            //disk.setVisible(true);
-            //itinerary.setVisible(true);
 
-            if (old.zoom() == now.zoom())
+            if (old.zoom() == now.zoom() && routeBean.getRouteProperty().get()!=null)
                 moveItinerary();
 
             else {
@@ -60,37 +56,35 @@ public final class RouteManager {
         });
 
         routeBean.getWaypoint().addListener((InvalidationListener) event -> {
-            if(routeBean.getRoute().get() != null ) {
+            if(routeBean.getRouteProperty().get() != null ) {
                 System.out.println("size pointtt : " +routeBean.getWaypoint().size());
                 reCreateItinerary();
             }
-            else setDiskAndItineraryFalse();
+            else setDiskAndItineraryVisible();
         });
 
 
         routeBean.highlightedPositionProperty().addListener(event -> {
             if (routeBean.highlightedPositionProperty() == null) {
-                setDiskAndItineraryFalse();
+                setDiskAndItineraryVisible();
             }
             else reCreateItinerary();
+
         });
        
-        routeBean.getRoute().addListener(event -> {
-            if (routeBean.getWaypoint() == null) {
-                setDiskAndItineraryFalse();
-            }
-            else reCreateItinerary();
+        routeBean.getRouteProperty().addListener(event -> {
+            reCreateItinerary();
         });
 
         
         disk.setOnMouseClicked(event -> {
 
-            int nodeId = routeBean.getRoute().get().nodeClosestTo(routeBean.highlightedPosition());
+            int nodeId = routeBean.getRouteProperty().get().nodeClosestTo(routeBean.highlightedPosition());
             Point2D p = disk.localToParent(event.getX(), event.getY());
 
             PointCh newPoint = mapParameters.get().pointAt(p.getX(), p.getY()).toPointCh();
 
-            int index = routeBean.getRoute().get().indexOfSegmentAt(routeBean.highlightedPosition());
+            int index = routeBean.getRouteProperty().get().indexOfSegmentAt(routeBean.highlightedPosition());
 
             boolean check=true;
 
@@ -107,44 +101,55 @@ public final class RouteManager {
     }
 
     private void moveItinerary() {
-        setDiskAndItineraryFalse();
 
         itinerary.setLayoutX(-mapParameters.get().x());
         itinerary.setLayoutY(-mapParameters.get().y());
 
-        setDiskAndItineraryTrue();
+        recreateDisklayout();
     }
 
-    private void setDiskAndItineraryFalse() {
-        disk.setVisible(false);
-        itinerary.setVisible(false);
-    }
-
-    private void setDiskAndItineraryTrue() {
-        if (routeBean.getRoute().get()!= null) {
-            disk.setVisible(true);
+    private void setDiskAndItineraryVisible() {
+        if (routeBean.getRouteProperty().get()!= null) {
             itinerary.setVisible(true);
+            if (Double.isNaN(routeBean.highlightedPosition())) {
+                disk.setVisible(false);
+            }
+            else disk.setVisible(true);
+        }
+        else {
+            disk.setVisible(false);
+            itinerary.setVisible(false);
         }
     }
 
+    private void recreateDisklayout() {
+        PointCh p2 = routeBean.getRouteProperty().get().pointAt(routeBean.highlightedPosition());
+        PointWebMercator point2 = PointWebMercator.ofPointCh(p2);
+        disk.setLayoutX(mapParameters.get().viewX(point2));
+        disk.setLayoutY(mapParameters.get().viewY(point2));
+        System.out.println(">>> " + point2.xAtZoomLevel(mapParameters.get().zoom()));
+    }
+
     private void reCreateItinerary() {
-        setDiskAndItineraryFalse();
-        if (routeBean.getRoute().get() != null) {
-            Double[] listeCoord = conversionCord(routeBean.getRoute().get().points());
+
+        if (routeBean.getRouteProperty().get() != null) {
+            Double[] listeCoord = conversionCord(routeBean.getRouteProperty().get().points());
 
 
             PointWebMercator point = PointWebMercator.ofPointCh(routeBean.getWaypoint().get(routeBean.getWaypoint().size() - 1).pointCh());
             System.out.println("dernier WAYPOINT : " + routeBean.getWaypoint().get(routeBean.getWaypoint().size() - 1).nodeId());
             System.out.println("dernier WAYPOINT      : " + point.yAtZoomLevel(mapParameters.get().zoom()));
-            System.out.println("dernier point de route: " + listeCoord[routeBean.getRoute().get().points().size() * 2 - 1]);
+            System.out.println("dernier point de route: " + listeCoord[routeBean.getRouteProperty().get().points().size() * 2 - 1]);
 
             itinerary.getPoints().setAll(listeCoord);
+
+            recreateDisklayout();
+
         }
         itinerary.setLayoutX(-mapParameters.get().x());
         itinerary.setLayoutY(-mapParameters.get().y());
 
-        setDiskAndItineraryTrue();
-
+        setDiskAndItineraryVisible();
     }
 
     private Double [] conversionCord (List<PointCh> listPoints) {

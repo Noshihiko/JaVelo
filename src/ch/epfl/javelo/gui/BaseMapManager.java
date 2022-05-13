@@ -4,6 +4,7 @@ import ch.epfl.javelo.Math2;
 import ch.epfl.javelo.projection.PointWebMercator;
 import javafx.application.Platform;
 import javafx.beans.property.ObjectProperty;
+import javafx.beans.property.SimpleLongProperty;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.layout.Pane;
@@ -35,12 +36,18 @@ public final class BaseMapManager {
         canvas.widthProperty().bind(pane.widthProperty());
         canvas.heightProperty().bind(pane.heightProperty());
 
+        SimpleLongProperty minScrollTime = new SimpleLongProperty();
         pane.setOnScroll(event -> {
-            int VALUE_ONE_SCROLL = 26;
             int ZOOM_MIN = 8;
             int ZOOM_MAX = 19;
 
-            int zoomLvl = parameters.get().zoom() + (int) (event.getDeltaY()/VALUE_ONE_SCROLL) ;
+            if (event.getDeltaY() == 0d) return;
+            long currentTime = System.currentTimeMillis();
+            if (currentTime < minScrollTime.get()) return;
+            minScrollTime.set(currentTime + 200);
+            int zoomDelta = (int) Math.signum(event.getDeltaY());
+
+            int zoomLvl = parameters.get().zoom() + zoomDelta ;
             zoomLvl = Math2.clamp(ZOOM_MIN, zoomLvl, ZOOM_MAX);
 
             PointWebMercator mouseBeforeZoom = PointWebMercator.of(parameters.get().zoom(),

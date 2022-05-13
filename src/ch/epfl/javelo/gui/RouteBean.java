@@ -65,6 +65,7 @@ public final class RouteBean {
                         listSingleRoute.add(memoryRoute.get(key));
 
                     } else {
+
                         listSingleRoute.add(path.bestRouteBetween(key.NodeId1(), key.NodeId2()));
 
                         //System.out.println(" avant dernier waypoint de la route : " +waypoints.get(i).nodeId());
@@ -77,13 +78,19 @@ public final class RouteBean {
                         memoryRoute.put(key, listSingleRoute.get(listSingleRoute.size() - 1));
                     }
 
-                    route.set(new MultiRoute(listSingleRoute));
 
+                }
+                if (listSingleRoute.contains(null)) {
+                    route.set(null);
+                    elevationProfile.set(null);
+                }
+
+                else {
+                    route.set(new MultiRoute(listSingleRoute));
                     elevationProfile.setValue(ElevationProfileComputer.elevationProfile(route.get(), MAX_STEP_LENGTH));
                 }
             }
         });
-
     }
 
     private record Key (Integer NodeId1, Integer NodeId2) {}
@@ -101,9 +108,10 @@ public final class RouteBean {
         highlightedPosition.setValue(newValue);
     }
 
-    public ReadOnlyObjectProperty<Route> getRoute(){
+    public ReadOnlyObjectProperty<Route> getRouteProperty(){
         return route;
     }
+
 
     public ReadOnlyObjectProperty<ElevationProfile> getElevationProfileProperty(){
         return elevationProfile;

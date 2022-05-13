@@ -56,8 +56,6 @@ public final class WaypointsManager {
         //si trouve pas ecrit l'erreur ds l'enonce
         //->nouveau pt ch avec cooordonnee d'un node trouve
 
-
-        //A CHECKER: SI LES COORDONNES SONT VALIDES
          Waypoint NewWaypoint = createNewWaypoint(x, y);
         if (NewWaypoint != null) {
             listWaypoints.add(NewWaypoint);
@@ -65,6 +63,8 @@ public final class WaypointsManager {
     }
 
     private Waypoint createNewWaypoint(double x, double y) {
+
+        //check if x et y valides
 
         PointCh newPoint = parameters.get().pointAt(x, y).toPointCh();
 
