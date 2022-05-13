@@ -121,8 +121,6 @@ public final class BaseMapManager {
 
                 tilesId = new TileManager.TileId(parameters.get().zoom(), i, j);
 
-                System.out.println(TileManager.TileId.isValid(parameters.get().zoom(), i, j));
-
                 if (TileManager.TileId.isValid(parameters.get().zoom(), i, j)) {
                     try {
                         context.drawImage(tiles.imageForTileAt(tilesId), coorX, coorY);
