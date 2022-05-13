@@ -32,16 +32,17 @@ public final class WaypointsManager {
         pane.setPickOnBounds(false);
 
         listWaypoints.addListener((ListChangeListener<? super Waypoint>) Observable -> {
-            clearListWaypoints();
+            pane().getChildren().clear();
             createNewListWaypoints();
 
         });
 
         parameters.addListener(Observable -> {
             //on veut juste repositionner les marqueurs
-            clearListWaypoints();
+            pane().getChildren().clear();
             createNewListWaypoints();
         });
+
 
     }
 
@@ -76,13 +77,14 @@ public final class WaypointsManager {
         return null;
     }
 
-
+    /*
     private void createGroupPerWaypoint(){
             for (int i=0; i<listWaypoints.size(); ++i) {
                 drawWaypoint(listWaypoints.get(i), i);
             }
     }
 
+     */
 
     private void drawWaypoint(Waypoint w, int index){
         //creer un ensemble des groupes correspondants aux waypoints ?
@@ -110,7 +112,7 @@ public final class WaypointsManager {
 
                 Waypoint waypointChanged = createNewWaypoint(event.getSceneX(), event.getSceneY());
                 listWaypoints.set(index, waypointChanged);
-                clearListWaypoints();
+                pane().getChildren().clear();
                 createNewListWaypoints();
             }
         });
@@ -141,15 +143,13 @@ public final class WaypointsManager {
                     String.valueOf(Position.middle);
         }
         newGroup.getStyleClass().add(position);
-        }
-
-
-    private void clearListWaypoints() {
-        pane().getChildren().clear();
     }
 
+
     private void createNewListWaypoints() {
-        createGroupPerWaypoint();
+        for (int i=0; i < listWaypoints.size(); ++i) {
+            drawWaypoint(listWaypoints.get(i), i);
+        }
     }
 
     private enum Position {

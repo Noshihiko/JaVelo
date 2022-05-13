@@ -36,12 +36,11 @@ public final class BaseMapManager {
         canvas.heightProperty().bind(pane.heightProperty());
 
         pane.setOnScroll(event -> {
-
             int VALUE_ONE_SCROLL = 26;
             int ZOOM_MIN = 8;
             int ZOOM_MAX = 19;
 
-            int zoomLvl = parameters.get().zoom() + Math.floorDiv((int) event.getDeltaY(),VALUE_ONE_SCROLL);
+            int zoomLvl = parameters.get().zoom() + (int) (event.getDeltaY()/VALUE_ONE_SCROLL) ;
             zoomLvl = Math2.clamp(ZOOM_MIN, zoomLvl, ZOOM_MAX);
 
             PointWebMercator mouseBeforeZoom = PointWebMercator.of(parameters.get().zoom(),
@@ -62,14 +61,14 @@ public final class BaseMapManager {
         pane.setOnMousePressed(event -> draggedPoint = new Point2D(event.getX(), event.getY()));
 
         pane.setOnMouseDragged(event -> {
-            draggedPoint=draggedPoint.subtract(event.getX(), event.getY());
+            draggedPoint = draggedPoint.subtract(event.getX(), event.getY());
 
             double x = parameters.get().x() + draggedPoint.getX();
             double y = parameters.get().y() + draggedPoint.getY();
 
             parameters.setValue(parameters.get().withMinXY(x,y));
 
-            draggedPoint=new Point2D(event.getX(), event.getY());
+            draggedPoint = new Point2D(event.getX(), event.getY());
 
             redrawOnNextPulse();
         });
@@ -95,14 +94,18 @@ public final class BaseMapManager {
     }
 
     public Pane pane(){
-        return this.pane;
+        return pane;
     }
 
     private void redrawIfNeeded() {
+
         if (!redrawNeeded) return;
         redrawNeeded = false;
+        System.out.println("Redrawifneeded : "+parameters.get().zoom());
 
         GraphicsContext context = canvas.getGraphicsContext2D();
+        double coorX;
+        double coorY;
 
         int minX = (int)(parameters.get().x() / MAP_PIXEL);
         int minY = (int)(parameters.get().y() / MAP_PIXEL);
@@ -110,14 +113,15 @@ public final class BaseMapManager {
         int maxX = (int)((parameters.get().x() + pane.getWidth()) / MAP_PIXEL);
         int maxY = (int)((parameters.get().y()+ pane.getHeight()) / MAP_PIXEL);
 
-        //context.clearRect(0,0, canvas.getWidth(), canvas.getHeight());
 
         for (int i = minX; i <= maxX; ++i){
             for (int j = minY; j <= maxY; ++j){
-                double coorX = i * MAP_PIXEL - parameters.get().x();
-                double coorY = j * MAP_PIXEL - parameters.get().y();
+                coorX = i * MAP_PIXEL - parameters.get().x();
+                coorY = j * MAP_PIXEL - parameters.get().y();
 
                 tilesId = new TileManager.TileId(parameters.get().zoom(), i, j);
+
+                System.out.println(TileManager.TileId.isValid(parameters.get().zoom(), i, j));
 
                 if (TileManager.TileId.isValid(parameters.get().zoom(), i, j)) {
                     try {
