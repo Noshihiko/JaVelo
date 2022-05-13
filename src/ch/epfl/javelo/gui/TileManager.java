@@ -70,7 +70,7 @@ public final class TileManager {
         public record TileId(int zoomLevel, int x, int y) {
 
             public static boolean isValid(int zoomLevel, int x, int y) {
-                return (x>=0 && x<= pow(zoomLevel, OFFSET_TILES_ZOOM_LEVEL) && y>=0 && y<= pow(zoomLevel, OFFSET_TILES_ZOOM_LEVEL));
+                return (x>= 0 && y>= 0 && zoomLevel>=0);
             }
         }
 }
