@@ -144,17 +144,17 @@ public final class RouteManager {
 
     private void reCreateItinerary() {
         setDiskAndItineraryFalse();
+        if (routeBean.getRoute().get() != null) {
+            Double[] listeCoord = conversionCord(routeBean.getRoute().get().points());
 
-        Double[] listeCoord = conversionCord(routeBean.getRoute().get().points());
 
+            PointWebMercator point = PointWebMercator.ofPointCh(routeBean.getWaypoint().get(routeBean.getWaypoint().size() - 1).pointCh());
+            System.out.println("dernier WAYPOINT : " + routeBean.getWaypoint().get(routeBean.getWaypoint().size() - 1).nodeId());
+            System.out.println("dernier WAYPOINT      : " + point.yAtZoomLevel(mapParameters.get().zoom()));
+            System.out.println("dernier point de route: " + listeCoord[routeBean.getRoute().get().points().size() * 2 - 1]);
 
-        PointWebMercator point = PointWebMercator.ofPointCh(routeBean.getWaypoint().get(routeBean.getWaypoint().size()-1).pointCh());
-        System.out.println("dernier WAYPOINT : " +routeBean.getWaypoint().get(routeBean.getWaypoint().size()-1).nodeId());
-        System.out.println("dernier WAYPOINT      : " +point.yAtZoomLevel(mapParameters.get().zoom()));
-        System.out.println("dernier point de route: " +listeCoord[routeBean.getRoute().get().points().size()*2 - 1]);
-
-        itinerary.getPoints().setAll(listeCoord);
-
+            itinerary.getPoints().setAll(listeCoord);
+        }
         itinerary.setLayoutX(-mapParameters.get().x());
         itinerary.setLayoutY(-mapParameters.get().y());
 
