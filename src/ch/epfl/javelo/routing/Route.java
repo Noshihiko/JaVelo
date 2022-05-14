@@ -19,25 +19,25 @@ public interface Route {
      *
      * @return l'index du segment à la position donnée (en mètres).
      */
-    abstract int indexOfSegmentAt(double position);
+    int indexOfSegmentAt(double position);
 
     /**
      * Donne la longueur de l'itinéraire, en mètres.
      * @return la longueur de l'itinéraire, en mètres.
      */
-    abstract double length();
+    double length();
 
     /**
      * Donne la totalité des arêtes de l'itinéraire.
      * @return la totalité des arêtes de l'itinéraire.
      */
-    abstract List<Edge> edges();
+    List<Edge> edges();
 
     /**
      * Donne la totalité des points situés aux extrémités des arêtes de l'itinéraire.
      * @return la totalité des points situés aux extrémités des arêtes de l'itinéraire.
      */
-    abstract List<PointCh> points();
+    List<PointCh> points();
 
     /**
      * Cherche le point correspondant à une position donnée.
@@ -45,7 +45,7 @@ public interface Route {
      * @param position la position donnée
      * @return le point se trouvant à la position donnée le long de l'itinéraire.
      */
-    abstract PointCh pointAt(double position);
+    PointCh pointAt(double position);
 
     /**
      * Cherche l'altitude à la position donnée.
@@ -53,7 +53,7 @@ public interface Route {
      * @param position la position donnée
      * @return l'altitude à la position donnée le long de l'itinéraire
      */
-    abstract double elevationAt(double position);
+    double elevationAt(double position);
 
     /**
      * Donne l'identité du nœud le plus proche de la position donnée.
@@ -61,7 +61,7 @@ public interface Route {
      * @param position la position donnée
      * @return l'identité du nœud appartenant à l'itinéraire et se trouvant le plus proche de la position donnée.
      */
-    abstract int nodeClosestTo(double position);
+    int nodeClosestTo(double position);
 
     /**
      * Cherche le point le plus proche d'un autre point.
@@ -69,5 +69,5 @@ public interface Route {
      * @param point point de référence
      * @return le point de l'itinéraire se trouvant le plus proche du point de référence donné.
      */
-    abstract  RoutePoint pointClosestTo(PointCh point);
+    RoutePoint pointClosestTo(PointCh point);
 }
