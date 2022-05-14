@@ -47,9 +47,11 @@ public record GraphEdges(ByteBuffer edgesBuffer, IntBuffer profileIds, ShortBuff
         int bitsPerValue = Short.SIZE / compressionRate;
         float[] profileSamples = new float[numberSamples];
         profileSamples[0] = asFloat((elevations.get(index)));
+
         for (int i = 0; i < numberSamples - 1; ++i) {
             profileSamples[i + 1] = profileSamples[i] + asFloat(extractSigned(elevations.get(index + 1 + (i / compressionRate)), (16 - bitsPerValue) - (i % compressionRate) * bitsPerValue, bitsPerValue));
         }
+
         return profileSamples;
     }
 
@@ -84,6 +86,7 @@ public record GraphEdges(ByteBuffer edgesBuffer, IntBuffer profileIds, ShortBuff
     public int targetNodeId(int edgeId) {
         int index = edgeId * OFFSET_BYTES_PER_EDGE + OFFSET_TARGET_NODE_ID;
         int nodeIdentity = edgesBuffer.getInt(index);
+
         return nodeIdentity >= 0 ? nodeIdentity : ~nodeIdentity;
     }
 
@@ -150,11 +153,11 @@ public record GraphEdges(ByteBuffer edgesBuffer, IntBuffer profileIds, ShortBuff
                 }
             }
 
-            case COMPRESSED_IN_Q4_4 -> profileSamples = decompression(OFFSET_VALUE_PER_SHORT_Q4_4, numberSamples, index).clone();
+            case COMPRESSED_IN_Q4_4 -> profileSamples = decompression(OFFSET_VALUE_PER_SHORT_Q4_4, numberSamples, index);
 
-            case COMPRESSED_IN_Q0_4 -> profileSamples = decompression(OFFSET_VALUE_PER_SHORT_Q0_4, numberSamples, index).clone();
-
+            case COMPRESSED_IN_Q0_4 -> profileSamples = decompression(OFFSET_VALUE_PER_SHORT_Q0_4, numberSamples, index);
         }
+
         if (isInverted) {
             for (int i = 0; i < profileSamples.length / 2; ++i) {
                 float temp = profileSamples[i];
@@ -163,7 +166,6 @@ public record GraphEdges(ByteBuffer edgesBuffer, IntBuffer profileIds, ShortBuff
             }
         }
         return profileSamples;
-
     }
 
     /**
@@ -176,6 +178,5 @@ public record GraphEdges(ByteBuffer edgesBuffer, IntBuffer profileIds, ShortBuff
     public int attributesIndex(int edgeId) {
         int index = edgeId * OFFSET_BYTES_PER_EDGE + OFFSET_IDENTITY;
         return Short.toUnsignedInt(edgesBuffer.getShort(index));
-
     }
 }
