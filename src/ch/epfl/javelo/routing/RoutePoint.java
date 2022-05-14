@@ -26,7 +26,7 @@ public record RoutePoint(PointCh point, double position, double distanceToRefere
      * @return un point identique, mais dont la position est décalée.
      */
     public RoutePoint withPositionShiftedBy(double positionDifference) {
-        return new RoutePoint(this.point, this.position + positionDifference, this.distanceToReference);
+        return (positionDifference == 0) ? this : new RoutePoint(this.point, this.position + positionDifference, this.distanceToReference);
     }
 
     /**
