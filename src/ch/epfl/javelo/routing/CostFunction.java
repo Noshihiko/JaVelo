@@ -11,5 +11,5 @@ public interface CostFunction {
      * @return le facteur par lequel la longueur de l'arête d'identité edgeId doit être multipliée
      * (ce facteur est supérieur ou égal à 1).
      */
-    abstract double costFactor(int nodeId, int edgeId);
+    double costFactor(int nodeId, int edgeId);
 }
