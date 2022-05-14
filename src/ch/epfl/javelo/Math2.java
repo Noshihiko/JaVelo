@@ -54,6 +54,7 @@ public final class Math2 {
      * sinon v.
      */
     public static int clamp(int min, int v, int max) {
+        checkArgument(min < max);
         return (v < min) ? min : Math.min(v, max);
     }
 
@@ -71,7 +72,7 @@ public final class Math2 {
      * sinon v.
      */
     public static double clamp(double min, double v, double max) {
-        checkArgument(min <= max);
+        checkArgument(min < max);
         return (v < min) ? min : Math.min(v, max);
     }
 
@@ -120,7 +121,7 @@ public final class Math2 {
      * @return la norme du vecteur u.
      */
     public static double norm(double uX, double uY) {
-        return sqrt(pow(uX,2) + pow(uY,2));
+        return sqrt(dotProduct(uX, uY, uX, uY));
     }
 
     /**
