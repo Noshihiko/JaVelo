@@ -74,7 +74,7 @@ public record PointWebMercator(double x, double y) {
      * @return la longitude du point en radian.
      */
     public double lon() {
-        return WebMercator.lon(this.x);
+        return WebMercator.lon(x);
     }
 
     /**
@@ -82,7 +82,7 @@ public record PointWebMercator(double x, double y) {
      * @return la latitude du point.
      */
     public double lat() {
-        return WebMercator.lat(this.y);
+        return WebMercator.lat(y);
     }
 
     /**
@@ -91,16 +91,12 @@ public record PointWebMercator(double x, double y) {
      *  si ce point n'est pas dans les limites de la Suisse définies par SwissBounds, retourne null.
      */
     public PointCh toPointCh() {
-        double lonSB = Ch1903.e(this.lon(), this.lat());
-        double latSB = Ch1903.n(this.lon(), this.lat());
+        double lonSB = Ch1903.e(lon(), lat());
+        double latSB = Ch1903.n(lon(), lat());
 
         if (SwissBounds.containsEN(lonSB, latSB)) {
-            double lonWM = WebMercator.lon(this.x);
-            double latWM = WebMercator.lat(this.y);
-
-            return new PointCh(Ch1903.e(lonWM, latWM), Ch1903.n(lonWM, latWM));
-        } else {
-            return null;
+            return new PointCh(lonSB, latSB);
         }
+        return null;
     }
 }
