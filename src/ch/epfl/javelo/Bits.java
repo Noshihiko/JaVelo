@@ -14,7 +14,7 @@ public final class Bits {
     private Bits() {}
 
     //Fait le premier changement avec un masque
-    private static int r(int value, int start, int length) {
+    private static int maskChange(int value, int start, int length) {
         if (length == 0) return 0;
         return value << (Integer.SIZE - (length + start));
     }
@@ -32,9 +32,9 @@ public final class Bits {
      */
     public static int extractSigned(int value, int start, int length) {
         checkArgument((0 <= length) && (0 <= start) && ((length + start) <= Integer.SIZE));
-        int r = r(value, start, length);
+        int bitsExtraction = maskChange(value, start, length);
 
-        return r >> (Integer.SIZE - length);
+        return bitsExtraction >> (Integer.SIZE - length);
     }
 
     /**
@@ -50,8 +50,8 @@ public final class Bits {
      */
     public static int extractUnsigned(int value, int start, int length) {
         checkArgument((0 <= start) && ((length + start) <= Integer.SIZE) && (length < Integer.SIZE) && (0 <= length));
-        int r = r(value, start, length);
+        int bitsExtraction = maskChange(value, start, length);
 
-        return r >>> (Integer.SIZE - length);
+        return bitsExtraction >>> (Integer.SIZE - length);
     }
 }
