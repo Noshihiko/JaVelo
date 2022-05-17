@@ -10,6 +10,7 @@ import javafx.scene.Group;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
+import javafx.scene.shape.Line;
 import javafx.scene.shape.Path;
 import javafx.scene.shape.Polygon;
 import javafx.scene.text.Text;
@@ -19,17 +20,19 @@ import javafx.scene.transform.Transform;
 
 //TODO demander si ok si je fais un addAll quand je bind les children
 public final class ElevationProfileManager {
-    ReadOnlyObjectProperty<ElevationProfile> profilePrinted;
+    private final ReadOnlyObjectProperty<ElevationProfile> profilePrinted;
     ReadOnlyDoubleProperty position;
     //1
     private BorderPane borderPane;
     private Pane pane;
     private VBox pane2;
-    private Path path;
+    private Path grid;
     private Polygon polygon;
 
     private Group group;
-    private Text text1, text2, text3;
+    private Text etiquette1, etiquette2, etiquette3;
+    private Line highlightedPosition;
+    private Text statistics;
 
     //2
     private Insets distanceRectangle;
@@ -46,13 +49,16 @@ public final class ElevationProfileManager {
         borderPane = new BorderPane();
         pane = new Pane();
         pane2 = new VBox();
-        path = new Path();
+        grid = new Path();
 
         group = new Group();
-        text1 = new Text();
-        text2 = new Text();
+        etiquette1 = new Text();
+        etiquette2 = new Text();
+        etiquette3 = new Text();
 
         polygon = new Polygon();
+        highlightedPosition = new Line();
+        statistics = new Text();
 
         double x2 = profilePrinted.get().length() / 1000;
 
@@ -61,11 +67,9 @@ public final class ElevationProfileManager {
                 0.2, 0.2
         );
 
-        text3 = new Text();
-
         pane2.setId("profile_data");
         polygon.setId("profile");
-        path.setId("grid");
+        grid.setId("grid");
 
         borderPane.getStylesheets().add("elevation_profile.css");
 
@@ -73,7 +77,7 @@ public final class ElevationProfileManager {
         text2.getStyleClass().addAll("grid_label", "vertical");
 
         group.getChildren().addAll(text1, text2);
-        pane.getChildren().addAll(path, group, polygon);
+        pane.getChildren().addAll(grid, group, polygon);
         pane2.getChildren().add(text3);
 
         borderPane.centerProperty().set(pane);
