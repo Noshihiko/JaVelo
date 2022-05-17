@@ -6,8 +6,8 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.Random;
 
-import static ch.epfl.test.TestRandomizer.RANDOM_ITERATIONS;
-import static ch.epfl.test.TestRandomizer.newRandom;
+import static ch.epfl.test.TestRandomizerP.RANDOM_ITERATIONS;
+import static ch.epfl.test.TestRandomizerP.newRandom;
 import static org.junit.jupiter.api.Assertions.*;
 
 class AttributeSetTestProf {

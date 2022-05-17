@@ -1,7 +1,7 @@
 package ch.epfl.javelo.projection;
 
-import static ch.epfl.test.TestRandomizer.RANDOM_ITERATIONS;
-import static ch.epfl.test.TestRandomizer.newRandom;
+import static ch.epfl.test.TestRandomizerP.RANDOM_ITERATIONS;
+import static ch.epfl.test.TestRandomizerP.newRandom;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 

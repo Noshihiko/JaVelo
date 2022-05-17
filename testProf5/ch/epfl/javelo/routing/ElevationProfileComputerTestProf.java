@@ -9,8 +9,8 @@ import java.util.List;
 import java.util.function.DoubleUnaryOperator;
 
 import static ch.epfl.javelo.routing.ElevationProfileComputer.elevationProfile;
-import static ch.epfl.test.TestRandomizer.RANDOM_ITERATIONS;
-import static ch.epfl.test.TestRandomizer.newRandom;
+import static ch.epfl.test.TestRandomizerP.RANDOM_ITERATIONS;
+import static ch.epfl.test.TestRandomizerP.newRandom;
 import static java.lang.Math.max;
 import static java.lang.Math.min;
 import static org.junit.jupiter.api.Assertions.assertEquals;

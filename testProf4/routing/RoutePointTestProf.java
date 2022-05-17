@@ -1,12 +1,12 @@
 package ch.epfl.javelo.routing;
 
 import ch.epfl.javelo.projection.PointCh;
-import ch.epfl.test.TestRandomizer;
+import ch.epfl.test.TestRandomizerP;
 import org.junit.jupiter.api.Test;
 
 import java.util.random.RandomGenerator;
 
-import static ch.epfl.test.TestRandomizer.RANDOM_ITERATIONS;
+import static ch.epfl.test.TestRandomizerP.RANDOM_ITERATIONS;
 import static org.junit.jupiter.api.Assertions.*;
 
 class RoutePointTestProf {
@@ -19,7 +19,7 @@ class RoutePointTestProf {
 
     @Test
     void routePointWithPositionShiftedShiftsPositionAndNothingElse() {
-        var rng = TestRandomizer.newRandom();
+        var rng = TestRandomizerP.newRandom();
         for (int i = 0; i < RANDOM_ITERATIONS; i += 1) {
             var e = 2_600_000 + rng.nextDouble(-50_000, 50_000);
             var n = 1_200_000 + rng.nextDouble(-50_000, 50_000);
@@ -37,7 +37,7 @@ class RoutePointTestProf {
 
     @Test
     void routePointMin1Works() {
-        var rng = TestRandomizer.newRandom();
+        var rng = TestRandomizerP.newRandom();
         for (int i = 0; i < RANDOM_ITERATIONS; i += 1) {
             var point1 = randomRoutePoint(rng);
             var point2 = randomRoutePoint(rng);
@@ -53,7 +53,7 @@ class RoutePointTestProf {
 
     @Test
     void routePointMin2Works() {
-        var rng = TestRandomizer.newRandom();
+        var rng = TestRandomizerP.newRandom();
         for (int i = 0; i < RANDOM_ITERATIONS; i += 1) {
             var point1 = randomRoutePoint(rng);
             var point2 = randomRoutePoint(rng);

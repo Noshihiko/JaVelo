@@ -141,16 +141,17 @@ public final class Graph {
     public int nodeClosestTo(PointCh point, double searchDistance) {
         int nodeId = OFFSET_NODE_CLOSEST;
         double minDistance = searchDistance * searchDistance;
-
+        double distance;
         //Réduction de la zone de recherche
         List<GraphSectors.Sector> sectorsClosePoint = sectors.sectorsInArea(point, searchDistance);
 
         for (GraphSectors.Sector sector : sectorsClosePoint) {
             //Comparaison de tous les nœuds contenus dans cette zone réduite de sectors
             for (int i = sector.startNodeId(); i < sector.endNodeId(); ++i) {
-                if (nodePoint(i).squaredDistanceTo(point) <= minDistance) {
+                distance = nodePoint(i).squaredDistanceTo(point);
+                if (distance <= minDistance) {
                     nodeId = i;
-                    minDistance = nodePoint(i).squaredDistanceTo(point);
+                    minDistance = distance;
                 }
             }
         }

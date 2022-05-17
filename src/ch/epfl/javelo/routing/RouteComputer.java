@@ -13,9 +13,9 @@ import java.util.*;
  * @author Chiara Freneix (329552)
  */
 
-public class RouteComputer {
-    private Graph graph;
-    private CostFunction costFunction;
+public final class RouteComputer {
+    private final Graph graph;
+    private final CostFunction costFunction;
 
     /**
      * Constructeur public de RouteComputer
@@ -43,7 +43,7 @@ public class RouteComputer {
     public Route bestRouteBetween(int startNodeId, int endNodeId) {
 
         /**
-         * Cree un enregistrement contenant un nœud et sa distance
+         * Crée un enregistrement contenant un nœud et sa distance
          *
          * @param nodeId   nœud associé à la distance
          * @param distance distance au nœud
@@ -62,15 +62,14 @@ public class RouteComputer {
 
         int nbrNodes = graph.nodeCount();
         PointCh endPointCh = graph.nodePoint(endNodeId);
-        PriorityQueue<WeightedNode> en_exploration = new PriorityQueue<>();
+        PriorityQueue<WeightedNode> enExploration = new PriorityQueue<>();
         float[] distance = new float[nbrNodes];
         int[] predecessor = new int[nbrNodes];
 
         Arrays.fill(distance, Float.POSITIVE_INFINITY);
-        Arrays.fill(predecessor, 0);
 
         distance[startNodeId] = 0;
-        en_exploration.add(new WeightedNode(startNodeId, distance[startNodeId]));
+        enExploration.add(new WeightedNode(startNodeId, distance[startNodeId]));
         int actualNodeExploredId = startNodeId;
 
         //********************* trouve noeud à explorer ******************
@@ -92,7 +91,7 @@ public class RouteComputer {
 
                         distance[ToNodeId] = d;
                         predecessor[ToNodeId] = actualNodeExploredId;
-                        en_exploration.add(new WeightedNode(ToNodeId, distance[ToNodeId]
+                        enExploration.add(new WeightedNode(ToNodeId, distance[ToNodeId]
                                 + (float) nextPointCh.distanceTo(endPointCh)));
                     }
                 }
@@ -100,9 +99,9 @@ public class RouteComputer {
             distance[actualNodeExploredId] = Float.NEGATIVE_INFINITY;
 
             do {
-                if (en_exploration.isEmpty()) return null;
+                if (enExploration.isEmpty()) return null;
 
-                else actualNodeExploredId = en_exploration.remove().nodeId;
+                else actualNodeExploredId = enExploration.remove().nodeId;
 
             } while (distance[actualNodeExploredId] == Float.NEGATIVE_INFINITY);
         }
@@ -128,11 +127,11 @@ public class RouteComputer {
             int prevNodeId = predecessor[actualNodeId];
             for (int i = 0; i < graph.nodeOutDegree(prevNodeId); ++i) {
 
-                int EdgeId = graph.nodeOutEdgeId(prevNodeId, i);
-                int ToNodeId = graph.edgeTargetNodeId(EdgeId);
+                int edgeId = graph.nodeOutEdgeId(prevNodeId, i);
+                int toNodeId = graph.edgeTargetNodeId(edgeId);
 
-                if (ToNodeId == actualNodeId) {
-                    edges.add(Edge.of(graph, EdgeId, prevNodeId, actualNodeId));
+                if (toNodeId == actualNodeId) {
+                    edges.add(Edge.of(graph, edgeId, prevNodeId, actualNodeId));
                     break;
                 }
             }

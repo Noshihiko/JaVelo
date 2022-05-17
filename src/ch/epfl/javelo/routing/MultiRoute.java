@@ -14,7 +14,7 @@ import static ch.epfl.javelo.Math2.clamp;
  * @author Camille Espieux (324248)
  * @author Chiara Freneix (329552)
  */
-public class MultiRoute implements Route {
+public final class MultiRoute implements Route {
     private final List<Route> routeList;
 
     /**
@@ -112,7 +112,7 @@ public class MultiRoute implements Route {
         for (Route route : routeList) {
             if (position > route.length()) {
                 position -= route.length();
-            } else if (position >= 0) {
+            } else {
                 return route.pointAt(position);
             }
         }
@@ -134,7 +134,7 @@ public class MultiRoute implements Route {
         for (Route route : routeList) {
             if (position > route.length()) {
                 position -= route.length();
-            } else if (position >= 0) {
+            } else {
                 return route.elevationAt(position);
             }
         }
@@ -155,7 +155,7 @@ public class MultiRoute implements Route {
         for (Route route : routeList) {
             if (position > route.length()) {
                 position -= route.length();
-            } else if (position >= 0) {
+            } else {
                 return route.nodeClosestTo(position);
             }
         }
