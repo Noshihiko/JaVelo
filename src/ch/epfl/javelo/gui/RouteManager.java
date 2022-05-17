@@ -5,7 +5,6 @@ import ch.epfl.javelo.projection.PointWebMercator;
 
 import javafx.beans.InvalidationListener;
 import javafx.beans.property.ReadOnlyObjectProperty;
-import javafx.collections.ObservableList;
 import javafx.geometry.Point2D;
 import javafx.scene.layout.Pane;
 import javafx.scene.shape.Circle;
@@ -83,6 +82,9 @@ public final class RouteManager {
             Point2D p = disk.localToParent(event.getX(), event.getY());
 
             PointCh newPoint = mapParameters.get().pointAt(p.getX(), p.getY()).toPointCh();
+
+            //TODO
+            // SEGMENT AT retourne pas la bonne valeure car ca place un waypoint a la fin et pas au milieu
 
             int index = routeBean.getRouteProperty().get().indexOfSegmentAt(routeBean.highlightedPosition());
 

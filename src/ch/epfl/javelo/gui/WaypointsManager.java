@@ -56,8 +56,6 @@ public final class WaypointsManager {
         //si trouve pas ecrit l'erreur ds l'enonce
         //->nouveau pt ch avec cooordonnee d'un node trouve
 
-
-
         //A CHECKER: SI LES COORDONNES SONT VALIDES
 
         Waypoint NewWaypoint = createNewWaypoint(x, y);
@@ -80,15 +78,6 @@ public final class WaypointsManager {
         else return new Waypoint(newPoint, nodeClosestId);
         return null;
     }
-
-    /*
-    private void createGroupPerWaypoint(){
-            for (int i=0; i<listWaypoints.size(); ++i) {
-                drawWaypoint(listWaypoints.get(i), i);
-            }
-    }
-
-     */
 
     private void drawWaypoint(Waypoint w, int index){
         //creer un ensemble des groupes correspondants aux waypoints ?
@@ -159,7 +148,6 @@ public final class WaypointsManager {
     private enum Position {
         first, middle, last;
     }
-
 }
 
 
