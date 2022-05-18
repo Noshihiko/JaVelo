@@ -12,10 +12,9 @@ import javafx.scene.Group;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
-import javafx.scene.shape.Line;
-import javafx.scene.shape.Path;
-import javafx.scene.shape.Polygon;
+import javafx.scene.shape.*;
 import javafx.scene.text.Text;
+import javafx.scene.transform.Affine;
 import javafx.scene.transform.Transform;
 
 
@@ -149,12 +148,34 @@ public final class ElevationProfileManager {
         highlightedPosition.visibleProperty().bind(position.greaterThanOrEqualTo(0));
 
         //4
+        //TODO paramètre de distanceInBetween ?
+        //TODO faut il deux types de distanceInBetween ?
         int[] POS_STEPS =
                 { 1_000, 2_000, 5_000, 10_000, 25_000, 50_000, 100_000 };
         int[] ELE_STEPS =
                 { 5, 10, 20, 25, 50, 100, 200, 250, 500, 1_000 };
 
+        double distanceInBetweenWidth = worldToScreen.get().deltaTransform(,);
+        double distanceInBetweenHeight = worldToScreen.get().deltaTransform(,);
 
+        //TODO quelles valeurs faut il mettre aux distances
+        if (distanceInBetweenWidth < 25) {
+            distanceInBetweenWidth = Double.NaN;
+        }
+        if (distanceInBetweenHeight < 50) {
+            distanceInBetweenHeight = Double.NaN;
+        }
+        //TODO puis je faire un addAll ou suis je obligée de faire de trucs séparément ?
+        // si séparément, je laisse comme ça, ou je dois mettre un index ?
+        // i à 1 ou 0 ? car techniquement à 0 on voit pas la grille donc pas utile
+        for (int i = 1; i < rectangle.get().getWidth()/distanceInBetweenWidth; ++i){
+            grid.getElements().add(new MoveTo(0,i));
+            grid.getElements().add(new LineTo(rectangle.get().getWidth(),i));
+        }
+        for (int i = 1; i < rectangle.get().getHeight()/distanceInBetweenHeight){
+            grid.getElements().add(new MoveTo(i,0));
+            grid.getElements().add(new LineTo(i,rectangle.get().getHeight()))
+        }
     }
 
 
