@@ -1,6 +1,7 @@
 package ch.epfl.javelo.gui;
 
 import ch.epfl.javelo.routing.ElevationProfile;
+import javafx.beans.binding.Bindings;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.ReadOnlyDoubleProperty;
 import javafx.beans.property.ReadOnlyObjectProperty;
@@ -14,7 +15,6 @@ import javafx.scene.shape.Line;
 import javafx.scene.shape.Path;
 import javafx.scene.shape.Polygon;
 import javafx.scene.text.Text;
-import javafx.scene.transform.Affine;
 import javafx.scene.transform.Transform;
 
 
@@ -38,15 +38,17 @@ public final class ElevationProfileManager {
     private Insets distanceRectangle;
 
     //3
-    private ObjectProperty<Rectangle2D> rectangleBleu;
+    //1733
+    private ObjectProperty<Rectangle2D> rectangle;
     private ObjectProperty<Transform> screenToWorld, worldToScreen;
+
+    //4
 
     public ElevationProfileManager(ReadOnlyObjectProperty<ElevationProfile> profilePrinted, ReadOnlyDoubleProperty position) {
         this.profilePrinted = profilePrinted;
         this.position = position;
 
         //création de l'interface
-        borderPane = new BorderPane();
         pane = new Pane();
         pane2 = new VBox();
         grid = new Path();
@@ -62,26 +64,26 @@ public final class ElevationProfileManager {
 
         double x2 = profilePrinted.get().length() / 1000;
 
+
+        //TODO pour le premier point, il faut utiliser les affines
         polygon.getPoints().addAll(0.0, 0.0,
-                0.1, 0.1,
-                0.2, 0.2
+                distanceRectangle.getLeft(), distanceRectangle.getBottom(),
+                distanceRectangle.getRight(), distanceRectangle.getBottom()
         );
 
         pane2.setId("profile_data");
         polygon.setId("profile");
         grid.setId("grid");
 
+        borderPane = new BorderPane(pane,null,null,pane2,null);
         borderPane.getStylesheets().add("elevation_profile.css");
 
-        text1.getStyleClass().addAll("grid_label", "horizontal");
-        text2.getStyleClass().addAll("grid_label", "vertical");
+        etiquette1.getStyleClass().addAll("grid_label", "horizontal");
+        etiquette2.getStyleClass().addAll("grid_label", "vertical");
 
-        group.getChildren().addAll(text1, text2);
+        group.getChildren().addAll(etiquette1, etiquette2);
         pane.getChildren().addAll(grid, group, polygon);
-        pane2.getChildren().add(text3);
-
-        borderPane.centerProperty().set(pane);
-        borderPane.bottomProperty().set(pane2);
+        pane2.getChildren().add(etiquette3);
 
         //Rectangle contenant le profil
         distanceRectangle = new Insets(10, 10, 20, 40);
@@ -95,6 +97,21 @@ public final class ElevationProfileManager {
 
         affine.createInverse()
                 */
+        //3
+        //TODO aled guillaume
+        highlightedPosition.layoutXProperty().bind(Bindings.createDoubleBinding( () -> {
+            highlightedPosition.getLayoutX()
+                }, position.get()));
+        highlightedPosition.startYProperty().bind(Bindings.select(rectangle, "minY"));
+        highlightedPosition.endYProperty().bind(Bindings.select(rectangle, "maxY"));
+        highlightedPosition.visibleProperty().bind(position.greaterThanOrEqualTo(0));
+
+        //4
+        int[] POS_STEPS =
+                { 1_000, 2_000, 5_000, 10_000, 25_000, 50_000, 100_000 };
+        int[] ELE_STEPS =
+                { 5, 10, 20, 25, 50, 100, 200, 250, 500, 1_000 };
+
     }
 
 
