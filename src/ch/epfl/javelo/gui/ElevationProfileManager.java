@@ -1,6 +1,7 @@
-/*package ch.epfl.javelo.gui;
+package ch.epfl.javelo.gui;
 
 import ch.epfl.javelo.routing.ElevationProfile;
+import javafx.beans.binding.Bindings;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.ReadOnlyDoubleProperty;
 import javafx.beans.property.ReadOnlyObjectProperty;
@@ -15,7 +16,6 @@ import javafx.scene.shape.Line;
 import javafx.scene.shape.Path;
 import javafx.scene.shape.Polygon;
 import javafx.scene.text.Text;
-import javafx.scene.transform.Affine;
 import javafx.scene.transform.Transform;
 
 
@@ -24,7 +24,7 @@ public final class ElevationProfileManager {
     private final ReadOnlyObjectProperty<ElevationProfile> profilePrinted;
     ReadOnlyDoubleProperty position;
     //1
-    private BorderPane borderPane;
+    private final BorderPane borderPane;
     private Pane pane;
     private VBox pane2;
     private Path grid;
@@ -39,15 +39,17 @@ public final class ElevationProfileManager {
     private Insets distanceRectangle;
 
     //3
-    private ObjectProperty<Rectangle2D> rectangleBleu;
+    //1733
+    private ObjectProperty<Rectangle2D> rectangle;
     private ObjectProperty<Transform> screenToWorld, worldToScreen;
+
+    //4
 
     public ElevationProfileManager(ReadOnlyObjectProperty<ElevationProfile> profilePrinted, ReadOnlyDoubleProperty position) {
         this.profilePrinted = profilePrinted;
         this.position = position;
 
         //création de l'interface
-        borderPane = new BorderPane();
         pane = new Pane();
         pane2 = new VBox();
         grid = new Path();
@@ -63,15 +65,18 @@ public final class ElevationProfileManager {
 
         double x2 = profilePrinted.get().length() / 1000;
 
+
+        //TODO pour le premier point, il faut utiliser les affines
         polygon.getPoints().addAll(0.0, 0.0,
-                0.1, 0.1,
-                0.2, 0.2
+                distanceRectangle.getLeft(), distanceRectangle.getBottom(),
+                distanceRectangle.getRight(), distanceRectangle.getBottom()
         );
 
         pane2.setId("profile_data");
         polygon.setId("profile");
         grid.setId("grid");
 
+        borderPane = new BorderPane(pane,null,null,pane2,null);
         borderPane.getStylesheets().add("elevation_profile.css");
 
         etiquette1.getStyleClass().addAll("grid_label", "horizontal");
@@ -87,7 +92,7 @@ public final class ElevationProfileManager {
         //Rectangle contenant le profil
         distanceRectangle = new Insets(10, 10, 20, 40);
         //1404
-        Affine affine = new Affine(worldToScreen.getValue());*/
+        Affine affine = new Affine(worldToScreen.getValue());
         //TODO : quelles sont les valeurs à mettre ?
        /*
         affine.prependTranslation();
@@ -96,10 +101,11 @@ public final class ElevationProfileManager {
 
         affine.createInverse()
                 */
-      /*  double minElevation = profilePrinted.get().minElevation();
+
+        double minElevation = profilePrinted.get().minElevation();
         double maxElevation = profilePrinted.get().maxElevation();
-        Point2D p1 = new Point2D(0, rectangleBleu.get().getMaxY());
-        Point2D p2 = new Point2D(rectangleBleu.get().getMaxX(), 0);
+        Point2D p1 = new Point2D(0, rectangle.get().getMaxY());
+        Point2D p2 = new Point2D(rectangle.get().getMaxX(), 0);
         Point2D p1prime = new Point2D(0, maxElevation);
         Point2D p2prime = new Point2D(profilePrinted.get().length(), minElevation);
 
@@ -120,7 +126,7 @@ public final class ElevationProfileManager {
         for (int i=0; i<profilePrinted.get().size(); ++i){
             double nbrPoints = nbrPixels;
             double length = profilePrinted.get().length()/nbrPoints;
-            new Point(profilePrinted.get().length())
+
         }
         //un point par pixel
         //creer un rec ord ? nope
@@ -134,11 +140,26 @@ public final class ElevationProfileManager {
         coords.prependTranslation();
         coords.prependScale();
 
+        //3
+        highlightedPosition.layoutXProperty().bind(Bindings.createDoubleBinding( () -> {
+            return mousePositionOnProfileProperty().get();
+                }, position));
+        highlightedPosition.startYProperty().bind(Bindings.select(rectangle, "minY"));
+        highlightedPosition.endYProperty().bind(Bindings.select(rectangle, "maxY"));
+        highlightedPosition.visibleProperty().bind(position.greaterThanOrEqualTo(0));
+
+        //4
+        int[] POS_STEPS =
+                { 1_000, 2_000, 5_000, 10_000, 25_000, 50_000, 100_000 };
+        int[] ELE_STEPS =
+                { 5, 10, 20, 25, 50, 100, 200, 250, 500, 1_000 };
+
+
     }
 
 
 
-    public ReadOnlyObjectProperty mousePositionOnProfileProperty() {
+    public ReadOnlyDoubleProperty mousePositionOnProfileProperty() {
        //TODO
         return null;
     }
@@ -156,4 +177,3 @@ public final class ElevationProfileManager {
         return borderPane;
     }
 }
-*/
