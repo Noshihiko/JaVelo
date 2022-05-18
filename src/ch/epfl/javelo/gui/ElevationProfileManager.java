@@ -23,7 +23,7 @@ public final class ElevationProfileManager {
     private final ReadOnlyObjectProperty<ElevationProfile> profilePrinted;
     ReadOnlyDoubleProperty position;
     //1
-    private BorderPane borderPane;
+    private final BorderPane borderPane;
     private Pane pane;
     private VBox pane2;
     private Path grid;
@@ -98,10 +98,9 @@ public final class ElevationProfileManager {
         affine.createInverse()
                 */
         //3
-        //TODO aled guillaume
         highlightedPosition.layoutXProperty().bind(Bindings.createDoubleBinding( () -> {
-            highlightedPosition.getLayoutX()
-                }, position.get()));
+            return mousePositionOnProfileProperty().get();
+                }, position));
         highlightedPosition.startYProperty().bind(Bindings.select(rectangle, "minY"));
         highlightedPosition.endYProperty().bind(Bindings.select(rectangle, "maxY"));
         highlightedPosition.visibleProperty().bind(position.greaterThanOrEqualTo(0));
@@ -116,7 +115,7 @@ public final class ElevationProfileManager {
 
 
 
-    public ReadOnlyObjectProperty mousePositionOnProfileProperty() {
+    public ReadOnlyDoubleProperty mousePositionOnProfileProperty() {
        //TODO
         return null;
     }
