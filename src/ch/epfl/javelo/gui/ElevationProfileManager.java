@@ -36,10 +36,11 @@ public final class ElevationProfileManager {
     private final Group group;
     private final Text etiquette1, etiquette2, etiquette3;
     private final Line highlightedPosition;
-    //private final Text statistics;
+    private final Text statistics;
     private final Insets distanceRectangle;
 
     private final ObservableList<PathElement> gridUpdate;
+    private ObservableList<Double> pointPolygone = null;
     private ObjectProperty<Rectangle2D> rectangle;
     private final ObjectProperty<Transform> screenToWorld = new SimpleObjectProperty<>(new Affine());
     private final ObjectProperty<Transform> worldToScreen = new SimpleObjectProperty<>(new Affine());
@@ -68,12 +69,13 @@ public final class ElevationProfileManager {
         //Rectangle contenant le profil
         distanceRectangle = new Insets(10, 10, 20, 40);
 
+        //Ajout de tous les points au polygone
+        for (int i = 0; i <= rectangle.get().getWidth(); ++i) {
+            pointPolygone.addAll((double)i, profilePrinted.get().elevationAt(i),distanceRectangle.getLeft(), profilePrinted.get().minElevation(),
+                    distanceRectangle.getRight(), profilePrinted.get().minElevation());
+        }
+        polygon.getPoints().setAll(pointPolygone);
 
-        //TODO pour le premier point, il faut utiliser les affines
-        polygon.getPoints().addAll(0.0, 0.0,
-                distanceRectangle.getLeft(), distanceRectangle.getBottom(),
-                distanceRectangle.getRight(), distanceRectangle.getBottom()
-        );
 
         pane2.setId("profile_data");
         polygon.setId("profile");
@@ -108,7 +110,7 @@ public final class ElevationProfileManager {
         pane.setOnMouseMoved(event ->{
             double x = event.getX();
             double y = event.getY();
-            mousePositionOnProfileProperty(x, y);
+           // mousePositionOnProfileProperty(x, y);
         });
 
         //détecte la sortie du pointeur de la souris du panneau
@@ -203,7 +205,7 @@ public final class ElevationProfileManager {
         grid.getElements().setAll(gridUpdate);
     }
 
-    public ReadOnlyDoubleProperty mousePositionOnProfileProperty(double x, double y) {
+    public ReadOnlyDoubleProperty mousePositionOnProfileProperty() {
 
         //  la position du pointeur de la souris
         // le long du profil (en mètres, arrondie à l'entier le plus proche),
