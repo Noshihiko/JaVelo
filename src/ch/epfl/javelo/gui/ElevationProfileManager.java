@@ -6,6 +6,7 @@ import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.ReadOnlyDoubleProperty;
 import javafx.beans.property.ReadOnlyObjectProperty;
 import javafx.collections.ObservableList;
+import javafx.beans.property.SimpleObjectProperty;
 import javafx.geometry.Insets;
 import javafx.geometry.Point2D;
 import javafx.geometry.Rectangle2D;
@@ -17,6 +18,7 @@ import javafx.scene.shape.*;
 import javafx.scene.text.Text;
 import javafx.scene.transform.Affine;
 import javafx.scene.transform.Transform;
+
 
 
 //TODO demander si ok si je fais un addAll quand je bind les children
@@ -41,7 +43,10 @@ public final class ElevationProfileManager {
     //3
     //1733
     private ObjectProperty<Rectangle2D> rectangle;
-    private ObjectProperty<Transform> screenToWorld, worldToScreen;
+
+    private ObjectProperty<Transform> screenToWorld = new SimpleObjectProperty<>(new Affine());
+    private ObjectProperty<Transform> worldToScreen = new SimpleObjectProperty<>(new Affine());
+
 
     //4
     private ObservableList<PathElement> gridUpdate;
@@ -63,6 +68,7 @@ public final class ElevationProfileManager {
         polygon = new Polygon();
         highlightedPosition = new Line();
         statistics = new Text();
+
 
         double x2 = profilePrinted.get().length() / 1000;
 
@@ -93,16 +99,8 @@ public final class ElevationProfileManager {
         //Rectangle contenant le profil
         distanceRectangle = new Insets(10, 10, 20, 40);
         //1404
-        Affine affine = new Affine(worldToScreen.getValue());
-        //TODO : quelles sont les valeurs à mettre ?
-       /*
-        affine.prependTranslation();
-        affine.prependScale();
-        affine.prependTranslation();
 
-        affine.createInverse()
-                */
-
+    //******************************* Transformations *********************************
         double minElevation = profilePrinted.get().minElevation();
         double maxElevation = profilePrinted.get().maxElevation();
         Point2D p1 = new Point2D(0, rectangle.get().getMaxY());
@@ -155,52 +153,47 @@ public final class ElevationProfileManager {
         grid.getElements().setAll(gridUpdate);
     }
 
-    private Transform screenToWorld(Point2D p1, Point2D p2, Point2D p1prime, Point2D p2prime) {
+    private void setScreenToWorld(Point2D p1, Point2D p2, Point2D p1prime, Point2D p2prime) {
 
         Affine transformationAffine = new Affine();
 
-        transformationAffine.prependTranslation(p1prime.getX()-p1.getX(), p2prime.getY()-p2.getY());
-        double sx = (p1prime.getX()-p2prime.getX())/(p2.getX() - p1.getX());
-        double sy = (p1prime.getY()-p2prime.getY())/(p2.getY() - p1.getY());
+        transformationAffine.prependTranslation(-10, -40);
+        double sx = (p1prime.getX() - p2prime.getX()) / (p2.getX() - p1.getX());
+        double sy = (p1prime.getY() - p2prime.getY()) / (p2.getY() - p1.getY());
         transformationAffine.prependScale(sx, sy);
-        transformationAffine.prependTranslation();
+        transformationAffine.prependTranslation(0, p1prime.getX());
 
+        screenToWorld.set(transformationAffine);
+    }
 
+    private void setWorldToScreen(Point2D p1, Point2D p2, Point2D p1prime, Point2D p2prime) {
 
-        for (int i=0; i<profilePrinted.get().size(); ++i){
-            double nbrPoints = nbrPixels;
-            double length = profilePrinted.get().length()/nbrPoints;
-
-        }
-        //un point par pixel
-        //creer un rec ord ? nope
-        //point x distance depuis depart de la route et y hauteur de la route
-        //elevation at(point)
-        //ajouter un polygone
-        //translation de length metre
-        //min elevation au altitude 0 et max elevation
-        //premiere translation
-        Transform coord = new Transform();
-        coords.prependTranslation();
-        coords.prependScale();
+        Affine transformationAffine = new Affine();
+        screenToWorld.set(transformationAffine);
+        worldToScreen.set(screenToWorld.get().createInverse());
+    }
+    //********************************* fin transformations ****************************************
 
     }
 
 
 
     public ReadOnlyDoubleProperty mousePositionOnProfileProperty() {
-       //TODO
+
+        highlightedPosition.layoutXProperty().bind(Bindings.createDoubleBinding( () -> {
+            return mousePositionOnProfileProperty().get();
+        }, position));
+        highlightedPosition.startYProperty().bind(Bindings.select(rectangle, "minY"));
+        highlightedPosition.endYProperty().bind(Bindings.select(rectangle, "maxY"));
+        highlightedPosition.visibleProperty().bind(position.greaterThanOrEqualTo(0));
+
+
+        //TODO
         return null;
     }
 
-    private record Point(double length, double elevationAtLength){}
-    //point (distance elevatioon)
 
 
-
-    private Transform worldToScreen(Transform coords) {
-        return screenToWorld(coords).createInverse();
-    }
 
     public Pane pane() {
         return borderPane;
