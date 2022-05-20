@@ -193,8 +193,8 @@ public final class ElevationProfileManager {
         return null;
     }
 
-
-
+        //******************************** etiquettes ****************************
+        
 
     public Pane pane() {
         return borderPane;
