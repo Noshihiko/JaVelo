@@ -46,8 +46,8 @@ public final class ElevationProfileManager {
         this.profilePrinted = profilePrinted;
         this.position = position;
 
-        //TODO vraiment pas sûre de ça
-        gridUpdate = new ImmutableObservableList<>();
+        //TODO c'est pas ca : comment on l'initialise
+       gridUpdate = new ImmutableObservableList<>();
 
         //Rectangle contenant le profil
         distanceRectangle = new Insets(10, 10, 20, 40);
