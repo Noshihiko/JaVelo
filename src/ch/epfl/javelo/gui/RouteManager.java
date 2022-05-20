@@ -84,7 +84,7 @@ public final class RouteManager {
             PointCh newPoint = mapParameters.get().pointAt(p.getX(), p.getY()).toPointCh();
 
             //TODO
-            // SEGMENT AT retourne pas la bonne valeure car ca place un waypoint a la fin et pas au milieu
+            // SEGMENT AT retourne pas la bonne valeur car ça place un waypoint à la fin et pas au milieu
 
             int index = routeBean.getRouteProperty().get().indexOfSegmentAt(routeBean.highlightedPosition());
 

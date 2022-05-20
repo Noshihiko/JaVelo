@@ -5,6 +5,7 @@ import javafx.beans.binding.Bindings;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.ReadOnlyDoubleProperty;
 import javafx.beans.property.ReadOnlyObjectProperty;
+import javafx.collections.ObservableList;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.geometry.Insets;
 import javafx.geometry.Point2D;
@@ -49,6 +50,7 @@ public final class ElevationProfileManager {
 
 
     //4
+    private ObservableList<PathElement> gridUpdate;
 
     public ElevationProfileManager(ReadOnlyObjectProperty<ElevationProfile> profilePrinted, ReadOnlyDoubleProperty position) {
         this.profilePrinted = profilePrinted;
@@ -95,6 +97,49 @@ public final class ElevationProfileManager {
         borderPane.centerProperty().set(pane);
         borderPane.bottomProperty().set(pane2);
 
+        //binding des éléments de la ligne en gras
+        highlightedPosition.layoutXProperty().bind(Bindings.createDoubleBinding( () -> {
+            return mousePositionOnProfileProperty().get();
+        }, position));
+        highlightedPosition.startYProperty().bind(Bindings.select(rectangle, "minY"));
+        highlightedPosition.endYProperty().bind(Bindings.select(rectangle, "maxY"));
+        highlightedPosition.visibleProperty().bind(position.greaterThanOrEqualTo(0));
+
+        //calcul des différentes distances entre les lignes horizontales et verticales de la grille
+        int[] POS_STEPS =
+                { 1_000, 2_000, 5_000, 10_000, 25_000, 50_000, 100_000 };
+        int[] ELE_STEPS =
+                { 5, 10, 20, 25, 50, 100, 200, 250, 500, 1_000 };
+
+        double distanceInBetweenWidth = 0;
+        double distanceInBetweenHeight = 0;
+        //lignes verticales
+        for (int i = 0; i < POS_STEPS.length; ++i) {
+            distanceInBetweenWidth = worldToScreen.get().deltaTransform(,);
+            if (distanceInBetweenWidth >=25) {
+                break;
+            }
+        }
+        //lignes horizontales
+        for (int i = 0; i < ELE_STEPS.length; ++i) {
+            distanceInBetweenHeight = worldToScreen.get().deltaTransform(,);
+            if (distanceInBetweenHeight >=50) {
+                break;
+            }
+        }
+
+        //Création des lignes de la grille
+        // TODO i à 1 ou 0 ? car techniquement à 0 on voit pas la grille donc pas utile
+        for (int i = 1; i < rectangle.get().getWidth()/distanceInBetweenWidth; ++i){
+            gridUpdate.add(new MoveTo(0,i));
+            gridUpdate.add(new LineTo(rectangle.get().getWidth(),i));
+        }
+        for (int i = 1; i < rectangle.get().getHeight()/distanceInBetweenHeight; ++i){
+            gridUpdate.add(new MoveTo(i,0));
+            gridUpdate.add(new LineTo(i,rectangle.get().getHeight()));
+        }
+        grid.getElements().setAll(gridUpdate);
+
         //Rectangle contenant le profil
         distanceRectangle = new Insets(10, 10, 20, 40);
         //1404
@@ -106,6 +151,7 @@ public final class ElevationProfileManager {
         Point2D p2 = new Point2D(rectangle.get().getMaxX(), 0);
         Point2D p1prime = new Point2D(0, maxElevation);
         Point2D p2prime = new Point2D(profilePrinted.get().length(), minElevation);
+
 
     }
 
@@ -129,42 +175,9 @@ public final class ElevationProfileManager {
         worldToScreen.set(screenToWorld.get().createInverse());
 
     }
-    //********************************* fin transformations ****************************************
-
-        //3
+    //**** ***************************** fin transformations ****************************************
 
 
-        //4
-        //TODO paramètre de distanceInBetween ?
-        //TODO faut il deux types de distanceInBetween ?
-        int[] POS_STEPS =
-                { 1_000, 2_000, 5_000, 10_000, 25_000, 50_000, 100_000 };
-        int[] ELE_STEPS =
-                { 5, 10, 20, 25, 50, 100, 200, 250, 500, 1_000 };
-
-        double distanceInBetweenWidth = worldToScreen.get().deltaTransform(,);
-        double distanceInBetweenHeight = worldToScreen.get().deltaTransform(,);
-
-        //TODO quelles valeurs faut il mettre aux distances
-        if (distanceInBetweenWidth < 25) {
-            distanceInBetweenWidth = Double.NaN;
-        }
-        if (distanceInBetweenHeight < 50) {
-            distanceInBetweenHeight = Double.NaN;
-        }
-        //TODO puis je faire un addAll ou suis je obligée de faire de trucs séparément ?
-        // si séparément, je laisse comme ça, ou je dois mettre un index ?
-        // i à 1 ou 0 ? car techniquement à 0 on voit pas la grille donc pas utile
-
-        for (int i = 1; i < rectangle.get().getWidth()/distanceInBetweenWidth; ++i){
-            grid.getElements().add(new MoveTo(0,i));
-            grid.getElements().add(new LineTo(rectangle.get().getWidth(),i));
-        }
-        for (int i = 1; i < rectangle.get().getHeight()/distanceInBetweenHeight){
-            grid.getElements().add(new MoveTo(i,0));
-            grid.getElements().add(new LineTo(i,rectangle.get().getHeight()))
-        }
-    }
 
 
 
