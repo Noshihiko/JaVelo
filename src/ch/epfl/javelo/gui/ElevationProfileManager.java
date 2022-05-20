@@ -173,7 +173,7 @@ public final class ElevationProfileManager {
         screenToWorld.set(transformationAffine);
         worldToScreen.set(screenToWorld.get().createInverse());
     }
-    //********************************* fin transformations ****************************************
+    //**** ***************************** fin transformations ****************************************
 
 
 
