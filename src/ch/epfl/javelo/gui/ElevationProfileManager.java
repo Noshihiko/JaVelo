@@ -96,19 +96,6 @@ public final class ElevationProfileManager {
         borderPane.centerProperty().set(pane);
         borderPane.bottomProperty().set(pane2);
 
-        //Rectangle contenant le profil
-        distanceRectangle = new Insets(10, 10, 20, 40);
-        //1404
-
-    //******************************* Transformations *********************************
-        double minElevation = profilePrinted.get().minElevation();
-        double maxElevation = profilePrinted.get().maxElevation();
-        Point2D p1 = new Point2D(0, rectangle.get().getMaxY());
-        Point2D p2 = new Point2D(rectangle.get().getMaxX(), 0);
-        Point2D p1prime = new Point2D(0, maxElevation);
-        Point2D p2prime = new Point2D(profilePrinted.get().length(), minElevation);
-
-
         //binding des éléments de la ligne en gras
         highlightedPosition.layoutXProperty().bind(Bindings.createDoubleBinding( () -> {
             return mousePositionOnProfileProperty().get();
@@ -123,8 +110,8 @@ public final class ElevationProfileManager {
         int[] ELE_STEPS =
                 { 5, 10, 20, 25, 50, 100, 200, 250, 500, 1_000 };
 
-        double distanceInBetweenWidth;
-        double distanceInBetweenHeight;
+        double distanceInBetweenWidth = 0;
+        double distanceInBetweenHeight = 0;
         //lignes verticales
         for (int i = 0; i < POS_STEPS.length; ++i) {
             distanceInBetweenWidth = worldToScreen.get().deltaTransform(,);
@@ -146,11 +133,25 @@ public final class ElevationProfileManager {
             gridUpdate.add(new MoveTo(0,i));
             gridUpdate.add(new LineTo(rectangle.get().getWidth(),i));
         }
-        for (int i = 1; i < rectangle.get().getHeight()/distanceInBetweenHeight){
+        for (int i = 1; i < rectangle.get().getHeight()/distanceInBetweenHeight; ++i){
             gridUpdate.add(new MoveTo(i,0));
             gridUpdate.add(new LineTo(i,rectangle.get().getHeight()));
         }
         grid.getElements().setAll(gridUpdate);
+
+        //Rectangle contenant le profil
+        distanceRectangle = new Insets(10, 10, 20, 40);
+        //1404
+
+    //******************************* Transformations *********************************
+        double minElevation = profilePrinted.get().minElevation();
+        double maxElevation = profilePrinted.get().maxElevation();
+        Point2D p1 = new Point2D(0, rectangle.get().getMaxY());
+        Point2D p2 = new Point2D(rectangle.get().getMaxX(), 0);
+        Point2D p1prime = new Point2D(0, maxElevation);
+        Point2D p2prime = new Point2D(profilePrinted.get().length(), minElevation);
+
+
     }
 
     private void setScreenToWorld(Point2D p1, Point2D p2, Point2D p1prime, Point2D p2prime) {
@@ -174,7 +175,7 @@ public final class ElevationProfileManager {
     }
     //********************************* fin transformations ****************************************
 
-    }
+
 
 
 
