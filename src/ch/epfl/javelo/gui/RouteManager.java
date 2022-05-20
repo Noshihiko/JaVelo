@@ -21,9 +21,9 @@ public final class RouteManager {
     //TODO
     // je pense pas qu'il faille le mettre en pv sinon ça en recrée pas
     // à demander
-    private Pane paneItinerary;
-    private Polyline itinerary;
-    private Circle disk;
+    private final Pane paneItinerary;
+    private final Polyline itinerary;
+    private final Circle disk;
 
     private final double RADIUS_OF_DISK = 5;
 

@@ -1,16 +1,19 @@
 package ch.epfl.javelo.gui;
 
 import ch.epfl.javelo.routing.ElevationProfile;
+import com.sun.javafx.collections.ImmutableObservableList;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.ObjectProperty;
+import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.ReadOnlyDoubleProperty;
 import javafx.beans.property.ReadOnlyObjectProperty;
 import javafx.collections.ObservableList;
-import javafx.beans.property.SimpleObjectProperty;
+
 import javafx.geometry.Insets;
 import javafx.geometry.Point2D;
 import javafx.geometry.Rectangle2D;
 import javafx.geometry.VPos;
+
 import javafx.scene.Group;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.Pane;
@@ -18,86 +21,75 @@ import javafx.scene.layout.VBox;
 import javafx.scene.shape.*;
 import javafx.scene.text.Font;
 import javafx.scene.text.Text;
-import javafx.scene.transform.Affine;
-import javafx.scene.transform.NonInvertibleTransformException;
-import javafx.scene.transform.Transform;
+import javafx.scene.transform.*;
+
+import java.util.StringJoiner;
 
 
-
-//TODO demander si ok si je fais un addAll quand je bind les children
 public final class ElevationProfileManager {
     private final ReadOnlyObjectProperty<ElevationProfile> profilePrinted;
     ReadOnlyDoubleProperty position;
     //1
     private final BorderPane borderPane;
-    private Pane pane;
-    private VBox pane2;
-    private Path grid;
-    private Polygon polygon;
+    private final Pane pane;
+    private final VBox pane2;
+    private final Path grid;
+    private final Polygon polygon;
+    private final Group group;
+    private final Text etiquette1, etiquette2, etiquette3;
+    private final Line highlightedPosition;
+    private final Text statistics;
+    private final Insets distanceRectangle;
 
-    private Group group;
-    private Text etiquette1, etiquette2, etiquette3;
-    private Line highlightedPosition;
-    private Text statistics;
-
-    //2
-    private Insets distanceRectangle;
-
-    //3
-    //1733
+    private final ObservableList<PathElement> gridUpdate;
+    private ObservableList<Double> pointPolygone = null;
     private ObjectProperty<Rectangle2D> rectangle;
+    private final ObjectProperty<Transform> screenToWorld = new SimpleObjectProperty<>(new Affine());
+    private final ObjectProperty<Transform> worldToScreen = new SimpleObjectProperty<>(new Affine());
 
-    private ObjectProperty<Transform> screenToWorld = new SimpleObjectProperty<>(new Affine());
-    private ObjectProperty<Transform> worldToScreen = new SimpleObjectProperty<>(new Affine());
-
-
-    //4
-    private ObservableList<PathElement> gridUpdate;
 
     public ElevationProfileManager(ReadOnlyObjectProperty<ElevationProfile> profilePrinted, ReadOnlyDoubleProperty position) {
         this.profilePrinted = profilePrinted;
         this.position = position;
 
-        //création de l'interface
-        pane = new Pane();
-        pane2 = new VBox();
-        grid = new Path();
+        //TODO c'est pas ca : comment on l'initialise
+       gridUpdate = new ImmutableObservableList<>();
 
-        group = new Group();
+        //Rectangle contenant le profil
+        distanceRectangle = new Insets(10, 10, 20, 40);
+
+        //création de l'interface
+
+        grid = new Path();
+        polygon = new Polygon();
+        highlightedPosition = new Line();
+
         etiquette1 = new Text();
         etiquette2 = new Text();
         etiquette3 = new Text();
-
-        polygon = new Polygon();
-        highlightedPosition = new Line();
         statistics = new Text();
 
+        group = new Group(etiquette1, etiquette2);
+        pane = new Pane(grid, group, polygon);
+        pane2 = new VBox(etiquette3);
+        borderPane = new BorderPane(pane,null,null,pane2,null);
 
-        double x2 = profilePrinted.get().length() / 1000;
-
-
-        //TODO pour le premier point, il faut utiliser les affines
-        polygon.getPoints().addAll(0.0, 0.0,
-                distanceRectangle.getLeft(), distanceRectangle.getBottom(),
-                distanceRectangle.getRight(), distanceRectangle.getBottom()
-        );
+        //Ajout de tous les points au polygone
+        for (int i = 0; i <= rectangle.get().getWidth(); ++i) {
+            pointPolygone.addAll((double)i, profilePrinted.get().elevationAt(i),
+                    distanceRectangle.getLeft(), profilePrinted.get().minElevation(),
+                    distanceRectangle.getRight(), profilePrinted.get().minElevation());
+        }
+        polygon.getPoints().setAll(pointPolygone);
 
         pane2.setId("profile_data");
         polygon.setId("profile");
         grid.setId("grid");
 
-        borderPane = new BorderPane(pane,null,null,pane2,null);
         borderPane.getStylesheets().add("elevation_profile.css");
 
         etiquette1.getStyleClass().addAll("grid_label", "horizontal");
         etiquette2.getStyleClass().addAll("grid_label", "vertical");
-
-        group.getChildren().addAll(etiquette1, etiquette2);
-        pane.getChildren().addAll(grid, group, polygon);
-        pane2.getChildren().add(etiquette3);
-
-        borderPane.centerProperty().set(pane);
-        borderPane.bottomProperty().set(pane2);
 
         //binding des éléments de la ligne en gras
         highlightedPosition.layoutXProperty().bind(Bindings.createDoubleBinding( () -> {
@@ -107,6 +99,7 @@ public final class ElevationProfileManager {
         highlightedPosition.endYProperty().bind(Bindings.select(rectangle, "maxY"));
         highlightedPosition.visibleProperty().bind(position.greaterThanOrEqualTo(0));
 
+
         //calcul des différentes distances entre les lignes horizontales et verticales de la grille
         //tblo en constant
         int[] POS_STEPS =
@@ -114,58 +107,8 @@ public final class ElevationProfileManager {
         int[] ELE_STEPS =
                 { 5, 10, 20, 25, 50, 100, 200, 250, 500, 1_000 };
 
-        double distanceInBetweenWidth = 0;
-        double distanceInBetweenHeight = 0;
-        //lignes verticales
-        for (int i = 0; i < POS_STEPS.length; ++i) {
-            distanceInBetweenWidth = worldToScreen.get().deltaTransform(,);
-            if (distanceInBetweenWidth >=25) {
-                break;
-            }
-        }
-        //lignes horizontales
-        for (int i = 0; i < ELE_STEPS.length; ++i) {
-            distanceInBetweenHeight = worldToScreen.get().deltaTransform(,);
-            if (distanceInBetweenHeight >=50) {
-                break;
-            }
-        }
-
-        //Création des lignes de la grille
-        // TODO i à 1 ou 0 ? car techniquement à 0 on voit pas la grille donc pas utile
-        for (int i = 1; i < rectangle.get().getHeight()/distanceInBetweenHeight; ++i){
-            gridUpdate.add(new MoveTo(0,i));
-            gridUpdate.add(new LineTo(rectangle.get().getWidth(),i));
-            //position : meme que le debut de la ligne
-
-            Text text = new Text(0, i, Double.toString(profilePrinted.get().minElevation() + (distanceInBetweenHeight*i)));
-
-            text.prefWidth(0);
-
-            text.setTextOrigin(VPos.TOP);
-            text.setStyle("grid_label");
-            text.setStyle("horizontal");
-            text.setFont(Font.font("Avenir", 10));
-
-        }
-        for (int i = 1; i < rectangle.get().getWidth()/distanceInBetweenWidth ; ++i){
-            gridUpdate.add(new MoveTo(i,0));
-            gridUpdate.add(new LineTo(i,rectangle.get().getHeight()));
-            Text text = new Text(i, 0, Double.toString(screenToWorld.get().deltaTransform(i,0).getX()));
-
-
-
-            text.setTextOrigin(VPos.TOP);
-            text.setStyle("grid_label");
-            text.setStyle("horizontal");
-            text.setFont(Font.font("Avenir", 10));
-        }
-        grid.getElements().setAll(gridUpdate);
-
-        //Rectangle contenant le profil
-        distanceRectangle = new Insets(10, 10, 20, 40);
-        //1404
-
+        gridAndEtiquetteCreation();
+        statisticsText();
 
         pane.setOnMouseMoved(event ->{
 
@@ -179,12 +122,12 @@ public final class ElevationProfileManager {
     //******************************* Transformations *********************************
         double minElevation = profilePrinted.get().minElevation();
         double maxElevation = profilePrinted.get().maxElevation();
+
         Point2D p1 = new Point2D(0, rectangle.get().getMaxY());
         Point2D p2 = new Point2D(rectangle.get().getMaxX(), 0);
+
         Point2D p1prime = new Point2D(0, maxElevation);
         Point2D p2prime = new Point2D(profilePrinted.get().length(), minElevation);
-
-
     }
 
     private void setScreenToWorld(Point2D p1, Point2D p2, Point2D p1prime, Point2D p2prime) {
@@ -200,6 +143,73 @@ public final class ElevationProfileManager {
         screenToWorld.set(transformationAffine);
     }
 
+
+    private void statisticsText(){
+        if (profilePrinted != null) {
+            StringJoiner statistic = new StringJoiner("     ");
+
+            statistic.add("Longueur : %.1f km" + profilePrinted.get().length() / 1000);
+            statistic.add("Montée : %.0f m" + profilePrinted.get().totalAscent());
+            statistic.add("Descente : %.0f m" + profilePrinted.get().totalDescent());
+            statistic.add("Altitude : de %.0f m à %.0f m" + profilePrinted.get().minElevation() + profilePrinted.get().maxElevation());
+            etiquette3.setId(statistic.toString());
+        }
+    }
+
+    private void gridAndEtiquetteCreation(){
+        //calcul des différentes distances entre les lignes horizontales et verticales de la grille
+        int[] POS_STEPS =
+                { 1_000, 2_000, 5_000, 10_000, 25_000, 50_000, 100_000 };
+        int[] ELE_STEPS =
+                { 5, 10, 20, 25, 50, 100, 200, 250, 500, 1_000 };
+        double distanceInBetweenWidth = 0;
+        double distanceInBetweenHeight = 0;
+
+        //lignes verticales
+        for (int i = 0; i < POS_STEPS.length; ++i) {
+            distanceInBetweenWidth = worldToScreen.get().deltaTransform(POS_STEPS[i],0).getX();
+            if (distanceInBetweenWidth >=25) {
+                break;
+            }
+        }
+        //lignes horizontales
+        for (int i = 0; i < ELE_STEPS.length; ++i) {
+            distanceInBetweenHeight = worldToScreen.get().deltaTransform(0,ELE_STEPS[i]).getY();
+            if (distanceInBetweenHeight >=50) {
+                break;
+            }
+        }
+
+        //Création des lignes de la grille
+        for (int i = 1; i < rectangle.get().getHeight()/distanceInBetweenHeight; ++i){
+            gridUpdate.add(new MoveTo(0,i));
+            gridUpdate.add(new LineTo(rectangle.get().getWidth(),i));
+
+            Text text = new Text(0, i, Double.toString(profilePrinted.get().minElevation() + (distanceInBetweenHeight*i)));
+
+            text.prefWidth(0);
+
+            text.setTextOrigin(VPos.TOP);
+            text.setStyle("grid_label");
+            text.setStyle("horizontal");
+            text.setFont(Font.font("Avenir", 10));
+        }
+
+        for (int i = 1; i < rectangle.get().getWidth()/distanceInBetweenWidth; ++i){
+            gridUpdate.add(new MoveTo(i,0));
+            gridUpdate.add(new LineTo(i,rectangle.get().getHeight()));
+
+            Text text = new Text(i, 0, Double.toString(screenToWorld.get().deltaTransform(i,0).getX()));
+
+            text.setTextOrigin(VPos.TOP);
+            text.setStyle("grid_label");
+            text.setStyle("horizontal");
+            text.setFont(Font.font("Avenir", 10));
+        }
+        grid.getElements().setAll(gridUpdate);
+    }
+
+
     private void setWorldToScreen(Point2D p1, Point2D p2, Point2D p1prime, Point2D p2prime) throws NonInvertibleTransformException {
 
         Affine transformationAffine = new Affine();
@@ -207,28 +217,17 @@ public final class ElevationProfileManager {
         worldToScreen.set(screenToWorld.get().createInverse());
 
     }
-    //**** ***************************** fin transformations ****************************************
-
-
-
 
 
     public ReadOnlyDoubleProperty mousePositionOnProfileProperty() {
 
-        highlightedPosition.layoutXProperty().bind(Bindings.createDoubleBinding( () -> {
-            return mousePositionOnProfileProperty().get();
-        }, position));
-        highlightedPosition.startYProperty().bind(Bindings.select(rectangle, "minY"));
-        highlightedPosition.endYProperty().bind(Bindings.select(rectangle, "maxY"));
-        highlightedPosition.visibleProperty().bind(position.greaterThanOrEqualTo(0));
-
-
+        //  la position du pointeur de la souris
+        // le long du profil (en mètres, arrondie à l'entier le plus proche),
+        // ou NaN si le pointeur de la
+        // souris ne se trouve pas au-dessus du profil
         //TODO
         return null;
     }
-
-
-
 
     public Pane pane() {
         return borderPane;
