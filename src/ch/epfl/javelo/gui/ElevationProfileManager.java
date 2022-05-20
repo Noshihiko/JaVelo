@@ -4,27 +4,22 @@ import ch.epfl.javelo.routing.ElevationProfile;
 import com.sun.javafx.collections.ImmutableObservableList;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.ObjectProperty;
+import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.ReadOnlyDoubleProperty;
 import javafx.beans.property.ReadOnlyObjectProperty;
 import javafx.collections.ObservableList;
-import javafx.beans.property.SimpleObjectProperty;
-import javafx.geometry.Insets;
-import javafx.geometry.Point2D;
-import javafx.geometry.Rectangle2D;
+import javafx.geometry.*;
 import javafx.scene.Group;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 import javafx.scene.shape.*;
 import javafx.scene.text.Text;
-import javafx.scene.transform.Affine;
-import javafx.scene.transform.NonInvertibleTransformException;
-import javafx.scene.transform.Transform;
+import javafx.scene.transform.*;
 
 import java.util.StringJoiner;
 
 
-//TODO demander si ok si je fais un addAll quand je bind les children
 public final class ElevationProfileManager {
     private final ReadOnlyObjectProperty<ElevationProfile> profilePrinted;
     ReadOnlyDoubleProperty position;
