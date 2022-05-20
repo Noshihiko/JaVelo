@@ -71,7 +71,8 @@ public final class ElevationProfileManager {
 
         //Ajout de tous les points au polygone
         for (int i = 0; i <= rectangle.get().getWidth(); ++i) {
-            pointPolygone.addAll((double)i, profilePrinted.get().elevationAt(i),distanceRectangle.getLeft(), profilePrinted.get().minElevation(),
+            pointPolygone.addAll((double)i, profilePrinted.get().elevationAt(i),
+                    distanceRectangle.getLeft(), profilePrinted.get().minElevation(),
                     distanceRectangle.getRight(), profilePrinted.get().minElevation());
         }
         polygon.getPoints().setAll(pointPolygone);
