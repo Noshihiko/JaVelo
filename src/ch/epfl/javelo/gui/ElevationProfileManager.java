@@ -16,6 +16,7 @@ import javafx.scene.layout.VBox;
 import javafx.scene.shape.*;
 import javafx.scene.text.Text;
 import javafx.scene.transform.Affine;
+import javafx.scene.transform.NonInvertibleTransformException;
 import javafx.scene.transform.Transform;
 
 
@@ -121,11 +122,12 @@ public final class ElevationProfileManager {
         screenToWorld.set(transformationAffine);
     }
 
-    private void setWorldToScreen(Point2D p1, Point2D p2, Point2D p1prime, Point2D p2prime) {
+    private void setWorldToScreen(Point2D p1, Point2D p2, Point2D p1prime, Point2D p2prime) throws NonInvertibleTransformException {
 
         Affine transformationAffine = new Affine();
         screenToWorld.set(transformationAffine);
         worldToScreen.set(screenToWorld.get().createInverse());
+
     }
     //********************************* fin transformations ****************************************
 
@@ -181,7 +183,7 @@ public final class ElevationProfileManager {
     }
 
         //******************************** etiquettes ****************************
-        
+
 
     public Pane pane() {
         return borderPane;
