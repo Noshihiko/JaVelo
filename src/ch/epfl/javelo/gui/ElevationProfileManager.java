@@ -68,7 +68,6 @@ public final class ElevationProfileManager {
         statistics = new Text();
 
 
-
         double x2 = profilePrinted.get().length() / 1000;
 
 
@@ -99,7 +98,7 @@ public final class ElevationProfileManager {
         distanceRectangle = new Insets(10, 10, 20, 40);
         //1404
 
-    //******************** Transformations ****************************
+    //******************************* Transformations *********************************
         double minElevation = profilePrinted.get().minElevation();
         double maxElevation = profilePrinted.get().maxElevation();
         Point2D p1 = new Point2D(0, rectangle.get().getMaxY());
@@ -128,6 +127,7 @@ public final class ElevationProfileManager {
         screenToWorld.set(transformationAffine);
         worldToScreen.set(screenToWorld.get().createInverse());
     }
+    //********************************* fin transformations ****************************************
 
         //3
 
@@ -153,6 +153,7 @@ public final class ElevationProfileManager {
         //TODO puis je faire un addAll ou suis je obligée de faire de trucs séparément ?
         // si séparément, je laisse comme ça, ou je dois mettre un index ?
         // i à 1 ou 0 ? car techniquement à 0 on voit pas la grille donc pas utile
+
         for (int i = 1; i < rectangle.get().getWidth()/distanceInBetweenWidth; ++i){
             grid.getElements().add(new MoveTo(0,i));
             grid.getElements().add(new LineTo(rectangle.get().getWidth(),i));
