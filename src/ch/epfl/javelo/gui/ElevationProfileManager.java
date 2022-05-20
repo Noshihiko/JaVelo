@@ -10,11 +10,13 @@ import javafx.beans.property.SimpleObjectProperty;
 import javafx.geometry.Insets;
 import javafx.geometry.Point2D;
 import javafx.geometry.Rectangle2D;
+import javafx.geometry.VPos;
 import javafx.scene.Group;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 import javafx.scene.shape.*;
+import javafx.scene.text.Font;
 import javafx.scene.text.Text;
 import javafx.scene.transform.Affine;
 import javafx.scene.transform.NonInvertibleTransformException;
@@ -106,6 +108,7 @@ public final class ElevationProfileManager {
         highlightedPosition.visibleProperty().bind(position.greaterThanOrEqualTo(0));
 
         //calcul des différentes distances entre les lignes horizontales et verticales de la grille
+        //tblo en constant
         int[] POS_STEPS =
                 { 1_000, 2_000, 5_000, 10_000, 25_000, 50_000, 100_000 };
         int[] ELE_STEPS =
@@ -130,19 +133,48 @@ public final class ElevationProfileManager {
 
         //Création des lignes de la grille
         // TODO i à 1 ou 0 ? car techniquement à 0 on voit pas la grille donc pas utile
-        for (int i = 1; i < rectangle.get().getWidth()/distanceInBetweenWidth; ++i){
+        for (int i = 1; i < rectangle.get().getHeight()/distanceInBetweenHeight; ++i){
             gridUpdate.add(new MoveTo(0,i));
             gridUpdate.add(new LineTo(rectangle.get().getWidth(),i));
+            //position : meme que le debut de la ligne
+
+            Text text = new Text(0, i, Double.toString(profilePrinted.get().minElevation() + (distanceInBetweenHeight*i)));
+
+            text.prefWidth(0);
+
+            text.setTextOrigin(VPos.TOP);
+            text.setStyle("grid_label");
+            text.setStyle("horizontal");
+            text.setFont(Font.font("Avenir", 10));
+
         }
-        for (int i = 1; i < rectangle.get().getHeight()/distanceInBetweenHeight; ++i){
+        for (int i = 1; i < rectangle.get().getWidth()/distanceInBetweenWidth ; ++i){
             gridUpdate.add(new MoveTo(i,0));
             gridUpdate.add(new LineTo(i,rectangle.get().getHeight()));
+            Text text = new Text(i, 0, Double.toString(screenToWorld.get().deltaTransform(i,0).getX()));
+
+
+
+            text.setTextOrigin(VPos.TOP);
+            text.setStyle("grid_label");
+            text.setStyle("horizontal");
+            text.setFont(Font.font("Avenir", 10));
         }
         grid.getElements().setAll(gridUpdate);
 
         //Rectangle contenant le profil
         distanceRectangle = new Insets(10, 10, 20, 40);
         //1404
+
+
+        pane.setOnMouseMoved(event ->{
+
+        });
+
+        pane.setOnMouseExited(event -> {
+            
+        });
+
 
     //******************************* Transformations *********************************
         double minElevation = profilePrinted.get().minElevation();
@@ -195,7 +227,7 @@ public final class ElevationProfileManager {
         return null;
     }
 
-        //******************************** etiquettes ****************************
+
 
 
     public Pane pane() {
