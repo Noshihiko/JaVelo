@@ -18,6 +18,7 @@ import javafx.scene.layout.VBox;
 import javafx.scene.shape.*;
 import javafx.scene.text.Text;
 import javafx.scene.transform.Affine;
+import javafx.scene.transform.NonInvertibleTransformException;
 import javafx.scene.transform.Transform;
 
 import java.util.StringJoiner;
@@ -149,12 +150,7 @@ public final class ElevationProfileManager {
         screenToWorld.set(transformationAffine);
     }
 
-    private void setWorldToScreen(Point2D p1, Point2D p2, Point2D p1prime, Point2D p2prime) {
 
-        Affine transformationAffine = new Affine();
-        screenToWorld.set(transformationAffine);
-        worldToScreen.set(screenToWorld.get().createInverse());
-    }
     //********************************* fin transformations ****************************************
 
 
@@ -206,6 +202,21 @@ public final class ElevationProfileManager {
         grid.getElements().setAll(gridUpdate);
     }
 
+
+
+    private void setWorldToScreen(Point2D p1, Point2D p2, Point2D p1prime, Point2D p2prime) throws NonInvertibleTransformException {
+
+        Affine transformationAffine = new Affine();
+        screenToWorld.set(transformationAffine);
+        worldToScreen.set(screenToWorld.get().createInverse());
+
+    }
+    //**** ***************************** fin transformations ****************************************
+
+
+
+
+
     public ReadOnlyDoubleProperty mousePositionOnProfileProperty() {
 
         //  la position du pointeur de la souris
@@ -215,6 +226,8 @@ public final class ElevationProfileManager {
         //TODO
         return null;
     }
+
+        //******************************** etiquettes ****************************
 
 
     public Pane pane() {
