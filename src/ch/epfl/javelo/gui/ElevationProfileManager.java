@@ -51,24 +51,27 @@ public final class ElevationProfileManager {
         this.profilePrinted = profilePrinted;
         this.position = position;
 
-        //création de l'interface
-        pane = new Pane();
-        pane2 = new VBox();
-        grid = new Path();
         //TODO vraiment pas sûre de ça
         gridUpdate = new ImmutableObservableList<>();
 
-        group = new Group();
+        //Rectangle contenant le profil
+        distanceRectangle = new Insets(10, 10, 20, 40);
+
+        //création de l'interface
+
+        grid = new Path();
+        polygon = new Polygon();
+        highlightedPosition = new Line();
+
         etiquette1 = new Text();
         etiquette2 = new Text();
         etiquette3 = new Text();
-
-        polygon = new Polygon();
-        highlightedPosition = new Line();
         statistics = new Text();
 
-        //Rectangle contenant le profil
-        distanceRectangle = new Insets(10, 10, 20, 40);
+        group = new Group(etiquette1, etiquette2);
+        pane = new Pane(grid, group, polygon);
+        pane2 = new VBox(etiquette3);
+        borderPane = new BorderPane(pane,null,null,pane2,null);
 
         //Ajout de tous les points au polygone
         for (int i = 0; i <= rectangle.get().getWidth(); ++i) {
@@ -78,23 +81,14 @@ public final class ElevationProfileManager {
         }
         polygon.getPoints().setAll(pointPolygone);
 
-
         pane2.setId("profile_data");
         polygon.setId("profile");
         grid.setId("grid");
 
-        borderPane = new BorderPane(pane,null,null,pane2,null);
         borderPane.getStylesheets().add("elevation_profile.css");
 
         etiquette1.getStyleClass().addAll("grid_label", "horizontal");
         etiquette2.getStyleClass().addAll("grid_label", "vertical");
-
-        group.getChildren().addAll(etiquette1, etiquette2);
-        pane.getChildren().addAll(grid, group, polygon);
-        pane2.getChildren().add(etiquette3);
-
-        borderPane.centerProperty().set(pane);
-        borderPane.bottomProperty().set(pane2);
 
         //binding des éléments de la ligne en gras
         highlightedPosition.layoutXProperty().bind(Bindings.createDoubleBinding( () -> {
@@ -113,28 +107,23 @@ public final class ElevationProfileManager {
             double x = event.getX();
             double y = event.getY();
            // mousePositionOnProfileProperty(x, y);
+            //TODO
         });
 
         //détecte la sortie du pointeur de la souris du panneau
         pane.setOnMouseExited(event -> {
-
-
+            //TODO
         });
-
-
-
-
-
 
     //******************************* Transformations *********************************
         double minElevation = profilePrinted.get().minElevation();
         double maxElevation = profilePrinted.get().maxElevation();
+
         Point2D p1 = new Point2D(0, rectangle.get().getMaxY());
         Point2D p2 = new Point2D(rectangle.get().getMaxX(), 0);
+
         Point2D p1prime = new Point2D(0, maxElevation);
         Point2D p2prime = new Point2D(profilePrinted.get().length(), minElevation);
-
-
     }
 
     private void setScreenToWorld(Point2D p1, Point2D p2, Point2D p1prime, Point2D p2prime) {
@@ -149,9 +138,6 @@ public final class ElevationProfileManager {
 
         screenToWorld.set(transformationAffine);
     }
-
-
-    //********************************* fin transformations ****************************************
 
 
     private void statisticsText(){
@@ -203,7 +189,6 @@ public final class ElevationProfileManager {
     }
 
 
-
     private void setWorldToScreen(Point2D p1, Point2D p2, Point2D p1prime, Point2D p2prime) throws NonInvertibleTransformException {
 
         Affine transformationAffine = new Affine();
@@ -211,10 +196,6 @@ public final class ElevationProfileManager {
         worldToScreen.set(screenToWorld.get().createInverse());
 
     }
-    //**** ***************************** fin transformations ****************************************
-
-
-
 
 
     public ReadOnlyDoubleProperty mousePositionOnProfileProperty() {
@@ -226,8 +207,6 @@ public final class ElevationProfileManager {
         //TODO
         return null;
     }
-
-        //******************************** etiquettes ****************************
 
 
     public Pane pane() {
