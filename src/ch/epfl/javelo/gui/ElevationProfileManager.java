@@ -20,7 +20,6 @@ import javafx.scene.text.Font;
 import javafx.scene.text.Text;
 import javafx.scene.transform.*;
 
-import javax.sound.midi.Soundbank;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.StringJoiner;
@@ -70,11 +69,6 @@ public final class ElevationProfileManager {
         etiquette1.getStyleClass().addAll("grid_label", "horizontal");
         etiquette2.getStyleClass().addAll("grid_label", "vertical");
 
-        int[] POS_STEPS =
-                { 1_000, 2_000, 5_000, 10_000, 25_000, 50_000, 100_000 };
-        int[] ELE_STEPS =
-                { 5, 10, 20, 25, 50, 100, 200, 250, 500, 1_000 };
-
         polygonePoints();
         gridAndEtiquetteCreation();
         statisticsText();
@@ -109,12 +103,12 @@ public final class ElevationProfileManager {
 
         //du rectangle
         rectangle.bind(Bindings.createObjectBinding( () -> {
-            System.out.println("Rectangle 4");
-
+            double conditionWidth = pane.getWidth() - (distanceRectangle.getLeft()+distanceRectangle.getRight());
+            double conditionHeight =pane.getHeight() - (distanceRectangle.getBottom()+ distanceRectangle.getTop());
 
             return new Rectangle2D(distanceRectangle.getLeft(), distanceRectangle.getTop(),
-                    clamp(0,pane.getWidth() - (distanceRectangle.getLeft()+distanceRectangle.getRight()),pane.getWidth()),
-                    clamp(0, pane.getHeight() - (distanceRectangle.getBottom()+ distanceRectangle.getTop()), pane.getHeight()));
+                    (conditionWidth <= 0) ? 0 : conditionWidth, (conditionHeight <= 0) ? 0 : conditionHeight
+            );
         }, pane.heightProperty(),pane.widthProperty()));
 
 
