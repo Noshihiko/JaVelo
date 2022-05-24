@@ -1,12 +1,11 @@
+
 package ch.epfl.javelo.gui;
+
 
 import ch.epfl.javelo.routing.ElevationProfile;
 import com.sun.javafx.collections.ImmutableObservableList;
 import javafx.beans.binding.Bindings;
-import javafx.beans.property.ObjectProperty;
-import javafx.beans.property.SimpleObjectProperty;
-import javafx.beans.property.ReadOnlyDoubleProperty;
-import javafx.beans.property.ReadOnlyObjectProperty;
+import javafx.beans.property.*;
 import javafx.collections.ObservableList;
 
 import javafx.geometry.Insets;
@@ -28,7 +27,7 @@ import java.util.StringJoiner;
 
 public final class ElevationProfileManager {
     private final ReadOnlyObjectProperty<ElevationProfile> profilePrinted;
-    ReadOnlyDoubleProperty position;
+    private final ReadOnlyDoubleProperty position;
     //1
     private final BorderPane borderPane;
     private final Pane pane;
@@ -40,6 +39,7 @@ public final class ElevationProfileManager {
     private final Line highlightedPosition;
     private final Text statistics;
     private final Insets distanceRectangle;
+    private final Group newGroupEtiquettes;
 
     private final ObservableList<PathElement> gridUpdate;
     private ObservableList<Double> pointPolygone = null;
@@ -53,7 +53,7 @@ public final class ElevationProfileManager {
         this.position = position;
 
         //TODO c'est pas ca : comment on l'initialise
-       gridUpdate = new ImmutableObservableList<>();
+       gridUpdate = new ObservableList<>();
 
         //Rectangle contenant le profil
         distanceRectangle = new Insets(10, 10, 20, 40);
@@ -73,6 +73,8 @@ public final class ElevationProfileManager {
         pane = new Pane(grid, group, polygon);
         pane2 = new VBox(etiquette3);
         borderPane = new BorderPane(pane,null,null,pane2,null);
+        newGroupEtiquettes = new Group();
+        pane().getChildren().add(newGroupEtiquettes);
 
         //Ajout de tous les points au polygone
         for (int i = 0; i <= rectangle.get().getWidth(); ++i) {
@@ -185,14 +187,15 @@ public final class ElevationProfileManager {
             gridUpdate.add(new MoveTo(0,i));
             gridUpdate.add(new LineTo(rectangle.get().getWidth(),i));
 
+
             Text text = new Text(0, i, Double.toString(profilePrinted.get().minElevation() + (distanceInBetweenHeight*i)));
 
             text.prefWidth(0);
 
             text.setTextOrigin(VPos.TOP);
-            text.setStyle("grid_label");
-            text.setStyle("horizontal");
+            text.getStyleClass().addAll("grid_label", "horizontal");
             text.setFont(Font.font("Avenir", 10));
+            newGroupEtiquettes.getChildren().add(text);
         }
 
         for (int i = 1; i < rectangle.get().getWidth()/distanceInBetweenWidth; ++i){
@@ -202,9 +205,9 @@ public final class ElevationProfileManager {
             Text text = new Text(i, 0, Double.toString(screenToWorld.get().deltaTransform(i,0).getX()));
 
             text.setTextOrigin(VPos.TOP);
-            text.setStyle("grid_label");
-            text.setStyle("horizontal");
+            text.getStyleClass().addAll("grid_label", "horizontal");
             text.setFont(Font.font("Avenir", 10));
+            newGroupEtiquettes.getChildren().add(text);
         }
         grid.getElements().setAll(gridUpdate);
     }
