@@ -24,7 +24,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.StringJoiner;
 
-import static ch.epfl.javelo.Math2.clamp;
 
 public final class ElevationProfileManager {
     private final ReadOnlyObjectProperty<ElevationProfile> profilePrinted;
@@ -56,9 +55,6 @@ public final class ElevationProfileManager {
     public ElevationProfileManager(ReadOnlyObjectProperty<ElevationProfile> profilePrinted, ReadOnlyDoubleProperty position) {
         this.profilePrinted = profilePrinted;
         this.position = position;
-        System.out.println("Rectangle 1");
-        System.out.println("Width " + rectangle.get().getWidth());
-        System.out.println("Height " + rectangle.get().getHeight());
 
         pane2.setId("profile_data");
         polygon.setId("profile");
@@ -68,53 +64,12 @@ public final class ElevationProfileManager {
 
         etiquette1.getStyleClass().addAll("grid_label", "horizontal");
         etiquette2.getStyleClass().addAll("grid_label", "vertical");
-
-        polygonePoints();
         gridAndEtiquetteCreation();
         statisticsText();
-
-        System.out.println("Rectangle 2");
-        System.out.println("Width " + rectangle.get().getWidth());
-        System.out.println("Height " + rectangle.get().getHeight());
+        polygonePoints();
 
 
-        //********************************* Listener **********************************
-        rectangle.addListener( o -> {
-            polygonePoints();
-            setScreenToWorld();
-            setWorldToScreen();
-        });
-
-        profilePrinted.addListener( o -> {
-            polygonePoints();
-            setScreenToWorld();
-            setWorldToScreen();
-        });
-
-
-        //********************************** Binding **********************************
-        //de la ligne en gras
-        annotationLine.layoutXProperty().bind(Bindings.createDoubleBinding( () -> {
-            return mousePositionOnProfileProperty().get();
-        }, position));
-        annotationLine.startYProperty().bind(Bindings.select(rectangle, "minY"));
-        annotationLine.endYProperty().bind(Bindings.select(rectangle, "maxY"));
-        annotationLine.visibleProperty().bind(position.greaterThanOrEqualTo(0));
-
-        //du rectangle
-        rectangle.bind(Bindings.createObjectBinding( () -> {
-            double conditionWidth = pane.getWidth() - (distanceRectangle.getLeft()+distanceRectangle.getRight());
-            double conditionHeight =pane.getHeight() - (distanceRectangle.getBottom()+ distanceRectangle.getTop());
-
-            return new Rectangle2D(distanceRectangle.getLeft(), distanceRectangle.getTop(),
-                    (conditionWidth <= 0) ? 0 : conditionWidth, (conditionHeight <= 0) ? 0 : conditionHeight
-            );
-        }, pane.heightProperty(),pane.widthProperty()));
-
-
-
-
-        //***************************** Transformations *******************************
+    //***************************** Transformations *******************************
         double minElevation = profilePrinted.get().minElevation();
         double maxElevation = profilePrinted.get().maxElevation();
 
@@ -126,6 +81,40 @@ public final class ElevationProfileManager {
 
         setScreenToWorld();
         setWorldToScreen();
+
+
+    //********************************* Listener **********************************
+        rectangle.addListener( o -> {
+            gridAndEtiquetteCreation();
+            statisticsText();
+            polygonePoints();
+        });
+
+        profilePrinted.addListener( o -> {
+            gridAndEtiquetteCreation();
+            statisticsText();
+            polygonePoints();
+        });
+
+
+    //********************************** Binding **********************************
+        //de la ligne en gras
+        annotationLine.layoutXProperty().bind(Bindings.createDoubleBinding( () -> {
+            return mousePositionOnProfileProperty().get();
+        }, position));
+        annotationLine.startYProperty().bind(Bindings.select(rectangle, "minY"));
+        annotationLine.endYProperty().bind(Bindings.select(rectangle, "maxY"));
+        annotationLine.visibleProperty().bind(position.greaterThanOrEqualTo(0));
+
+        //du rectangle
+        rectangle.bind(Bindings.createObjectBinding( () -> {
+            double conditionWidth = pane.getWidth() - (distanceRectangle.getLeft() + distanceRectangle.getRight());
+            double conditionHeight = pane.getHeight() - (distanceRectangle.getBottom() + distanceRectangle.getTop());
+
+            return new Rectangle2D(distanceRectangle.getLeft(), distanceRectangle.getTop(),
+                    (conditionWidth <= 0) ? 0 : conditionWidth, (conditionHeight <= 0) ? 0 : conditionHeight
+            );
+        }, pane.heightProperty(), pane.widthProperty()));
     }
 
 
@@ -174,52 +163,61 @@ public final class ElevationProfileManager {
                 { 1_000, 2_000, 5_000, 10_000, 25_000, 50_000, 100_000 };
         int[] ELE_STEPS =
                 { 5, 10, 20, 25, 50, 100, 200, 250, 500, 1_000 };
+
         double distanceInBetweenWidth = 0;
         double distanceInBetweenHeight = 0;
 
+
+        //TODO ne faudrait il pas mieux faire une boucle while
         //lignes verticales
         for (int i = 0; i < POS_STEPS.length; ++i) {
             distanceInBetweenWidth = worldToScreen.get().deltaTransform(POS_STEPS[i],0).getX();
-            if (distanceInBetweenWidth >=25) {
+            if (distanceInBetweenWidth >= 25) {
                 break;
             }
         }
+
         //lignes horizontales
         for (int i = 0; i < ELE_STEPS.length; ++i) {
-            distanceInBetweenHeight = worldToScreen.get().deltaTransform(0,ELE_STEPS[i]).getY();
-            if (distanceInBetweenHeight >=50) {
+            distanceInBetweenHeight = worldToScreen.get().deltaTransform(0, ELE_STEPS[i]).getY();
+            if (distanceInBetweenHeight >= 50) {
                 break;
             }
         }
 
         //Création des lignes de la grille
         for (int i = 1; i < rectangle.get().getHeight()/distanceInBetweenHeight; ++i){
-            gridUpdate.add(new MoveTo(0,i));
-            gridUpdate.add(new LineTo(rectangle.get().getWidth(),i));
+            gridUpdate.add(new MoveTo(distanceRectangle.getLeft(), i * distanceInBetweenHeight));
+            gridUpdate.add(new LineTo(rectangle.get().getWidth() - distanceRectangle.getRight(), i * distanceInBetweenHeight));
 
-
-            Text text = new Text(0, i, Double.toString(profilePrinted.get().minElevation() + (distanceInBetweenHeight*i)));
+            Text text = new Text(0, i, Integer.toString((int)(profilePrinted.get().minElevation() + (distanceInBetweenHeight * i))));
 
             text.prefWidth(0);
-
             text.setTextOrigin(VPos.TOP);
             text.getStyleClass().addAll("grid_label", "horizontal");
             text.setFont(Font.font("Avenir", 10));
             newGroupEtiquettes.getChildren().add(text);
+
+            grid.getElements().setAll(gridUpdate);
         }
 
-        for (int i = 1; i < rectangle.get().getWidth()/distanceInBetweenWidth; ++i){
-            gridUpdate.add(new MoveTo(i,0));
-            gridUpdate.add(new LineTo(i,rectangle.get().getHeight()));
+        //TODO verifier si c'est les bonnes infos pour étiquettes
+        // et on inverse pas width et height
+        // jpense qu'il y a un pb dans le calcul de la distance
+        for (int i = 1; i < rectangle.get().getWidth() / distanceInBetweenWidth; ++i){
+            gridUpdate.add(new MoveTo(i * distanceInBetweenWidth,distanceRectangle.getBottom()));
+            gridUpdate.add(new LineTo(i * distanceInBetweenWidth, rectangle.get().getHeight() - distanceRectangle.getTop()));
 
-            Text text = new Text(i, 0, Double.toString(screenToWorld.get().deltaTransform(i,0).getX()));
+            Text text = new Text(i, 0, Integer.toString((int)screenToWorld.get().deltaTransform(i,0).getX()));
 
-            text.setTextOrigin(VPos.TOP);
-            text.getStyleClass().addAll("grid_label", "horizontal");
+            text.prefWidth(text.getY() + 2);
+            text.setTextOrigin(VPos.CENTER);
+            text.getStyleClass().addAll("grid_label", "vertical");
             text.setFont(Font.font("Avenir", 10));
             newGroupEtiquettes.getChildren().add(text);
+           grid.getElements().setAll(gridUpdate);
         }
-        grid.getElements().setAll(gridUpdate);
+        //grid.getElements().setAll(gridUpdate);
     }
 
     private void setWorldToScreen(){
@@ -233,6 +231,9 @@ public final class ElevationProfileManager {
         }
     }
 
+    //TODO changer nom sx et sy
+    // changer nom p1prime et p2prime et p1 et p2
+    // ce serait un pb de -10 et -40 ?
     private void setScreenToWorld() {
         Affine transformationAffine = new Affine();
 
