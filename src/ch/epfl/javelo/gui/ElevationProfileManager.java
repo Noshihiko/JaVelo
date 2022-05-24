@@ -1,7 +1,10 @@
+
 package ch.epfl.javelo.gui;
+
 
 import ch.epfl.javelo.routing.ElevationProfile;
 import javafx.beans.binding.Bindings;
+import javafx.beans.property.*;
 import javafx.beans.property.*;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -40,6 +43,7 @@ public final class ElevationProfileManager {
     private final Line annotationLine;
     //private final Text statistics;
     private final Insets distanceRectangle;
+    private final Group newGroupEtiquettes;
 
     private final ObservableList<PathElement> gridUpdate;
     private ObservableList<Double> pointPolygone;
@@ -47,6 +51,8 @@ public final class ElevationProfileManager {
     private final ObjectProperty<Transform> screenToWorld = new SimpleObjectProperty<>(new Affine());
     private final ObjectProperty<Transform> worldToScreen = new SimpleObjectProperty<>(new Affine());
     private final ReadOnlyDoubleProperty mousePosition;
+
+    private final Point2D p1, p2, p1prime, p2prime;
 
 
     public ElevationProfileManager(ReadOnlyObjectProperty<ElevationProfile> profilePrinted, ReadOnlyDoubleProperty position) {
@@ -83,6 +89,8 @@ public final class ElevationProfileManager {
         pane = new Pane(grid, group, polygon);
         pane2 = new VBox(etiquette3);
         borderPane = new BorderPane(pane,null,null,pane2,null);
+        newGroupEtiquettes = new Group();
+        pane().getChildren().add(newGroupEtiquettes);
 
         pointPolygone = FXCollections.observableArrayList();
         //Ajout de tous les points au polygone
@@ -152,16 +160,31 @@ public final class ElevationProfileManager {
         double minElevation = profilePrinted.get().minElevation();
         double maxElevation = profilePrinted.get().maxElevation();
 
-        Point2D p1 = new Point2D(0, rectangle.get().getMaxY());
-        Point2D p2 = new Point2D(rectangle.get().getMaxX(), 0);
+        p1 = new Point2D(0, rectangle.get().getMaxY());
+        p2 = new Point2D(rectangle.get().getMaxX(), 0);
 
-        Point2D p1prime = new Point2D(0, maxElevation);
-        Point2D p2prime = new Point2D(profilePrinted.get().length(), minElevation);
+        p1prime = new Point2D(0, maxElevation);
+        p2prime = new Point2D(profilePrinted.get().length(), minElevation);
 
-        //TODO tu les utilises pas tes p1, p2, p1prime et p2prime ?
+        setScreenToWorld();
+        setWorldToScreen();
+
     }
 
-    private void setScreenToWorld(Point2D p1, Point2D p2, Point2D p1prime, Point2D p2prime) {
+    /*private void setScreenToWorld(Point2D p1, Point2D p2, Point2D p1prime, Point2D p2prime) {
+
+        Affine transformationAffine = new Affine();
+
+        transformationAffine.prependTranslation(-10, -40);
+        double sx = (p1prime.getX() - p2prime.getX()) / (p2.getX() - p1.getX());
+        double sy = (p1prime.getY() - p2prime.getY()) / (p2.getY() - p1.getY());
+        transformationAffine.prependScale(sx, sy);
+        transformationAffine.prependTranslation(0, p1prime.getX());
+
+        screenToWorld.set(transformationAffine);
+    }*/
+
+    private void setScreenToWorld() {
 
         Affine transformationAffine = new Affine();
 
@@ -216,15 +239,15 @@ public final class ElevationProfileManager {
             gridUpdate.add(new MoveTo(0,i));
             gridUpdate.add(new LineTo(rectangle.get().getWidth(),i));
 
+
             Text text = new Text(0, i, Double.toString(profilePrinted.get().minElevation() + (distanceInBetweenHeight*i)));
 
             text.prefWidth(0);
 
-            //TODO : remplacer setStyle par setId à vérifier
             text.setTextOrigin(VPos.TOP);
-            text.setId("grid_label");
-            text.setId("horizontal");
+            text.getStyleClass().addAll("grid_label", "horizontal");
             text.setFont(Font.font("Avenir", 10));
+            newGroupEtiquettes.getChildren().add(text);
         }
 
         for (int i = 1; i < rectangle.get().getWidth()/distanceInBetweenWidth; ++i){
@@ -234,15 +257,23 @@ public final class ElevationProfileManager {
             Text text = new Text(i, 0, Double.toString(screenToWorld.get().deltaTransform(i,0).getX()));
 
             text.setTextOrigin(VPos.TOP);
-            text.setId("grid_label");
-            text.setId("horizontal");
+            text.getStyleClass().addAll("grid_label", "horizontal");
             text.setFont(Font.font("Avenir", 10));
+            newGroupEtiquettes.getChildren().add(text);
         }
         grid.getElements().setAll(gridUpdate);
     }
 
 
-    private void setWorldToScreen(Point2D p1, Point2D p2, Point2D p1prime, Point2D p2prime) throws NonInvertibleTransformException {
+    /*private void setWorldToScreen(Point2D p1, Point2D p2, Point2D p1prime, Point2D p2prime) throws NonInvertibleTransformException {
+
+        Affine transformationAffine = new Affine();
+        screenToWorld.set(transformationAffine);
+        worldToScreen.set(screenToWorld.get().createInverse());
+
+    }*/
+
+    private void setWorldToScreen() throws NonInvertibleTransformException {
 
         Affine transformationAffine = new Affine();
         screenToWorld.set(transformationAffine);

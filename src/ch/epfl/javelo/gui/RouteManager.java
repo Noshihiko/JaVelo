@@ -135,15 +135,15 @@ public final class RouteManager {
     private void reCreateItinerary() {
 
         if (routeBean.getRouteProperty().get() != null) {
-            Double[] listeCoord = conversionCord(routeBean.getRouteProperty().get().points());
+            Double[] listOfCoordinates = conversionCord(routeBean.getRouteProperty().get().points());
 
 
             PointWebMercator point = PointWebMercator.ofPointCh(routeBean.getWaypoint().get(routeBean.getWaypoint().size() - 1).pointCh());
             System.out.println("dernier WAYPOINT : " + routeBean.getWaypoint().get(routeBean.getWaypoint().size() - 1).nodeId());
             System.out.println("dernier WAYPOINT      : " + point.yAtZoomLevel(mapParameters.get().zoom()));
-            System.out.println("dernier point de route: " + listeCoord[routeBean.getRouteProperty().get().points().size() * 2 - 1]);
+            System.out.println("dernier point de route: " + listOfCoordinates[routeBean.getRouteProperty().get().points().size() * 2 - 1]);
 
-            itinerary.getPoints().setAll(listeCoord);
+            itinerary.getPoints().setAll(listOfCoordinates);
 
             recreateDisklayout();
 
