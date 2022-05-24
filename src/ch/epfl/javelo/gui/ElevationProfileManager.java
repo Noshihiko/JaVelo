@@ -5,7 +5,6 @@ package ch.epfl.javelo.gui;
 import ch.epfl.javelo.routing.ElevationProfile;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.*;
-import javafx.beans.property.*;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 
@@ -23,8 +22,6 @@ import javafx.scene.text.Font;
 import javafx.scene.text.Text;
 import javafx.scene.transform.*;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.StringJoiner;
 
 
@@ -41,7 +38,6 @@ public final class ElevationProfileManager {
     private final Group group;
     private final Text etiquette1, etiquette2, etiquette3;
     private final Line annotationLine;
-    //private final Text statistics;
     private final Insets distanceRectangle;
     private final Group newGroupEtiquettes;
 
@@ -55,7 +51,7 @@ public final class ElevationProfileManager {
     private final Point2D p1, p2, p1prime, p2prime;
 
 
-    public ElevationProfileManager(ReadOnlyObjectProperty<ElevationProfile> profilePrinted, ReadOnlyDoubleProperty position) {
+    public ElevationProfileManager(ReadOnlyObjectProperty<ElevationProfile> profilePrinted, ReadOnlyDoubleProperty position) throws NonInvertibleTransformException {
         //TODO vérifier si c'est ça qu'il veut que l'on fasse
         if (profilePrinted.get().totalDescent() == 0) {
             this.profilePrinted = null;
@@ -73,8 +69,8 @@ public final class ElevationProfileManager {
         //TODO COMMENT ON FAIT rectangle ? faut il mettre le insets dedans?
         rectangle = new SimpleObjectProperty<>();
         rectangle.set(Rectangle2D.EMPTY);
-        //création de l'interface
 
+        //création de l'interface
         mousePosition = new SimpleDoubleProperty();
         grid = new Path();
         polygon = new Polygon();
@@ -83,7 +79,6 @@ public final class ElevationProfileManager {
         etiquette1 = new Text();
         etiquette2 = new Text();
         etiquette3 = new Text();
-        //statistics = new Text();
 
         group = new Group(etiquette1, etiquette2);
         pane = new Pane(grid, group, polygon);
@@ -118,17 +113,6 @@ public final class ElevationProfileManager {
         annotationLine.endYProperty().bind(Bindings.select(rectangle, "maxY"));
         annotationLine.visibleProperty().bind(position.greaterThanOrEqualTo(0));
 
-        /*
-        //binding du rectangle
-        rectangle.bind(Bindings.createObjectBinding(()-> {
-            //calcul du nouveau rect
-            //TODO 1464
-            //pane
-            return null;
-                }, pane.widthProperty(), pane.heightProperty()
-        ));
-
-         */
 
         //calcul des différentes distances entre les lignes horizontales et verticales de la grille
         //tblo en constant
@@ -168,34 +152,8 @@ public final class ElevationProfileManager {
 
         setScreenToWorld();
         setWorldToScreen();
-
     }
 
-    /*private void setScreenToWorld(Point2D p1, Point2D p2, Point2D p1prime, Point2D p2prime) {
-
-        Affine transformationAffine = new Affine();
-
-        transformationAffine.prependTranslation(-10, -40);
-        double sx = (p1prime.getX() - p2prime.getX()) / (p2.getX() - p1.getX());
-        double sy = (p1prime.getY() - p2prime.getY()) / (p2.getY() - p1.getY());
-        transformationAffine.prependScale(sx, sy);
-        transformationAffine.prependTranslation(0, p1prime.getX());
-
-        screenToWorld.set(transformationAffine);
-    }*/
-
-    private void setScreenToWorld() {
-
-        Affine transformationAffine = new Affine();
-
-        transformationAffine.prependTranslation(-10, -40);
-        double sx = (p1prime.getX() - p2prime.getX()) / (p2.getX() - p1.getX());
-        double sy = (p1prime.getY() - p2prime.getY()) / (p2.getY() - p1.getY());
-        transformationAffine.prependScale(sx, sy);
-        transformationAffine.prependTranslation(0, p1prime.getX());
-
-        screenToWorld.set(transformationAffine);
-    }
 
 
     private void statisticsText(){
@@ -264,30 +222,27 @@ public final class ElevationProfileManager {
         grid.getElements().setAll(gridUpdate);
     }
 
-
-    /*private void setWorldToScreen(Point2D p1, Point2D p2, Point2D p1prime, Point2D p2prime) throws NonInvertibleTransformException {
-
-        Affine transformationAffine = new Affine();
-        screenToWorld.set(transformationAffine);
-        worldToScreen.set(screenToWorld.get().createInverse());
-
-    }*/
-
     private void setWorldToScreen() throws NonInvertibleTransformException {
-
         Affine transformationAffine = new Affine();
         screenToWorld.set(transformationAffine);
         worldToScreen.set(screenToWorld.get().createInverse());
 
     }
 
+    private void setScreenToWorld() {
+
+        Affine transformationAffine = new Affine();
+
+        transformationAffine.prependTranslation(-10, -40);
+        double sx = (p1prime.getX() - p2prime.getX()) / (p2.getX() - p1.getX());
+        double sy = (p1prime.getY() - p2prime.getY()) / (p2.getY() - p1.getY());
+        transformationAffine.prependScale(sx, sy);
+        transformationAffine.prependTranslation(0, p1prime.getX());
+
+        screenToWorld.set(transformationAffine);
+    }
 
     public ReadOnlyDoubleProperty mousePositionOnProfileProperty() {
-        //  la position du pointeur de la souris
-        // le long du profil (en mètres, arrondie à l'entier le plus proche),
-        // ou NaN si le pointeur de la
-        // souris ne se trouve pas au-dessus du profil
-        //TODO
         return mousePosition;
     }
 
