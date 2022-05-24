@@ -2,10 +2,7 @@ package ch.epfl.javelo.gui;
 
 import ch.epfl.javelo.routing.ElevationProfile;
 import javafx.beans.binding.Bindings;
-import javafx.beans.property.ObjectProperty;
-import javafx.beans.property.SimpleObjectProperty;
-import javafx.beans.property.ReadOnlyDoubleProperty;
-import javafx.beans.property.ReadOnlyObjectProperty;
+import javafx.beans.property.*;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 
@@ -49,6 +46,7 @@ public final class ElevationProfileManager {
     private ObjectProperty<Rectangle2D> rectangle;
     private final ObjectProperty<Transform> screenToWorld = new SimpleObjectProperty<>(new Affine());
     private final ObjectProperty<Transform> worldToScreen = new SimpleObjectProperty<>(new Affine());
+    private final ReadOnlyDoubleProperty mousePosition;
 
 
     public ElevationProfileManager(ReadOnlyObjectProperty<ElevationProfile> profilePrinted, ReadOnlyDoubleProperty position) {
@@ -71,6 +69,7 @@ public final class ElevationProfileManager {
         rectangle.set(Rectangle2D.EMPTY);
         //création de l'interface
 
+        mousePosition = new SimpleDoubleProperty();
         grid = new Path();
         polygon = new Polygon();
         annotationLine = new Line();
@@ -135,14 +134,15 @@ public final class ElevationProfileManager {
 
         //détecte les mouvements du pointeur de la souris lorsqu'elle survole ce panneau
         pane.setOnMouseMoved(event ->{
-            double mouseX = event.getX();
-            double mouseY = event.getY();
+            Point2D mouseIRL = screenToWorld.get().deltaTransform(event.getX(), event.getY());
+            mousePositionOnProfileProperty().add((int)mouseIRL.getX());
+            mousePositionOnProfileProperty().add((int)mouseIRL.getY());
             //modifier les valeurs de la propriété mousePositionOnProfileProperty
         });
 
         //détecte la sortie du pointeur de la souris du panneau
         pane.setOnMouseExited(event -> {
-            //TODO
+            mousePositionOnProfileProperty().add(Double.NaN);
             // faut mettre la propriété
             // mousePositionOnProfileProperty en NaN
         });
@@ -257,7 +257,7 @@ public final class ElevationProfileManager {
         // ou NaN si le pointeur de la
         // souris ne se trouve pas au-dessus du profil
         //TODO
-        return null;
+        return mousePosition;
     }
 
     public Pane pane() {
