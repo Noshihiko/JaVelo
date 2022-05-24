@@ -47,6 +47,8 @@ public final class ElevationProfileManager {
     private final ObjectProperty<Transform> screenToWorld = new SimpleObjectProperty<>(new Affine());
     private final ObjectProperty<Transform> worldToScreen = new SimpleObjectProperty<>(new Affine());
 
+    private final Point2D p1, p2, p1prime, p2prime;
+
 
     public ElevationProfileManager(ReadOnlyObjectProperty<ElevationProfile> profilePrinted, ReadOnlyDoubleProperty position) {
         this.profilePrinted = profilePrinted;
@@ -125,14 +127,31 @@ public final class ElevationProfileManager {
         double minElevation = profilePrinted.get().minElevation();
         double maxElevation = profilePrinted.get().maxElevation();
 
-        Point2D p1 = new Point2D(0, rectangle.get().getMaxY());
-        Point2D p2 = new Point2D(rectangle.get().getMaxX(), 0);
+        p1 = new Point2D(0, rectangle.get().getMaxY());
+        p2 = new Point2D(rectangle.get().getMaxX(), 0);
 
-        Point2D p1prime = new Point2D(0, maxElevation);
-        Point2D p2prime = new Point2D(profilePrinted.get().length(), minElevation);
+        p1prime = new Point2D(0, maxElevation);
+        p2prime = new Point2D(profilePrinted.get().length(), minElevation);
+
+        setScreenToWorld();
+        setWorldToScreen();
+
     }
 
-    private void setScreenToWorld(Point2D p1, Point2D p2, Point2D p1prime, Point2D p2prime) {
+    /*private void setScreenToWorld(Point2D p1, Point2D p2, Point2D p1prime, Point2D p2prime) {
+
+        Affine transformationAffine = new Affine();
+
+        transformationAffine.prependTranslation(-10, -40);
+        double sx = (p1prime.getX() - p2prime.getX()) / (p2.getX() - p1.getX());
+        double sy = (p1prime.getY() - p2prime.getY()) / (p2.getY() - p1.getY());
+        transformationAffine.prependScale(sx, sy);
+        transformationAffine.prependTranslation(0, p1prime.getX());
+
+        screenToWorld.set(transformationAffine);
+    }*/
+
+    private void setScreenToWorld() {
 
         Affine transformationAffine = new Affine();
 
@@ -213,7 +232,15 @@ public final class ElevationProfileManager {
     }
 
 
-    private void setWorldToScreen(Point2D p1, Point2D p2, Point2D p1prime, Point2D p2prime) throws NonInvertibleTransformException {
+    /*private void setWorldToScreen(Point2D p1, Point2D p2, Point2D p1prime, Point2D p2prime) throws NonInvertibleTransformException {
+
+        Affine transformationAffine = new Affine();
+        screenToWorld.set(transformationAffine);
+        worldToScreen.set(screenToWorld.get().createInverse());
+
+    }*/
+
+    private void setWorldToScreen() throws NonInvertibleTransformException {
 
         Affine transformationAffine = new Affine();
         screenToWorld.set(transformationAffine);
