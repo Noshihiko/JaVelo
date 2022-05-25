@@ -1,4 +1,4 @@
-package ch.epfl.javelo.gui;
+/*package ch.epfl.javelo.gui;
 
 import ch.epfl.javelo.routing.ElevationProfile;
 import javafx.beans.binding.Bindings;
@@ -129,6 +129,8 @@ public final class ElevationProfileManager {
             polygon.getPoints().add(i, worldToScreen.get().transform(xElevationAt, profilePrinted.get().elevationAt(xElevationAt)).getY());
         }
     }
+    */
+    //FIN COMM ****************************************************************************************
 
 
         /*
@@ -145,7 +147,8 @@ public final class ElevationProfileManager {
 
          */
 
-
+//DEB COM ***************************************************************************************
+/*
     private void statisticsText(){
         if (profilePrinted != null) {
             StringJoiner statistic = new StringJoiner("     ");
@@ -276,4 +279,4 @@ public final class ElevationProfileManager {
     public Pane pane() {
         return borderPane;
     }
-}
+}*/

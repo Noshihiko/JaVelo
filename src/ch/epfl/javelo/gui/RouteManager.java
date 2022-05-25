@@ -87,6 +87,7 @@ public final class RouteManager {
             // SEGMENT AT retourne pas la bonne valeur car ça place un waypoint à la fin et pas au milieu
 
             int index = routeBean.getRouteProperty().get().indexOfSegmentAt(routeBean.highlightedPosition());
+            System.out.println("INDEX OF WYAYPOINT : " +index);
 
             boolean check=true;
 
@@ -129,7 +130,7 @@ public final class RouteManager {
         PointWebMercator point2 = PointWebMercator.ofPointCh(p2);
         disk.setLayoutX(mapParameters.get().viewX(point2));
         disk.setLayoutY(mapParameters.get().viewY(point2));
-        System.out.println(">>> " + point2.xAtZoomLevel(mapParameters.get().zoom()));
+        //System.out.println(">>> " + point2.xAtZoomLevel(mapParameters.get().zoom()));
     }
 
     private void reCreateItinerary() {
@@ -139,9 +140,9 @@ public final class RouteManager {
 
 
             PointWebMercator point = PointWebMercator.ofPointCh(routeBean.getWaypoint().get(routeBean.getWaypoint().size() - 1).pointCh());
-            System.out.println("dernier WAYPOINT : " + routeBean.getWaypoint().get(routeBean.getWaypoint().size() - 1).nodeId());
-            System.out.println("dernier WAYPOINT      : " + point.yAtZoomLevel(mapParameters.get().zoom()));
-            System.out.println("dernier point de route: " + listOfCoordinates[routeBean.getRouteProperty().get().points().size() * 2 - 1]);
+            //System.out.println("dernier WAYPOINT : " + routeBean.getWaypoint().get(routeBean.getWaypoint().size() - 1).nodeId());
+            //System.out.println("dernier WAYPOINT      : " + point.yAtZoomLevel(mapParameters.get().zoom()));
+            //System.out.println("dernier point de route: " + listOfCoordinates[routeBean.getRouteProperty().get().points().size() * 2 - 1]);
 
             itinerary.getPoints().setAll(listOfCoordinates);
 
