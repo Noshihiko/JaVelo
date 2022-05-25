@@ -274,9 +274,7 @@ public final class ElevationProfileManager {
     }
 
 
-    //TODO changer nom sx et sy
-    // changer nom p1prime et p2prime et p1 et p2
-    // ce serait un pb de -10 et -40 ?
+    //TODO changer nom sx et sy, p1prime et p2prime et p1 et p2
     private void setScreenToWorld() {
         Affine transformationAffine = new Affine();
 
