@@ -1,7 +1,6 @@
 
 package ch.epfl.javelo.gui;
 
-
 import ch.epfl.javelo.routing.ElevationProfile;
 import com.sun.javafx.collections.ImmutableObservableList;
 import javafx.beans.binding.Bindings;
@@ -150,7 +149,6 @@ public final class ElevationProfileManager {
 
         screenToWorld.set(transformationAffine);
     }*/
-
     private void setScreenToWorld() {
 
         Affine transformationAffine = new Affine();
@@ -230,7 +228,6 @@ public final class ElevationProfileManager {
         }
         grid.getElements().setAll(gridUpdate);
     }
-
 
     /*private void setWorldToScreen(Point2D p1, Point2D p2, Point2D p1prime, Point2D p2prime) throws NonInvertibleTransformException {
 

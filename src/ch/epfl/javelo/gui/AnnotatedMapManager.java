@@ -1,3 +1,4 @@
+/*
 package ch.epfl.javelo.gui;
 
 import ch.epfl.javelo.data.Graph;
@@ -5,8 +6,9 @@ import javafx.beans.InvalidationListener;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.ReadOnlyObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
-import javafx.beans.value.ChangeListener;
+
 import javafx.scene.layout.Pane;
+import javafx.scene.layout.StackPane;
 
 import java.util.function.Consumer;
 
@@ -25,6 +27,8 @@ public final class AnnotatedMapManager {
     private final ObjectProperty<MapViewParameters> onlyMapParameters;
     private final BaseMapManager mapManager;
     private final WaypointsManager waypointsManager;
+    private final StackPane empilementPane;
+    private final ObjectProperty mousePositionOnRouteProperty;
 
 
     public AnnotatedMapManager(Graph reseauRoutier, TileManager gestionnaireTuiles, RouteBean routeBean, Consumer<String> error) {
@@ -46,10 +50,19 @@ public final class AnnotatedMapManager {
         //creation de base map manager
         mapManager = new BaseMapManager(gestionnaireTuiles, waypointsManager , onlyMapParameters);
 
+        empilementPane = new StackPane(mapManager.pane(), routeManager.pane(), waypointsManager.pane());
+        empilementPane.setStyle("map.css");
+
+        //TODO a faire
+        mousePositionOnRouteProperty = new SimpleObjectProperty();
     }
 
 
     public Pane pane() {
         return pane;
     }
-}
+
+    public ObjectProperty mousePositionOnRouteProperty() {
+        return mousePositionOnRouteProperty;
+    }
+}*/
