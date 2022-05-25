@@ -31,46 +31,46 @@ public final class TileManager {
             return cacheMemoire.get(tileId);
         }
         else {
-        //Si la taille du cache-memoire est depassé on enlève l'element le moins utilisé
-             while (cacheMemoire.size() >= 100) {
-                    cacheMemoire.remove(cacheMemoire.keySet().iterator().next());
-                }
-            }
-            //ecriture du chemin d'accès pour acceder a l'image de la tuile voulue
-            Path access = path.resolve(String.valueOf(tileId.zoomLevel)).resolve(String.valueOf(tileId.x)).resolve((tileId.y)+".png");
-
-            if (Files.exists(access)) {
-                //si l'image est dans l'hard disk alors on la recupère
-                try (FileInputStream i = new FileInputStream(access.toFile())) {
-                    Image image = new Image(i);
-                    cacheMemoire.put(tileId, image);
-                    return image;
-                }
-            }
-            //si l'image n'est pas dans l'hard disk on va chercher sur le web
-            else {
-                URL u = new URL(
-                        "https://tile.openstreetmap.org/"+tileId.zoomLevel + "/" + tileId.x +"/" +tileId.y +".png");
-                URLConnection c = u.openConnection();
-                c.setRequestProperty("User-Agent", "JaVelo");
-                Files.createDirectories(access.getParent());
-                try (InputStream i = c.getInputStream()) {
-                    FileOutputStream a = new FileOutputStream(access.toFile());
-                    i.transferTo(a);
-                }
-                try(FileInputStream i = new FileInputStream(access.toFile())){
-                    Image image = new Image(i);
-                    cacheMemoire.put(tileId, image);
-                    return image;
-                }
-                //catch ?
+            //Si la taille du cache-memoire est depassé on enlève l'element le moins utilisé
+            while (cacheMemoire.size() >= 100) {
+                cacheMemoire.remove(cacheMemoire.keySet().iterator().next());
             }
         }
+        //ecriture du chemin d'accès pour acceder a l'image de la tuile voulue
+        Path access = path.resolve(String.valueOf(tileId.zoomLevel)).resolve(String.valueOf(tileId.x)).resolve((tileId.y)+".png");
 
-        public record TileId(int zoomLevel, int x, int y) {
-
-            public static boolean isValid(int zoomLevel, int x, int y) {
-                return (x>= 0 && y>= 0 && zoomLevel>=0);
+        if (Files.exists(access)) {
+            //si l'image est dans l'hard disk alors on la recupère
+            try (FileInputStream i = new FileInputStream(access.toFile())) {
+                Image image = new Image(i);
+                cacheMemoire.put(tileId, image);
+                return image;
             }
         }
+        //si l'image n'est pas dans l'hard disk on va chercher sur le web
+        else {
+            URL u = new URL(
+                    "https://tile.openstreetmap.org/"+tileId.zoomLevel + "/" + tileId.x +"/" +tileId.y +".png");
+            URLConnection c = u.openConnection();
+            c.setRequestProperty("User-Agent", "JaVelo");
+            Files.createDirectories(access.getParent());
+            try (InputStream i = c.getInputStream()) {
+                FileOutputStream a = new FileOutputStream(access.toFile());
+                i.transferTo(a);
+            }
+            try(FileInputStream i = new FileInputStream(access.toFile())){
+                Image image = new Image(i);
+                cacheMemoire.put(tileId, image);
+                return image;
+            }
+            //catch ?
+        }
+    }
+
+    public record TileId(int zoomLevel, int x, int y) {
+
+        public static boolean isValid(int zoomLevel, int x, int y) {
+            return (x>= 0 && y>= 0 && zoomLevel>=0);
+        }
+    }
 }

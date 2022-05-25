@@ -1,4 +1,4 @@
-package ch.epfl.javelo.gui;
+/*package ch.epfl.javelo.gui;
 
 import ch.epfl.javelo.routing.ElevationProfile;
 import javafx.beans.binding.Bindings;
@@ -119,15 +119,18 @@ public final class ElevationProfileManager {
 
 
     //Ajout de tous les points au polygone
-    private void polygonePoints(){
+    private void polygonePoints() {
         pointPolygone.clear();
 
         polygon.getPoints().addAll(rectangle.get().getMinX(), rectangle.get().getMaxY(),
                 rectangle.get().getMaxX(), rectangle.get().getMaxY());
         for (int i = 0; i <= rectangle.get().getWidth(); ++i) {
-            double xElevationAt = screenToWorld.get().transform(i,0).getX();
+            double xElevationAt = screenToWorld.get().transform(i, 0).getX();
             polygon.getPoints().add(i, worldToScreen.get().transform(xElevationAt, profilePrinted.get().elevationAt(xElevationAt)).getY());
         }
+    }
+    */
+    //FIN COMM ****************************************************************************************
 
 
         /*
@@ -143,8 +146,9 @@ public final class ElevationProfileManager {
        polygon.getPoints().setAll(pointPolygone);
 
          */
-    }
 
+//DEB COM ***************************************************************************************
+/*
     private void statisticsText(){
         if (profilePrinted != null) {
             StringJoiner statistic = new StringJoiner("     ");
@@ -238,6 +242,22 @@ public final class ElevationProfileManager {
         //grid.getElements().setAll(gridUpdate);
     }
 
+
+    //private void setWorldToScreen(Point2D p1, Point2D p2, Point2D p1prime, Point2D p2prime) throws NonInvertibleTransformException {
+
+        private void setScreenToWorld() {
+            Affine transformationAffine = new Affine();
+
+            double sx = (p1prime.getX() - p2prime.getX()) / (p2.getX() - p1.getX());
+            double sy = (p1prime.getY() - p2prime.getY()) / (p2.getY() - p1.getY());
+
+            transformationAffine.prependTranslation(-10, -40);
+            transformationAffine.prependScale(sx, sy);
+            transformationAffine.prependTranslation(0, p1prime.getX());
+
+            screenToWorld.set(transformationAffine);
+        }
+
     private void setWorldToScreen(){
         Affine transformationAffine = new Affine();
 
@@ -252,18 +272,7 @@ public final class ElevationProfileManager {
     //TODO changer nom sx et sy
     // changer nom p1prime et p2prime et p1 et p2
     // ce serait un pb de -10 et -40 ?
-    private void setScreenToWorld() {
-        Affine transformationAffine = new Affine();
 
-        double sx = (p1prime.getX() - p2prime.getX()) / (p2.getX() - p1.getX());
-        double sy = (p1prime.getY() - p2prime.getY()) / (p2.getY() - p1.getY());
-
-        transformationAffine.prependTranslation(-10, -40);
-        transformationAffine.prependScale(sx, sy);
-        transformationAffine.prependTranslation(0, p1prime.getX());
-
-        screenToWorld.set(transformationAffine);
-    }
 
     //TODO vaut-il mieux recréer un chaque fois un doubleproperty ou alors faire doubleproperty.set(double.nan) ?
     public ReadOnlyDoubleProperty mousePositionOnProfileProperty() {
@@ -288,4 +297,4 @@ public final class ElevationProfileManager {
     public Pane pane() {
         return borderPane;
     }
-}
+}*/
