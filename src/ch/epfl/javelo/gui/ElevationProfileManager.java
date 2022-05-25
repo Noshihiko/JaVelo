@@ -1,4 +1,4 @@
-/*package ch.epfl.javelo.gui;
+package ch.epfl.javelo.gui;
 
 import ch.epfl.javelo.routing.ElevationProfile;
 import javafx.beans.binding.Bindings;
@@ -50,7 +50,7 @@ public final class ElevationProfileManager {
     private final ObjectProperty<Transform> screenToWorld = new SimpleObjectProperty<>(new Affine());
     private final ObjectProperty<Transform> worldToScreen = new SimpleObjectProperty<>(new Affine());
 
-    private final Point2D p1, p2, p1prime, p2prime;
+    private  Point2D p1, p2, p1prime, p2prime;
 
     public ElevationProfileManager(ReadOnlyObjectProperty<ElevationProfile> profilePrinted, ReadOnlyDoubleProperty position) {
         this.profilePrinted = profilePrinted;
@@ -64,36 +64,55 @@ public final class ElevationProfileManager {
 
         etiquette1.getStyleClass().addAll("grid_label", "horizontal");
         etiquette2.getStyleClass().addAll("grid_label", "vertical");
-      //  gridAndEtiquetteCreation();
-        //statisticsText();
+        gridAndEtiquetteCreation();
+        statisticsText();
         polygonePoints();
 
+        /*
+        polygon.getPoints().addAll(distanceRectangle.getLeft(), distanceRectangle.getBottom(),
+                    distanceRectangle.getLeft(), rectangle.get().getHeight() + distanceRectangle.getBottom(),
+                    distanceRectangle.getLeft() + rectangle.get().getWidth(), distanceRectangle.getBottom(),
+                    distanceRectangle.getLeft() + rectangle.get().getWidth(), distanceRectangle.getBottom() + rectangle.get().getHeight());
+       */
 
     //***************************** Transformations *******************************
-        double minElevation = profilePrinted.get().minElevation();
-        double maxElevation = profilePrinted.get().maxElevation();
-
-        p1 = new Point2D(0, rectangle.get().getMaxY());
-        p2 = new Point2D(rectangle.get().getMaxX(), 0);
-
-        p1prime = new Point2D(0, maxElevation);
-        p2prime = new Point2D(profilePrinted.get().length(), minElevation);
-
-        setScreenToWorld();
-        setWorldToScreen();
 
 
     //********************************* Listener **********************************
         rectangle.addListener( o -> {
-         //   gridAndEtiquetteCreation();
-          //  statisticsText();
+            double minElevation = profilePrinted.get().minElevation();
+            double maxElevation = profilePrinted.get().maxElevation();
+
+            p1 = new Point2D(0, rectangle.get().getHeight());
+            p2 = new Point2D(rectangle.get().getWidth(), 0);
+
+            p1prime = new Point2D(0, maxElevation);
+            p2prime = new Point2D(profilePrinted.get().length(), minElevation);
+
+            setScreenToWorld();
+            setWorldToScreen();
+            gridAndEtiquetteCreation();
+            statisticsText();
             polygonePoints();
+
         });
 
         profilePrinted.addListener( o -> {
-            //gridAndEtiquetteCreation();
-            //statisticsText();
+            double minElevation = profilePrinted.get().minElevation();
+            double maxElevation = profilePrinted.get().maxElevation();
+
+            p1 = new Point2D(0, rectangle.get().getHeight());
+            p2 = new Point2D(rectangle.get().getWidth(), 0);
+
+            p1prime = new Point2D(0, maxElevation);
+            p2prime = new Point2D(profilePrinted.get().length(), minElevation);
+
+            setScreenToWorld();
+            setWorldToScreen();
+            gridAndEtiquetteCreation();
+            statisticsText();
             polygonePoints();
+
         });
 
 
@@ -121,16 +140,19 @@ public final class ElevationProfileManager {
     //Ajout de tous les points au polygone
     private void polygonePoints() {
         pointPolygone.clear();
+        polygon.getPoints().clear();
 
-        polygon.getPoints().addAll(rectangle.get().getMinX(), rectangle.get().getMaxY(),
-                rectangle.get().getMaxX(), rectangle.get().getMaxY());
-        for (int i = 0; i <= rectangle.get().getWidth(); ++i) {
+
+
+        for (int i = (int)rectangle.get().getMinX(); i < rectangle.get().getMaxX(); ++i) {
             double xElevationAt = screenToWorld.get().transform(i, 0).getX();
-            polygon.getPoints().add(i, worldToScreen.get().transform(xElevationAt, profilePrinted.get().elevationAt(xElevationAt)).getY());
+            polygon.getPoints().add((double)i);
+            polygon.getPoints().add(worldToScreen.get().transform(0, profilePrinted.get().elevationAt(xElevationAt)).getY());
         }
+
+        polygon.getPoints().addAll(rectangle.get().getMaxX(), rectangle.get().getMaxY(),
+                rectangle.get().getMinX(), rectangle.get().getMaxY());
     }
-    */
-    //FIN COMM ****************************************************************************************
 
 
         /*
@@ -147,8 +169,7 @@ public final class ElevationProfileManager {
 
          */
 
-//DEB COM ***************************************************************************************
-/*
+
     private void statisticsText(){
         if (profilePrinted != null) {
             StringJoiner statistic = new StringJoiner("     ");
@@ -162,6 +183,10 @@ public final class ElevationProfileManager {
     }
 
     private void gridAndEtiquetteCreation(){
+        grid.getElements().removeAll();
+        gridUpdate.clear();
+        newGroupEtiquettes.getChildren().clear();
+
         //calcul des différentes distances entre les lignes horizontales et verticales de la grille
         int[] POS_STEPS =
                 { 1_000, 2_000, 5_000, 10_000, 25_000, 50_000, 100_000 };
@@ -170,6 +195,14 @@ public final class ElevationProfileManager {
 
         double distanceInBetweenWidth = 0;
         double distanceInBetweenHeight = 0;
+        gridUpdate.add(new MoveTo(rectangle.get().getMinX(), rectangle.get().getMinY()));
+        gridUpdate.add(new LineTo(rectangle.get().getMaxX(), rectangle.get().getMinY()));
+        gridUpdate.add(new MoveTo(rectangle.get().getMinX(), rectangle.get().getMinY()));
+        gridUpdate.add(new LineTo(rectangle.get().getMinX(), rectangle.get().getMaxY()));
+        gridUpdate.add(new MoveTo(rectangle.get().getMinX(), rectangle.get().getMaxY()));
+        gridUpdate.add(new LineTo(rectangle.get().getMaxX(), rectangle.get().getMaxY()));
+        gridUpdate.add(new MoveTo(rectangle.get().getMaxX(), rectangle.get().getMaxY()));
+        gridUpdate.add(new LineTo(rectangle.get().getMaxX(), rectangle.get().getMinY()));
 
 
         //TODO ne faudrait il pas mieux faire une boucle while
@@ -205,12 +238,13 @@ public final class ElevationProfileManager {
 
          */
 
+        //<<<<TODO voir si boucle while ok
         //Création des lignes de la grille
         for (int i = 1; i < rectangle.get().getHeight()/distanceInBetweenHeight; ++i){
-            gridUpdate.add(new MoveTo(distanceRectangle.getLeft(), i * distanceInBetweenHeight));
-            gridUpdate.add(new LineTo(rectangle.get().getWidth() - distanceRectangle.getRight(), i * distanceInBetweenHeight));
+            gridUpdate.add(new MoveTo(rectangle.get().getMinX(), i * distanceInBetweenHeight));
+            gridUpdate.add(new LineTo(rectangle.get().getMaxX(), i * distanceInBetweenHeight));
 
-            Text text = new Text(0, i, Integer.toString((int)((profilePrinted.get().minElevation() + (distanceInBetweenHeight * i) / 1000))));
+            Text text = new Text(20, i * distanceInBetweenHeight, Integer.toString((int)((screenToWorld.get().transform(0,distanceInBetweenHeight * i).getY()))));
 
             text.setTextOrigin(VPos.TOP);
             text.prefWidth(0);
@@ -218,66 +252,60 @@ public final class ElevationProfileManager {
             text.getStyleClass().addAll("grid_label", "horizontal");
             text.setFont(Font.font("Avenir", 10));
             newGroupEtiquettes.getChildren().add(text);
-
-            grid.getElements().setAll(gridUpdate);
         }
 
-        //TODO verifier si c'est les bonnes infos pour étiquettes
-        // et on inverse pas width et height
-        // jpense qu'il y a un pb dans le calcul de la distance
-        for (int i = 1; i < rectangle.get().getWidth() / distanceInBetweenWidth; ++i){
-            gridUpdate.add(new MoveTo(i * distanceInBetweenWidth,distanceRectangle.getBottom()));
-            gridUpdate.add(new LineTo(i * distanceInBetweenWidth, rectangle.get().getHeight() - distanceRectangle.getTop()));
-
-            Text text = new Text(i, 0, Integer.toString((int)screenToWorld.get().deltaTransform(i,0).getX()));
+        //selon les x
+        for (int i = 0; i < rectangle.get().getWidth() / distanceInBetweenWidth; ++i){
+            double xGrid = i * distanceInBetweenWidth + rectangle.get().getMinX();
+            gridUpdate.add(new MoveTo(xGrid, rectangle.get().getMinY()));
+            gridUpdate.add(new LineTo(xGrid, rectangle.get().getMaxY()));
+            //TODO Demander pour le +1 car pas très legit
+            Text text = new Text(xGrid, 10,
+                    Integer.toString((int)(((screenToWorld.get().transform(xGrid, 0).getX())+1) /1000)));
 
 
             text.setTextOrigin(VPos.CENTER);
-            text.prefWidth(text.getX() + 2);
+            text.prefWidth(2);
             text.getStyleClass().addAll("grid_label", "vertical");
             text.setFont(Font.font("Avenir", 10));
             newGroupEtiquettes.getChildren().add(text);
-            grid.getElements().setAll(gridUpdate);
         }
-        //grid.getElements().setAll(gridUpdate);
+        grid.getElements().setAll(gridUpdate);
     }
 
-
-    //private void setWorldToScreen(Point2D p1, Point2D p2, Point2D p1prime, Point2D p2prime) throws NonInvertibleTransformException {
-
-        private void setScreenToWorld() {
-            Affine transformationAffine = new Affine();
-
-            double sx = (p1prime.getX() - p2prime.getX()) / (p2.getX() - p1.getX());
-            double sy = (p1prime.getY() - p2prime.getY()) / (p2.getY() - p1.getY());
-
-            transformationAffine.prependTranslation(-10, -40);
-            transformationAffine.prependScale(sx, sy);
-            transformationAffine.prependTranslation(0, p1prime.getX());
-
-            screenToWorld.set(transformationAffine);
-        }
-
-    private void setWorldToScreen(){
-        Affine transformationAffine = new Affine();
-
-        try {
-            screenToWorld.set(transformationAffine);
-            worldToScreen.set(screenToWorld.get().createInverse());
-        } catch (NonInvertibleTransformException e) {
-            e.printStackTrace();
-        }
-    }
 
     //TODO changer nom sx et sy
     // changer nom p1prime et p2prime et p1 et p2
     // ce serait un pb de -10 et -40 ?
+    private void setScreenToWorld() {
+        Affine transformationAffine = new Affine();
 
+        double sx = - (p1prime.getX() - p2prime.getX()) / (p2.getX() - p1.getX());
+        double sy = (p1prime.getY() - p2prime.getY()) / (p2.getY() - p1.getY());
 
-    //TODO vaut-il mieux recréer un chaque fois un doubleproperty ou alors faire doubleproperty.set(double.nan) ?
+        transformationAffine.prependTranslation(-distanceRectangle.getLeft() , - p1.getY() - rectangle.get().getMinY());
+        transformationAffine.prependScale(sx, sy);
+        transformationAffine.prependTranslation(0, p2prime.getY());
+
+        /*
+        transformationAffine.prependTranslation(-distanceRectangle.getLeft() , -rectangle.get().getMaxY());
+        transformationAffine.prependScale(profilePrinted.get().length()/rectangle.get().getWidth(), -(profilePrinted.get().maxElevation() - profilePrinted.get().minElevation())/rectangle.get().getHeight());
+        transformationAffine.prependTranslation(0, profilePrinted.get().minElevation());
+         */
+
+        screenToWorld.set(transformationAffine);
+    }
+
+    private void setWorldToScreen(){
+        try {
+            worldToScreen.set(screenToWorld.get().createInverse());
+        } catch (NonInvertibleTransformException e) {
+            worldToScreen.set(new Affine());
+        }
+    }
+
     public ReadOnlyDoubleProperty mousePositionOnProfileProperty() {
         DoubleProperty mousePosition = new SimpleDoubleProperty(Double.NaN);
-        //mousePosition.set(Double.NaN);
 
         //détecte les mouvements du pointeur de la souris lorsqu'elle survole ce panneau
         pane.setOnMouseMoved(event ->{
@@ -297,4 +325,4 @@ public final class ElevationProfileManager {
     public Pane pane() {
         return borderPane;
     }
-}*/
+}
