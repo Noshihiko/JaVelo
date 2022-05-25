@@ -86,8 +86,8 @@ public final class RouteManager {
             //TODO
             // SEGMENT AT retourne pas la bonne valeur car ça place un waypoint à la fin et pas au milieu
 
-            int index = routeBean.getRouteProperty().get().indexOfSegmentAt(routeBean.highlightedPosition());
-            System.out.println("INDEX OF WYAYPOINT : " +index);
+            int index = routeBean.getRouteProperty().get().indexOfSegmentAt(routeBean.highlightedPosition())+1;
+            //System.out.println("INDEX OF WYAYPOINT : " +index);
 
             boolean check=true;
 
