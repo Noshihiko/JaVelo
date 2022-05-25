@@ -64,8 +64,8 @@ public final class ElevationProfileManager {
 
         etiquette1.getStyleClass().addAll("grid_label", "horizontal");
         etiquette2.getStyleClass().addAll("grid_label", "vertical");
-        gridAndEtiquetteCreation();
-        statisticsText();
+      //  gridAndEtiquetteCreation();
+        //statisticsText();
         polygonePoints();
 
 
@@ -85,14 +85,14 @@ public final class ElevationProfileManager {
 
     //********************************* Listener **********************************
         rectangle.addListener( o -> {
-            gridAndEtiquetteCreation();
-            statisticsText();
+         //   gridAndEtiquetteCreation();
+          //  statisticsText();
             polygonePoints();
         });
 
         profilePrinted.addListener( o -> {
-            gridAndEtiquetteCreation();
-            statisticsText();
+            //gridAndEtiquetteCreation();
+            //statisticsText();
             polygonePoints();
         });
 
@@ -170,13 +170,27 @@ public final class ElevationProfileManager {
 
         //TODO ne faudrait il pas mieux faire une boucle while
         //lignes verticales
+        /*
         for (int i = 0; i < POS_STEPS.length; ++i) {
             distanceInBetweenWidth = worldToScreen.get().deltaTransform(POS_STEPS[i],0).getX();
             if (distanceInBetweenWidth >= 25) {
                 break;
             }
         }
+         */
+       int k = 0;
+       while (distanceInBetweenWidth < 25 && k < POS_STEPS.length) {
+           distanceInBetweenWidth = worldToScreen.get().deltaTransform(POS_STEPS[k],0).getX();
+           k += 1;
+       }
 
+       k = 0;
+        while (distanceInBetweenHeight < 50 && k < ELE_STEPS.length) {
+            distanceInBetweenHeight = worldToScreen.get().deltaTransform(0,ELE_STEPS[k]).getY();
+            k += 1;
+        }
+
+        /*
         //lignes horizontales
         for (int i = 0; i < ELE_STEPS.length; ++i) {
             distanceInBetweenHeight = worldToScreen.get().deltaTransform(0, ELE_STEPS[i]).getY();
@@ -185,15 +199,18 @@ public final class ElevationProfileManager {
             }
         }
 
+         */
+
         //Création des lignes de la grille
         for (int i = 1; i < rectangle.get().getHeight()/distanceInBetweenHeight; ++i){
             gridUpdate.add(new MoveTo(distanceRectangle.getLeft(), i * distanceInBetweenHeight));
             gridUpdate.add(new LineTo(rectangle.get().getWidth() - distanceRectangle.getRight(), i * distanceInBetweenHeight));
 
-            Text text = new Text(0, i, Integer.toString((int)(profilePrinted.get().minElevation() + (distanceInBetweenHeight * i))));
+            Text text = new Text(0, i, Integer.toString((int)((profilePrinted.get().minElevation() + (distanceInBetweenHeight * i) / 1000))));
 
-            text.prefWidth(0);
             text.setTextOrigin(VPos.TOP);
+            text.prefWidth(0);
+
             text.getStyleClass().addAll("grid_label", "horizontal");
             text.setFont(Font.font("Avenir", 10));
             newGroupEtiquettes.getChildren().add(text);
@@ -210,12 +227,13 @@ public final class ElevationProfileManager {
 
             Text text = new Text(i, 0, Integer.toString((int)screenToWorld.get().deltaTransform(i,0).getX()));
 
-            text.prefWidth(text.getY() + 2);
+
             text.setTextOrigin(VPos.CENTER);
+            text.prefWidth(text.getX() + 2);
             text.getStyleClass().addAll("grid_label", "vertical");
             text.setFont(Font.font("Avenir", 10));
             newGroupEtiquettes.getChildren().add(text);
-           grid.getElements().setAll(gridUpdate);
+            grid.getElements().setAll(gridUpdate);
         }
         //grid.getElements().setAll(gridUpdate);
     }
