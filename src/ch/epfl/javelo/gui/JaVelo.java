@@ -35,18 +35,18 @@ public final class JaVelo extends Application {
     private ElevationProfileManager profile;
     private Consumer<String> errorConsumer;
 
-    private ErrorManager errorManager = new ErrorManager();
-    private AnnotatedMapManager map = new AnnotatedMapManager(graph, tileManager, bean, errorConsumer);
+    private ErrorManager errorManager;
+    private AnnotatedMapManager map;
 
 
-    private SplitPane carteAndProfil =  new SplitPane();
+    private SplitPane carteAndProfil;
 
-    private MenuItem menuItem = new MenuItem("Exporter GPX");
-    private Menu menu = new Menu("Fichier");
-    private MenuBar menuBar = new MenuBar(menu);
+    private MenuItem menuItem;
+    private Menu menu;
+    private MenuBar menuBar;
 
 
-    private StackPane carteProfilAndError = new StackPane(carteAndProfil, errorManager.pane());
+    private StackPane carteProfilAndError;
     private BorderPane borderPane;
 
 
@@ -55,11 +55,21 @@ public final class JaVelo extends Application {
     // y ajoutant le menuBar très simple présenté plus haut
     @Override
     public void start(Stage primaryStage) throws Exception {
+        errorManager = new ErrorManager();
+        carteAndProfil =  new SplitPane();
+
+        menuItem = new MenuItem("Exporter GPX");
+        menu = new Menu("Fichier");
+        menuBar = new MenuBar(menu);
+        carteProfilAndError = new StackPane(carteAndProfil, errorManager.pane());
+
         graph = Graph.loadFrom(Path.of(PATH_GRAPH));
         costFunction = new CityBikeCF(graph);
 
         routeComputer = new RouteComputer(graph, costFunction);
         bean = new RouteBean(routeComputer);
+
+        map = new AnnotatedMapManager(graph, tileManager, bean, errorConsumer);
 
         carteAndProfil.setOrientation(Orientation.VERTICAL);
         carteAndProfil.setResizableWithParent(profile.pane(), false);
