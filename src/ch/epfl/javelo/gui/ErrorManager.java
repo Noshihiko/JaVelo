@@ -10,13 +10,11 @@ import javafx.util.Duration;
 
 
 public final class ErrorManager {
-    //private final Pane pane;
     private final VBox errorMessage;
     private final Text text;
 
 
     public ErrorManager() {
-        //pane = new Pane();
         errorMessage = new VBox();
         text = new Text();
         errorMessage.setStyle("error.css");
@@ -45,6 +43,5 @@ public final class ErrorManager {
         //seqTransition.stop();
 
         java.awt.Toolkit.getDefaultToolkit().beep();
-
     }
 }

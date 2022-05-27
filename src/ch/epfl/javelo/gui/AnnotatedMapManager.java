@@ -4,11 +4,7 @@ package ch.epfl.javelo.gui;
 import ch.epfl.javelo.data.Graph;
 import ch.epfl.javelo.projection.PointCh;
 import ch.epfl.javelo.projection.PointWebMercator;
-import javafx.beans.InvalidationListener;
-import javafx.beans.property.ObjectProperty;
-import javafx.beans.property.ReadOnlyDoubleProperty;
-import javafx.beans.property.ReadOnlyObjectProperty;
-import javafx.beans.property.SimpleObjectProperty;
+import javafx.beans.property.*;
 
 import javafx.geometry.Point2D;
 import javafx.scene.layout.Pane;
@@ -32,7 +28,7 @@ public final class AnnotatedMapManager {
     private final BaseMapManager mapManager;
     private final WaypointsManager waypointsManager;
     private final StackPane empilementPane;
-    private final ReadOnlyDoubleProperty mousePositionOnRouteProperty;
+    private final DoubleProperty mousePositionOnRouteProperty;
     private final ObjectProperty<Point2D> mousePositionProperty;
 
 
@@ -89,12 +85,16 @@ public final class AnnotatedMapManager {
 
         PointCh pointRoute = routeBean.getRouteProperty().get().pointClosestTo(mousePos.toPointCh()).point();
 
+        PointWebMercator pointRouteWeb = PointWebMercator.ofPointCh(pointRoute);
+
         if (routeBean.getRouteProperty().get().pointClosestTo(mousePos.toPointCh()).distanceToReference() <= 15 en mètre) ;
 
             mousePositionOnRouteProperty.set(routeBean.getRouteProperty().get().pointClosestTo(mousePos.toPointCh()).position());
 
         return mousePositionOnRouteProperty;
     }
+
+    private setMousePositionOnRouteProperty()
 
 
 
