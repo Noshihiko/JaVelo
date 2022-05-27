@@ -2,6 +2,8 @@ package ch.epfl.javelo.gui;
 
 import ch.epfl.javelo.data.Graph;
 import ch.epfl.javelo.routing.CityBikeCF;
+import ch.epfl.javelo.routing.ElevationProfile;
+import ch.epfl.javelo.routing.GpxGenerator;
 import ch.epfl.javelo.routing.RouteComputer;
 import javafx.application.Application;
 import javafx.geometry.Orientation;
@@ -26,6 +28,12 @@ public final class JaVelo extends Application {
     private CityBikeCF costFunction;
     private RouteBean bean;
     private RouteComputer routeComputer;
+    private TileManager tileManager;
+    private ElevationProfileManager profile;
+
+    private ErrorManager errorManager = new ErrorManager();
+    private AnnotatedMapManager map = new AnnotatedMapManager(graph, tileManager, bean, errorManager.);
+
 
     private SplitPane carteAndProfil =  new SplitPane();
 
@@ -33,10 +41,8 @@ public final class JaVelo extends Application {
     private Menu menu = new Menu("Fichier");
     private MenuBar menuBar = new MenuBar(menu);
 
-    private Pane map = new Pane();
-    private Pane profil = new Pane ();
-    private Pane error = new Pane();
-    private StackPane carteProfilAndError = new StackPane(carteAndProfil, error);
+
+    private StackPane carteProfilAndError = new StackPane(carteAndProfil, errorManager.pane());
     private BorderPane borderPane;
 
 
@@ -51,14 +57,14 @@ public final class JaVelo extends Application {
         bean = new RouteBean(routeComputer);
 
         carteAndProfil.setOrientation(Orientation.VERTICAL);
-        carteAndProfil.setResizableWithParent(profil, false);
+        carteAndProfil.setResizableWithParent(profile.pane(), false);
 
         //todo
         // Le panneau contenant le message d'erreur est généralement totalement transparent,
         // donc invisible, sauf en cas d'erreur.
 
         if (bean.getRouteProperty() == null) {
-            carteProfilAndError.getChildren().remove(error);
+            carteProfilAndError.getChildren().remove(errorManager.pane());
         }
 
         menuItem.disableProperty().bind(bean.getRouteProperty().isNull());
@@ -66,13 +72,17 @@ public final class JaVelo extends Application {
 
         menu.setOnAction( o -> {
             try {
+                GpxGenerator.writeGpx();
+            } catch(){
 
             }
         });
 
         bean.highlightedPositionProperty().bind(o -> {
-            if (AnnotatedMapManager.mousePositionOnRouteProperty()) {
-                bean.setHighlightedPosition();
+            if (map.mousePositionOnRouteProperty().get() >=0) {
+                bean.setHighlightedPosition(map.mousePositionOnRouteProperty().get());
+            } else {
+                bean.setHighlightedPosition(profile.mousePositionOnProfileProperty().get());
             }
         });
         borderPane = new BorderPane(carteProfilAndError, menuBar,null, null, null);

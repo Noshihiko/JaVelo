@@ -1,4 +1,4 @@
-/*
+
 package ch.epfl.javelo.gui;
 
 import ch.epfl.javelo.Math2;
@@ -103,4 +103,3 @@ public final class AnnotatedMapManager {
 
 
 }
-*/

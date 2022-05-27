@@ -1,23 +1,17 @@
 package ch.epfl.javelo.gui;
 
 import ch.epfl.javelo.routing.*;
-import javafx.beans.InvalidationListener;
 
 import javafx.beans.Observable;
 import javafx.beans.property.*;
 import javafx.collections.FXCollections;
-import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
-import javafx.util.Pair;
-
 
 import java.util.ArrayList;
-
 
 import java.util.LinkedHashMap;
 import java.util.List;
 
-//1349, 1391, 1430
 public final class RouteBean {
     private RouteComputer path;
     //propriétés publiques en lecture seule :
@@ -67,9 +61,6 @@ public final class RouteBean {
                     } else {
 
                         listSingleRoute.add(path.bestRouteBetween(key.NodeId1(), key.NodeId2()));
-
-                        //System.out.println(" avant dernier waypoint de la route : " +waypoints.get(i).nodeId());
-                        //System.out.println(" dernier point de la route : " +waypoints.get(i+1).nodeId());
 
                         if (memoryRoute.size() > 100) {
                             memoryRoute.remove(memoryRoute.keySet().iterator().next());
