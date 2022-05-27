@@ -4,6 +4,7 @@ import ch.epfl.javelo.projection.PointCh;
 import ch.epfl.javelo.projection.PointWebMercator;
 
 import javafx.beans.InvalidationListener;
+import javafx.beans.Observable;
 import javafx.beans.property.ReadOnlyObjectProperty;
 import javafx.geometry.Point2D;
 import javafx.scene.layout.Pane;
@@ -18,9 +19,6 @@ public final class RouteManager {
     private final ReadOnlyObjectProperty<MapViewParameters> mapParameters;
     private final Consumer<String> error;
 
-    //TODO
-    // je pense pas qu'il faille le mettre en pv sinon ça en recrée pas
-    // à demander
     private final Pane paneItinerary;
     private final Polyline itinerary;
     private final Circle disk;
@@ -45,6 +43,7 @@ public final class RouteManager {
         paneItinerary.setPickOnBounds(false);
 
         mapParameters.addListener((object, old, now) -> {
+            System.out.println("Truc");
 
             if (old.zoom() == now.zoom() && routeBean.getRouteProperty().get()!=null)
                 moveItinerary();
@@ -54,7 +53,8 @@ public final class RouteManager {
             }
         });
 
-        routeBean.getWaypoint().addListener((InvalidationListener) event -> {
+        routeBean.getWaypoint().addListener((Observable event) -> {
+
             if(routeBean.getRouteProperty().get() != null ) {
                 System.out.println("size pointtt : " +routeBean.getWaypoint().size());
                 reCreateItinerary();
@@ -64,15 +64,19 @@ public final class RouteManager {
 
 
         routeBean.highlightedPositionProperty().addListener(event -> {
-            if (routeBean.highlightedPositionProperty() == null) {
-                setDiskAndItineraryVisible();
+           if (routeBean.highlightedPositionProperty() != null) {
+               recreateDisklayout();
             }
-            else reCreateItinerary();
+            // else reCreateItinerary();
+
+            setDiskAndItineraryVisible();
 
         });
        
         routeBean.getRouteProperty().addListener(event -> {
-            reCreateItinerary();
+            if (routeBean.getRouteProperty().get() != null) {
+                reCreateItinerary();
+            }
         });
 
         
@@ -104,9 +108,10 @@ public final class RouteManager {
     }
 
     private void moveItinerary() {
+        System.out.println("Move");
 
-        itinerary.setLayoutX(-mapParameters.get().x());
         itinerary.setLayoutY(-mapParameters.get().y());
+        itinerary.setLayoutX(-mapParameters.get().x());
 
         recreateDisklayout();
     }
@@ -126,14 +131,16 @@ public final class RouteManager {
     }
 
     private void recreateDisklayout() {
+        if (routeBean.highlightedPositionProperty() != null  && routeBean.getRouteProperty().get() != null) {
         PointCh p2 = routeBean.getRouteProperty().get().pointAt(routeBean.highlightedPosition());
         PointWebMercator point2 = PointWebMercator.ofPointCh(p2);
         disk.setLayoutX(mapParameters.get().viewX(point2));
         disk.setLayoutY(mapParameters.get().viewY(point2));
         //System.out.println(">>> " + point2.xAtZoomLevel(mapParameters.get().zoom()));
-    }
+    }}
 
     private void reCreateItinerary() {
+        System.out.println("Recree");
 
         if (routeBean.getRouteProperty().get() != null) {
             Double[] listOfCoordinates = conversionCord(routeBean.getRouteProperty().get().points());
@@ -148,10 +155,9 @@ public final class RouteManager {
 
             recreateDisklayout();
 
+            itinerary.setLayoutX(-mapParameters.get().x());
+            itinerary.setLayoutY(-mapParameters.get().y());
         }
-        itinerary.setLayoutX(-mapParameters.get().x());
-        itinerary.setLayoutY(-mapParameters.get().y());
-
         setDiskAndItineraryVisible();
     }
 
