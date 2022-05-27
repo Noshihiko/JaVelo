@@ -1,9 +1,10 @@
 
 package ch.epfl.javelo.gui;
 
+import ch.epfl.javelo.Math2;
 import ch.epfl.javelo.data.Graph;
-import ch.epfl.javelo.projection.PointCh;
 import ch.epfl.javelo.projection.PointWebMercator;
+import ch.epfl.javelo.routing.RoutePoint;
 import javafx.beans.property.*;
 
 import javafx.geometry.Point2D;
@@ -55,46 +56,48 @@ public final class AnnotatedMapManager {
         empilementPane.setStyle("map.css");
 
 
-        mousePositionOnRouteProperty = new SimpleObjectProperty();
-        mousePositionProperty = new SimpleObjectProperty();
+        mousePositionOnRouteProperty = new SimpleDoubleProperty();
+        mousePositionProperty = new SimpleObjectProperty<>();
 
         mapManager.pane().setOnMouseMoved(event -> {
             mousePositionProperty.setValue(new Point2D(event.getX(), event.getY()));
+            setMousePositionOnRouteProperty();
         });
 
         mapManager.pane().setOnMouseExited(event -> {
-            mousePositionProperty.setValue(new Point2D(event.getX(), event.getY()));
-            //TODO
-           // if (fait plus partie de la carte) mousePositionProperty.setvalue(NaN);
+            mousePositionProperty.setValue(null);
+            mousePositionOnRouteProperty.set(Double.NaN);
         });
     }
-
 
     public Pane pane() {
         return pane;
     }
 
     public ReadOnlyDoubleProperty mousePositionOnRouteProperty() {
-
-        double x = mousePositionProperty.getValue().getX();
-        double y = mousePositionProperty.getValue().getY();
-        //TODO calcul de la distance 15 pixels en
-        // metre et savoir si mousePositionOnRouteProperty c'est un read only ou pas
-
-        PointWebMercator mousePos = mapParameters.pointAt(x, y);
-
-        PointCh pointRoute = routeBean.getRouteProperty().get().pointClosestTo(mousePos.toPointCh()).point();
-
-        PointWebMercator pointRouteWeb = PointWebMercator.ofPointCh(pointRoute);
-
-        if (routeBean.getRouteProperty().get().pointClosestTo(mousePos.toPointCh()).distanceToReference() <= 15 en mètre) ;
-
-            mousePositionOnRouteProperty.set(routeBean.getRouteProperty().get().pointClosestTo(mousePos.toPointCh()).position());
-
         return mousePositionOnRouteProperty;
     }
 
-    private setMousePositionOnRouteProperty()
+    private void setMousePositionOnRouteProperty() {
+
+        double x = mousePositionProperty.getValue().getX();
+        double y = mousePositionProperty.getValue().getY();
+
+        PointWebMercator mousePos = mapParameters.pointAt(x, y);
+
+        RoutePoint pointRoute = routeBean.getRouteProperty().get().pointClosestTo(mousePos.toPointCh());
+
+        PointWebMercator pointRouteWeb = PointWebMercator.ofPointCh(pointRoute.point());
+
+        double xPointRoute = mapParameters.viewX(pointRouteWeb);
+        double yPointRoute = mapParameters.viewY(pointRouteWeb);
+
+        double uX = xPointRoute - x;
+        double uY = yPointRoute - y;
+
+        if (Math2.norm(uX , uY) >= 15 ) mousePositionOnRouteProperty.set(pointRoute.position());
+        else mousePositionOnRouteProperty.set(Double.NaN);
+    }
 
 
 
