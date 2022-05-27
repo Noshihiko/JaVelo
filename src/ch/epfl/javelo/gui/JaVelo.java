@@ -2,10 +2,10 @@ package ch.epfl.javelo.gui;
 
 import ch.epfl.javelo.data.Graph;
 import ch.epfl.javelo.routing.CityBikeCF;
-import ch.epfl.javelo.routing.ElevationProfile;
 import ch.epfl.javelo.routing.GpxGenerator;
 import ch.epfl.javelo.routing.RouteComputer;
 import javafx.application.Application;
+import javafx.beans.binding.Bindings;
 import javafx.geometry.Orientation;
 import javafx.scene.control.Menu;
 import javafx.scene.control.MenuBar;
@@ -16,13 +16,16 @@ import javafx.scene.layout.Pane;
 import javafx.scene.layout.StackPane;
 import javafx.stage.Stage;
 
+import java.io.UncheckedIOException;
 import java.nio.file.Path;
+import java.util.function.Consumer;
 
 public final class JaVelo extends Application {
     private final String PATH_GRAPH  = "javelo-data";
     private final String PATH_CACHE_TILES = "osm-cache";
     private final String PATH_HOST_TILES = "tile.openstreetmap.org";
     private final String TITLE = "JaVelo";
+    private final String TITLE_ITINERAIRE = "javelo.gpx";
 
     private Graph graph;
     private CityBikeCF costFunction;
@@ -30,9 +33,10 @@ public final class JaVelo extends Application {
     private RouteComputer routeComputer;
     private TileManager tileManager;
     private ElevationProfileManager profile;
+    private Consumer<String> errorConsumer;
 
     private ErrorManager errorManager = new ErrorManager();
-    private AnnotatedMapManager map = new AnnotatedMapManager(graph, tileManager, bean, errorManager.);
+    private AnnotatedMapManager map = new AnnotatedMapManager(graph, tileManager, bean, errorConsumer);
 
 
     private SplitPane carteAndProfil =  new SplitPane();
@@ -44,6 +48,7 @@ public final class JaVelo extends Application {
 
     private StackPane carteProfilAndError = new StackPane(carteAndProfil, errorManager.pane());
     private BorderPane borderPane;
+
 
 
     //construire l'interface graphique finale en combinant les parties gérées par les classes écrites précédemment et en
@@ -59,9 +64,6 @@ public final class JaVelo extends Application {
         carteAndProfil.setOrientation(Orientation.VERTICAL);
         carteAndProfil.setResizableWithParent(profile.pane(), false);
 
-        //todo
-        // Le panneau contenant le message d'erreur est généralement totalement transparent,
-        // donc invisible, sauf en cas d'erreur.
 
         if (bean.getRouteProperty() == null) {
             carteProfilAndError.getChildren().remove(errorManager.pane());
@@ -72,19 +74,17 @@ public final class JaVelo extends Application {
 
         menu.setOnAction( o -> {
             try {
-                GpxGenerator.writeGpx();
-            } catch(){
-
+                GpxGenerator.writeGpx(TITLE_ITINERAIRE, bean.getRouteProperty().get(), bean.getElevationProfileProperty().get());
+            } catch( java.io.IOException e){
+                throw new UncheckedIOException(e);
             }
         });
 
-        bean.highlightedPositionProperty().bind(o -> {
-            if (map.mousePositionOnRouteProperty().get() >=0) {
-                bean.setHighlightedPosition(map.mousePositionOnRouteProperty().get());
-            } else {
-                bean.setHighlightedPosition(profile.mousePositionOnProfileProperty().get());
-            }
-        });
+        bean.highlightedPositionProperty().bind(Bindings.when(map.mousePositionOnRouteProperty()
+                .greaterThanOrEqualTo(0)).then(map.mousePositionOnRouteProperty())
+                .otherwise(profile.mousePositionOnProfileProperty()));
+
+
         borderPane = new BorderPane(carteProfilAndError, menuBar,null, null, null);
         borderPane.setMinSize(800, 600);
     }
