@@ -74,21 +74,22 @@ public final class ElevationProfileManager {
 
     //********************************* Listener **********************************
         rectangle.addListener( o -> {
-            double minElevation = profilePrinted.get().minElevation();
-            double maxElevation = profilePrinted.get().maxElevation();
+            if (profilePrinted.isNotNull().get()) {
+                double minElevation = profilePrinted.get().minElevation();
+                double maxElevation = profilePrinted.get().maxElevation();
 
-            p1 = new Point2D(0, rectangle.get().getHeight());
-            p2 = new Point2D(rectangle.get().getWidth(), 0);
+                p1 = new Point2D(0, rectangle.get().getHeight());
+                p2 = new Point2D(rectangle.get().getWidth(), 0);
 
-            p1prime = new Point2D(0, maxElevation);
-            p2prime = new Point2D(profilePrinted.get().length(), minElevation);
+                p1prime = new Point2D(0, maxElevation);
+                p2prime = new Point2D(profilePrinted.get().length(), minElevation);
 
-            setScreenToWorld();
-            setWorldToScreen();
-            gridAndEtiquetteCreation();
-            statisticsText();
-            profileCreation();
-
+                setScreenToWorld();
+                setWorldToScreen();
+                gridAndEtiquetteCreation();
+                statisticsText();
+                profileCreation();
+            }
         });
 
         profilePrinted.addListener( o -> {
@@ -174,15 +175,17 @@ public final class ElevationProfileManager {
 
          */
     private void statisticsText(){
-        String statistic = String.format("Longueur : %.1f km" +
-                "     Montée : %.0f m" +
-                "     Descente : %.0f m" +
-                "     Altitude : de %.0f m à %.0f m",
-                profilePrinted.get().length() / 1000,profilePrinted.get().totalAscent(),profilePrinted.get().totalDescent(), profilePrinted.get().minElevation(),
-                profilePrinted.get().maxElevation()
-        );
+        if (profilePrinted.isNotNull().get()) {
+            String statistic = String.format("Longueur : %.1f km" +
+                            "     Montée : %.0f m" +
+                            "     Descente : %.0f m" +
+                            "     Altitude : de %.0f m à %.0f m",
+                    profilePrinted.get().length() / 1000, profilePrinted.get().totalAscent(), profilePrinted.get().totalDescent(), profilePrinted.get().minElevation(),
+                    profilePrinted.get().maxElevation()
+            );
 
-        etiquette3.setText(statistic);
+            etiquette3.setText(statistic);
+        }
     }
 
     private void gridAndEtiquetteCreation(){

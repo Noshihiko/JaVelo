@@ -1,4 +1,4 @@
-/*package ch.epfl.javelo.gui;
+package ch.epfl.javelo.gui;
 
 
 import ch.epfl.javelo.data.Graph;
@@ -49,4 +49,4 @@ public final class Stage10Test extends Application {
         primaryStage.setScene(scene);
         primaryStage.show();
     }
-}*/
+}
