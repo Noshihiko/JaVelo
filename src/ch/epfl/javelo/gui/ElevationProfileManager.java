@@ -112,9 +112,13 @@ public final class ElevationProfileManager {
     //***************************** Position de la souris *****************************
         //détecte les mouvements du pointeur de la souris lorsqu'elle survole ce panneau
         pane.setOnMouseMoved(event ->{
-            Point2D mouseIRL = screenToWorld.get().deltaTransform(event.getX(), event.getY());
-            mousePosition.set((int)mouseIRL.getX());
-            mousePosition.set((int)mouseIRL.getY());
+            if(rectangle.get().contains(event.getX(), event.getY())) {
+                Point2D mouseIRL = screenToWorld.get().transform(event.getX(), event.getY());
+                mousePosition.set(Math.rint(mouseIRL.getX()));
+            } else {
+                mousePosition.set(Double.NaN);
+            }
+           // mousePosition.set((int)mouseIRL.getY());
         });
 
         //détecte la sortie du pointeur de la souris du panneau
@@ -124,7 +128,7 @@ public final class ElevationProfileManager {
 
     //********************************** Binding **********************************
         //de la ligne en gras
-        annotationLine.layoutXProperty().bind(Bindings.createDoubleBinding( () -> position.get(), position));
+        annotationLine.layoutXProperty().bind(Bindings.createDoubleBinding( () -> worldToScreen.get().transform(position.get(),0).getX(), worldToScreen, position));
         annotationLine.startYProperty().bind(Bindings.select(rectangle, "minY"));
         annotationLine.endYProperty().bind(Bindings.select(rectangle, "maxY"));
         annotationLine.visibleProperty().bind(position.greaterThanOrEqualTo(0));
@@ -216,8 +220,9 @@ public final class ElevationProfileManager {
        //lignes horizontales
         k = 0;
         while (distanceInBetweenHeight < 50 && k < ELE_STEPS.length) {
-            distanceInBetweenHeight = worldToScreen.get().deltaTransform(0,ELE_STEPS[k]).getY();
+            distanceInBetweenHeight = worldToScreen.get().deltaTransform(0,- ELE_STEPS[k]).getY();
             k += 1;
+            System.out.println("distance " + distanceInBetweenHeight);
         }
 
 
@@ -225,7 +230,9 @@ public final class ElevationProfileManager {
         //TODO il faut inverser les distances car la ca va du haut vers le bas
         //selon les y
         for (int i = 0; i < rectangle.get().getHeight() / distanceInBetweenHeight; ++i){
-            double yGrid = i * distanceInBetweenHeight + rectangle.get().getMaxY();
+
+            double yGrid = i * distanceInBetweenHeight ;
+            System.out.println("y grid " + yGrid);
             gridUpdate.add(new MoveTo(rectangle.get().getMinX(), yGrid));
             gridUpdate.add(new LineTo(rectangle.get().getMaxX(), yGrid));
 
@@ -265,7 +272,7 @@ public final class ElevationProfileManager {
         Affine transformationAffine = new Affine();
 
         double sx = - (p1prime.getX() - p2prime.getX()) / (p2.getX() - p1.getX());
-        double sy = (p1prime.getY() - p2prime.getY()) / (p2.getY() - p1.getY());
+        double sy =  (p1prime.getY() - p2prime.getY()) / (p2.getY() - p1.getY());
 
         transformationAffine.prependTranslation(-distanceRectangle.getLeft() , - p1.getY() - rectangle.get().getMinY());
         transformationAffine.prependScale(sx, sy);
