@@ -160,6 +160,19 @@ public final class ElevationProfileManager {
                 rectangle.get().getMinX(), rectangle.get().getMaxY());
     }
 
+        /*
+        pointPolygone.addAll(List.of(new Point2D(rectangle.get().getMinX(), rectangle.get().getMaxY()),
+                new Point2D(rectangle.get().getMaxX(), rectangle.get().getMaxY())));
+
+        for (int i = 0; i <= rectangle.get().getWidth(); ++i) {
+            double xElevationAt = screenToWorld.get().transform(i,0).getX();
+            pointPolygone.add(new Point2D(i, worldToScreen.get().transform(xElevationAt, profilePrinted.get().elevationAt(xElevationAt)).getY()));
+        }
+
+
+       polygon.getPoints().setAll(pointPolygone);
+
+         */
     private void statisticsText(){
         String statistic = String.format("Longueur : %.1f km" +
                 "     Montée : %.0f m" +

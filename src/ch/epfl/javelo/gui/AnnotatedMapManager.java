@@ -1,12 +1,16 @@
-/*
+
 package ch.epfl.javelo.gui;
 
 import ch.epfl.javelo.data.Graph;
+import ch.epfl.javelo.projection.PointCh;
+import ch.epfl.javelo.projection.PointWebMercator;
 import javafx.beans.InvalidationListener;
 import javafx.beans.property.ObjectProperty;
+import javafx.beans.property.ReadOnlyDoubleProperty;
 import javafx.beans.property.ReadOnlyObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
 
+import javafx.geometry.Point2D;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.StackPane;
 
@@ -28,7 +32,8 @@ public final class AnnotatedMapManager {
     private final BaseMapManager mapManager;
     private final WaypointsManager waypointsManager;
     private final StackPane empilementPane;
-    private final ObjectProperty mousePositionOnRouteProperty;
+    private final ReadOnlyDoubleProperty mousePositionOnRouteProperty;
+    private final ObjectProperty<Point2D> mousePositionProperty;
 
 
     public AnnotatedMapManager(Graph reseauRoutier, TileManager gestionnaireTuiles, RouteBean routeBean, Consumer<String> error) {
@@ -53,8 +58,19 @@ public final class AnnotatedMapManager {
         empilementPane = new StackPane(mapManager.pane(), routeManager.pane(), waypointsManager.pane());
         empilementPane.setStyle("map.css");
 
-        //TODO a faire
+
         mousePositionOnRouteProperty = new SimpleObjectProperty();
+        mousePositionProperty = new SimpleObjectProperty();
+
+        mapManager.pane().setOnMouseMoved(event -> {
+            mousePositionProperty.setValue(new Point2D(event.getX(), event.getY()));
+        });
+
+        mapManager.pane().setOnMouseExited(event -> {
+            mousePositionProperty.setValue(new Point2D(event.getX(), event.getY()));
+            //TODO
+           // if (fait plus partie de la carte) mousePositionProperty.setvalue(NaN);
+        });
     }
 
 
@@ -62,7 +78,25 @@ public final class AnnotatedMapManager {
         return pane;
     }
 
-    public ObjectProperty mousePositionOnRouteProperty() {
+    public ReadOnlyDoubleProperty mousePositionOnRouteProperty() {
+
+        double x = mousePositionProperty.getValue().getX();
+        double y = mousePositionProperty.getValue().getY();
+        //TODO calcul de la distance 15 pixels en
+        // metre et savoir si mousePositionOnRouteProperty c'est un read only ou pas
+
+        PointWebMercator mousePos = mapParameters.pointAt(x, y);
+
+        PointCh pointRoute = routeBean.getRouteProperty().get().pointClosestTo(mousePos.toPointCh()).point();
+
+        if (routeBean.getRouteProperty().get().pointClosestTo(mousePos.toPointCh()).distanceToReference() <= 15 en mètre) ;
+
+            mousePositionOnRouteProperty.set(routeBean.getRouteProperty().get().pointClosestTo(mousePos.toPointCh()).position());
+
         return mousePositionOnRouteProperty;
     }
-}*/
+
+
+
+
+}
