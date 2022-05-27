@@ -39,6 +39,8 @@ public final class Stage10Test extends Application {
         highlightProperty.bind(
                 profileManager.mousePositionOnProfileProperty());
 
+
+       // highlightProperty.set(500);
         Scene scene = new Scene(profileManager.pane());
 
         primaryStage.setMinWidth(600);
