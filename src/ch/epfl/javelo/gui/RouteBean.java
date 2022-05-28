@@ -12,23 +12,31 @@ import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 
+/**
+ * Regroupant les propriétés relatives aux points de passage et à l'itinéraire correspondant.
+ *
+ * @author Camille Espieux (324248)
+ * @author Chiara Freneix (329552)
+ */
 public final class RouteBean {
     private RouteComputer path;
-    //propriétés publiques en lecture seule :
+
     private ObjectProperty<Route> route;
     private ObjectProperty<ElevationProfile> elevationProfile;
-
-    //seules propriétés modifiables depuis l'extérieur :
     private ObservableList<Waypoint> waypoints = FXCollections.observableArrayList();
     private DoubleProperty highlightedPosition = new SimpleDoubleProperty();
 
     //cache-mémoire des routes
-    //TODO : demander pour le initialCapacity
     private Key key;
     private LinkedHashMap<Key, Route> memoryRoute = new LinkedHashMap<>(20);
 
     private int MAX_STEP_LENGTH = 5;
 
+    /**
+     * Constructeur public de la classe.
+     *
+     * @param path un calcul d'itinéraire utilisé pour déterminer le meilleur itinéraire reliant deux points de passage
+     */
     public RouteBean(RouteComputer path){
         this.path = path;
         this.route = new SimpleObjectProperty<>(null);
@@ -39,16 +47,11 @@ public final class RouteBean {
         waypoints.addListener((Observable event)-> {
             List<Route> listSingleRoute = new ArrayList<>();
 
-            //*********************** TEST ************************
-            for (int i=0; i<waypoints.size(); ++i){
-                System.out.println(waypoints.get(i).nodeId());
-            }
-            //***************************************************
-
             if (waypoints.size() < 2) {
                 route.set(null);
                 elevationProfile.set(null);
-                //System.out.println("array size " +waypoints.size());
+                //routeAndElevationProfileNull();
+
             }
             else {
 
@@ -74,6 +77,8 @@ public final class RouteBean {
                 if (listSingleRoute.contains(null)) {
                     route.set(null);
                     elevationProfile.set(null);
+                    //routeAndElevationProfileNull();
+
                 }
 
                 else {
@@ -84,40 +89,89 @@ public final class RouteBean {
         });
     }
 
+    /**
+     * Méthode qui set la route et le profil d'élévation à null.
+     */
+    private void routeAndElevationProfileNull() {
+        route.set(null);
+        elevationProfile.set(null);
+    }
+
+    /**
+     * Enregistrement permettant de créer une clé. Clé ensuite utilisée pour la LinkedHashMap memoryRoute
+     */
     private record Key (Integer NodeId1, Integer NodeId2) {}
 
+    /**
+     * Retourne la propriété elle-même, de type DoubleProperty.
+     *
+     * @return la propriété elle-même, de type DoubleProperty
+     */
     public DoubleProperty highlightedPositionProperty(){
         return this.highlightedPosition;
     }
 
+    /**
+     * Retourne le contenu de la propriété, de type double.
+     *
+     * @return le contenu de la propriété, de type double
+     */
     public double highlightedPosition(){
         return highlightedPosition.doubleValue();
     }
 
+    /**
+     * Stocke la valeur donnée en argument dans la propriété.
+     *
+     * @param newValue la potentielle nouvelle valeur de la propriété
+     */
     public void setHighlightedPosition(double newValue){
         if (newValue < 0) newValue = Double.NaN;
         highlightedPosition.setValue(newValue);
     }
 
+    /**
+     * Retourne la propriété route sous la forme d'une valeur de type ObjectProperty<Route>.
+     *
+     * @return la propriété route sous la forme d'une valeur de type ObjectProperty<Route>
+     */
     public ReadOnlyObjectProperty<Route> getRouteProperty(){
         return route;
     }
 
-
+    /**
+     * Retourne la propriété elevationProfile sous la forme d'une valeur de type ObjectProperty<ElevationProfile>.
+     *
+     * @return la propriété elevationProfile sous la forme d'une valeur de type ObjectProperty<ElevationProfile>
+     */
     public ReadOnlyObjectProperty<ElevationProfile> getElevationProfileProperty(){
         return elevationProfile;
     }
 
+    /**
+     * Retourne la liste de waypoint(s).
+     *
+     * @return la liste de waypoint(s)
+     */
     public ObservableList<Waypoint> getWaypoint(){
         return waypoints;
     }
 
+    /**
+     * Stocke un waypoint dans la liste de waypoint(s).
+     *
+     * @param waypoint un waypoint qui va être rajouté à la liste observable de waypoint(s)
+     */
     public void setWaypoint(Waypoint waypoint){
         waypoints.add(waypoint);
     }
 
+    /**
+     * Retourne l'itinéraire.
+     *
+     * @return l'itinéraire
+     */
     public RouteComputer getPath(){
         return path;
     }
-
-    }
+}
