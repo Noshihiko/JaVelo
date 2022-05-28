@@ -53,7 +53,7 @@ public final class JaVelo extends Application {
 
         RouteComputer routeComputer = new RouteComputer(graph, costFunction);
         RouteBean bean = new RouteBean(routeComputer);
-        ElevationProfileManager elevationProfile;
+        ElevationProfileManager elevationProfile  =  new ElevationProfileManager(bean.getElevationProfileProperty(), bean.highlightedPositionProperty());
 
         AnnotatedMapManager map = new AnnotatedMapManager(graph, tileManager, bean, errorConsumer);
 
@@ -66,10 +66,8 @@ public final class JaVelo extends Application {
 
         if (bean.getRouteProperty() == null)  {
            // carteAndProfil.getItems().remove(elevationProfile.pane());
-            elevationProfile = null;
             carteProfilAndError.getChildren().remove(errorManager.pane());
         } else {
-            elevationProfile =  new ElevationProfileManager(bean.getElevationProfileProperty(), bean.highlightedPositionProperty());
             carteAndProfil.getItems().add(elevationProfile.pane());
 
         }
@@ -82,7 +80,7 @@ public final class JaVelo extends Application {
         menuItem.disableProperty().bind(bean.getRouteProperty().isNull());
         menu.getItems().add(menuItem);
 
-
+/*
         bean.getRouteProperty().addListener( o -> {
             if (bean.getRouteProperty().isNull().get()) {
 
@@ -90,6 +88,8 @@ public final class JaVelo extends Application {
 
             }
         });
+
+ */
 
 
         menu.setOnAction( o -> {

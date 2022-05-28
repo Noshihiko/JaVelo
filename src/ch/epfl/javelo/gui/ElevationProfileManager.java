@@ -68,13 +68,13 @@ public final class ElevationProfileManager {
         etiquette1.getStyleClass().addAll("grid_label", "horizontal");
         etiquette2.getStyleClass().addAll("grid_label", "vertical");
         gridAndEtiquetteCreation();
-        statisticsText();
+        //statisticsText();
         profileCreation();
 
 
     //********************************* Listener **********************************
         rectangle.addListener( o -> {
-            if (profilePrinted.isNotNull().get()) {
+           if (profilePrinted.isNotNull().get()) {
                 double minElevation = profilePrinted.get().minElevation();
                 double maxElevation = profilePrinted.get().maxElevation();
 
@@ -175,7 +175,7 @@ public final class ElevationProfileManager {
 
          */
     private void statisticsText(){
-        if (profilePrinted.isNotNull().get()) {
+        //if (profilePrinted.isNotNull().get()) {
             String statistic = String.format("Longueur : %.1f km" +
                             "     Montée : %.0f m" +
                             "     Descente : %.0f m" +
@@ -185,7 +185,7 @@ public final class ElevationProfileManager {
             );
 
             etiquette3.setText(statistic);
-        }
+        //}
     }
 
     private void gridAndEtiquetteCreation(){
