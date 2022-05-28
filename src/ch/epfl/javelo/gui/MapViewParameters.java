@@ -5,7 +5,7 @@ import ch.epfl.javelo.projection.PointWebMercator;
 import javafx.geometry.Point2D;
 
 /**
- * Représente les paramètres du fond de carte présenté dans l'interface graphique.
+ * Enregistrement qui représente les paramètres du fond de carte présenté dans l'interface graphique.
  *
  * @author Camille Espieux (324248)
  * @author Chiara Freneix (329552)
