@@ -24,7 +24,12 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.StringJoiner;
 
-
+/**
+ * Gère l'affichage et l'interaction avec le profil en long d'un itinéraire.
+ *
+ * @author Camille Espieux (324248)
+ * @author Chiara Freneix (329552)
+ */
 public final class ElevationProfileManager {
     private final ReadOnlyObjectProperty<ElevationProfile> profilePrinted;
     private final ReadOnlyDoubleProperty position;
@@ -73,7 +78,7 @@ public final class ElevationProfileManager {
 
 
     //********************************* Listener **********************************
-        rectangle.addListener( o -> {
+        rectangle.addListener( (p, oldS, newS) -> {
            if (profilePrinted.isNotNull().get()) {
                 double minElevation = profilePrinted.get().minElevation();
                 double maxElevation = profilePrinted.get().maxElevation();
@@ -92,7 +97,7 @@ public final class ElevationProfileManager {
             }
         });
 
-        profilePrinted.addListener( o -> {
+        profilePrinted.addListener( (p, oldS, newS) -> {
             if (profilePrinted.get() == null) return;
             double minElevation = profilePrinted.get().minElevation();
             double maxElevation = profilePrinted.get().maxElevation();
@@ -112,21 +117,16 @@ public final class ElevationProfileManager {
         });
 
     //***************************** Position de la souris *****************************
-        //détecte les mouvements du pointeur de la souris lorsqu'elle survole ce panneau
-        pane.setOnMouseMoved(event ->{
+        pane.setOnMouseMoved(event -> {
             if(rectangle.get().contains(event.getX(), event.getY())) {
                 Point2D mouseIRL = screenToWorld.get().transform(event.getX(), event.getY());
                 mousePosition.set(Math.rint(mouseIRL.getX()));
             } else {
                 mousePosition.set(Double.NaN);
             }
-           // mousePosition.set((int)mouseIRL.getY());
         });
 
-        //détecte la sortie du pointeur de la souris du panneau
-        pane.setOnMouseExited(event -> {
-            mousePosition.set(Double.NaN);
-        });
+        pane.setOnMouseExited(event -> mousePosition.set(Double.NaN));
 
     //********************************** Binding **********************************
         //de la ligne en gras
@@ -147,7 +147,9 @@ public final class ElevationProfileManager {
     }
 
 
-    //Ajout de tous les points au polygone
+    /**
+     * Ajout de tous les points au polygone.
+     */
     private void profileCreation() {
         pointPolygone.clear();
         polygon.getPoints().clear();
@@ -175,12 +177,18 @@ public final class ElevationProfileManager {
        polygon.getPoints().setAll(pointPolygone);
 
          */
+
+    /**
+     * Ajout du texte contenant les statistiques.
+     */
     private void statisticsText(){
+        if (profilePrinted == null) return;
         //if (profilePrinted.isNotNull().get()) {
             String statistic = String.format("Longueur : %.1f km" +
                             "     Montée : %.0f m" +
                             "     Descente : %.0f m" +
                             "     Altitude : de %.0f m à %.0f m",
+
                     profilePrinted.get().length() / 1000, profilePrinted.get().totalAscent(), profilePrinted.get().totalDescent(), profilePrinted.get().minElevation(),
                     profilePrinted.get().maxElevation()
             );
@@ -189,6 +197,9 @@ public final class ElevationProfileManager {
         //}
     }
 
+    /**
+     * Création de la grille et des étiquettes.
+     */
     private void gridAndEtiquetteCreation(){
         grid.getElements().removeAll();
         gridUpdate.clear();
@@ -202,6 +213,7 @@ public final class ElevationProfileManager {
 
         double distanceInBetweenWidth = 0;
         double distanceInBetweenHeight = 0;
+
 
         gridUpdate.add(new MoveTo(rectangle.get().getMinX(), rectangle.get().getMinY()));
         gridUpdate.add(new LineTo(rectangle.get().getMaxX(), rectangle.get().getMinY()));
@@ -231,7 +243,6 @@ public final class ElevationProfileManager {
 
 
         //Création des lignes de la grille
-        //TODO il faut inverser les distances car la ca va du haut vers le bas
         //selon les y
         for (int i = 0; i < rectangle.get().getHeight() / distanceInBetweenHeight; ++i){
 
@@ -272,6 +283,11 @@ public final class ElevationProfileManager {
 
 
     //TODO changer nom sx et sy, p1prime et p2prime et p1 et p2
+
+    /**
+     * Méthode qui permet de passer du système de coordonnées du panneau JavaFX contenant le rectangle bleu au système
+     *  de coordonnées du «monde réel».
+     */
     private void setScreenToWorld() {
         Affine transformationAffine = new Affine();
 
@@ -285,6 +301,10 @@ public final class ElevationProfileManager {
         screenToWorld.set(transformationAffine);
     }
 
+    /**
+     * Méthode qui permet de passer du système de coordonnées du «monde réel» au  du système de coordonnées du panneau
+     *  JavaFX contenant le rectangle bleu.
+     */
     private void setWorldToScreen(){
         try {
             worldToScreen.set(screenToWorld.get().createInverse());
@@ -293,10 +313,21 @@ public final class ElevationProfileManager {
         }
     }
 
+    /**
+     * Retourne une propriété en lecture seule contenant la position du pointeur de la souris le long du profil
+     * (en mètres, arrondie à l'entier le plus proche).
+     *
+     * @return une propriété en lecture seule contenant la position du pointeur de la souris le long du profil
+     */
     public ReadOnlyDoubleProperty mousePositionOnProfileProperty() {
         return mousePosition;
     }
 
+    /**
+     * Retourne le panneau contenant le dessin du profil.
+     *
+     * @return borderPane, le panneau à la racine de la hiérarchie
+     */
     public Pane pane() {
         return borderPane;
     }
