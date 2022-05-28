@@ -2,7 +2,6 @@ package ch.epfl.javelo.gui;
 
 import ch.epfl.javelo.projection.PointWebMercator;
 
-import ch.epfl.javelo.projection.WebMercator;
 import javafx.geometry.Point2D;
 
 /**
@@ -12,22 +11,6 @@ import javafx.geometry.Point2D;
  * @author Chiara Freneix (329552)
  */
 public record MapViewParameters(int zoom, double x, double y) {
-    private static PointWebMercator p;
-
-    /**
-     * Constructeur public du record.
-     *
-     * @param zoom le niveau de zoom
-     * @param x la coordonnée x du coin haut-gauche de la portion de carte affichée
-     * @param y la coordonnée y du coin haut-gauche de la portion de carte affichée
-     */
-    public MapViewParameters(int zoom, double x, double y){
-        this.zoom = zoom;
-        this.x = x;
-        this.y = y;
-
-        p = PointWebMercator.of(zoom, x, y);
-    }
 
     /**
      * Retourne les coordonnées du coin haut-gauche sous la forme d'un objet de type Point2D.
@@ -35,7 +18,7 @@ public record MapViewParameters(int zoom, double x, double y) {
      * @return les coordonnées du coin haut-gauche sous la forme d'un objet de type Point2D
      */
     public Point2D topLeft() {
-        return new Point2D(x,y);
+        return new Point2D(x, y);
     }
 
     /**
@@ -83,5 +66,4 @@ public record MapViewParameters(int zoom, double x, double y) {
     public int viewY(PointWebMercator that){
         return (int) (that.yAtZoomLevel(this.zoom) - topLeft().getY());
     }
-
 }
