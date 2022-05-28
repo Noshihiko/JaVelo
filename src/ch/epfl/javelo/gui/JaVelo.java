@@ -7,6 +7,7 @@ import ch.epfl.javelo.routing.RouteComputer;
 import javafx.application.Application;
 import javafx.beans.binding.Bindings;
 import javafx.geometry.Orientation;
+import javafx.scene.Scene;
 import javafx.scene.control.Menu;
 import javafx.scene.control.MenuBar;
 import javafx.scene.control.MenuItem;
@@ -57,21 +58,20 @@ public final class JaVelo extends Application {
 
         AnnotatedMapManager map = new AnnotatedMapManager(graph, tileManager, bean, errorConsumer);
 
-        BorderPane borderPane = new BorderPane(carteProfilAndError, menuBar,null, null, null);
-        borderPane.setId(TITLE);
-        borderPane.setMinSize(800, 600);
+        BorderPane mainPane = new BorderPane(carteProfilAndError, menuBar,null, null, null);
+        //mainPane.setId(TITLE);
+        //mainPane.setMinSize(800, 600);
 
         carteAndProfil.getItems().add(map.pane());
 
-
-        if (bean.getRouteProperty() == null)  {
+        //System.out.println("route beqn checker : " + bean.getRouteProperty().get().length() + " > length");
+        if (bean.getRouteProperty().get() == null)  {
            // carteAndProfil.getItems().remove(elevationProfile.pane());
             carteProfilAndError.getChildren().remove(errorManager.pane());
         } else {
             carteAndProfil.getItems().add(elevationProfile.pane());
-
         }
-        carteAndProfil.setResizableWithParent(elevationProfile.pane(), false);
+        SplitPane.setResizableWithParent(elevationProfile.pane(), false);
 
         bean.highlightedPositionProperty().bind(Bindings.when(map.mousePositionOnRouteProperty()
                         .greaterThanOrEqualTo(0)).then(map.mousePositionOnRouteProperty())
@@ -80,16 +80,7 @@ public final class JaVelo extends Application {
         menuItem.disableProperty().bind(bean.getRouteProperty().isNull());
         menu.getItems().add(menuItem);
 
-/*
-        bean.getRouteProperty().addListener( o -> {
-            if (bean.getRouteProperty().isNull().get()) {
 
-            } else {
-
-            }
-        });
-
- */
 
 
         menu.setOnAction( o -> {
@@ -99,7 +90,12 @@ public final class JaVelo extends Application {
                 throw new UncheckedIOException(e);
             }
         });
-
+        mainPane.getStylesheets().add("map.css");
+        primaryStage.setMinWidth(600);
+        primaryStage.setMinHeight(300);
+        primaryStage.setScene(new Scene(mainPane));
+        primaryStage.setTitle("JaVelo");
+        primaryStage.show();
 
     }
 }

@@ -48,7 +48,7 @@ public final class RouteBean {
             if (waypoints.size() < 2) {
                 route.set(null);
                 elevationProfile.set(null);
-                System.out.println("array size " +waypoints.size());
+                //System.out.println("array size " +waypoints.size());
             }
             else {
 

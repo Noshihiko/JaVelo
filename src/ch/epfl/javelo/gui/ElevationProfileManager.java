@@ -93,6 +93,7 @@ public final class ElevationProfileManager {
         });
 
         profilePrinted.addListener( o -> {
+            if (profilePrinted.get() == null) return;
             double minElevation = profilePrinted.get().minElevation();
             double maxElevation = profilePrinted.get().maxElevation();
 

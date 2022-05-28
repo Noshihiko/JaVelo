@@ -18,13 +18,12 @@ public final class AnnotatedMapManager {
     private final TileManager gestionnaireTuiles;
     private final Consumer<String> error;
     private final RouteBean routeBean;
-    private final Pane pane;
     private final RouteManager routeManager;
     private final MapViewParameters mapParameters;
     private final int ZOOM_AT_START = 12;
     private final int X_AT_START = 543200;
     private final int Y_AT_START = 370650;
-    private final ReadOnlyObjectProperty<MapViewParameters> readOnlyMapParameters;
+    //private final ReadOnlyObjectProperty<MapViewParameters> readOnlyMapParameters;
     private final ObjectProperty<MapViewParameters> onlyMapParameters;
     private final BaseMapManager mapManager;
     private final WaypointsManager waypointsManager;
@@ -38,22 +37,23 @@ public final class AnnotatedMapManager {
         this.gestionnaireTuiles = gestionnaireTuiles;
         this.error = error;
         this.routeBean = routeBean;
-        pane = new Pane();
         mapParameters = new MapViewParameters(ZOOM_AT_START, X_AT_START, Y_AT_START);
-        readOnlyMapParameters = new SimpleObjectProperty<>(mapParameters);
+        //readOnlyMapParameters = new SimpleObjectProperty<>(mapParameters);
         onlyMapParameters = new SimpleObjectProperty<>(mapParameters);
 
         //creation d'un waypoint manager
         waypointsManager = new WaypointsManager(reseauRoutier, onlyMapParameters, routeBean.getWaypoint() ,error);
 
         // Creation d'une Route manager
-        routeManager = new RouteManager(routeBean, readOnlyMapParameters, error);
+        routeManager = new RouteManager(routeBean, onlyMapParameters, error);
 
         //creation de base map manager
         mapManager = new BaseMapManager(gestionnaireTuiles, waypointsManager , onlyMapParameters);
 
-        empilementPane = new StackPane(mapManager.pane(), routeManager.pane(), waypointsManager.pane());
-        empilementPane.setStyle("map.css");
+        empilementPane = new StackPane(mapManager.pane(),
+                routeManager.pane(),
+                waypointsManager.pane());
+        empilementPane.getStylesheets().add("map.css");
 
 
         mousePositionOnRouteProperty = new SimpleDoubleProperty();
@@ -61,7 +61,8 @@ public final class AnnotatedMapManager {
 
         mapManager.pane().setOnMouseMoved(event -> {
             mousePositionProperty.setValue(new Point2D(event.getX(), event.getY()));
-            setMousePositionOnRouteProperty();
+            if (routeBean.getRouteProperty().get() == null) mousePositionOnRouteProperty.set(Double.NaN);
+            else setMousePositionOnRouteProperty();
         });
 
         mapManager.pane().setOnMouseExited(event -> {
@@ -71,7 +72,7 @@ public final class AnnotatedMapManager {
     }
 
     public Pane pane() {
-        return pane;
+        return empilementPane;
     }
 
     public ReadOnlyDoubleProperty mousePositionOnRouteProperty() {
@@ -79,7 +80,6 @@ public final class AnnotatedMapManager {
     }
 
     private void setMousePositionOnRouteProperty() {
-
         double x = mousePositionProperty.getValue().getX();
         double y = mousePositionProperty.getValue().getY();
 
@@ -95,7 +95,7 @@ public final class AnnotatedMapManager {
         double uX = xPointRoute - x;
         double uY = yPointRoute - y;
 
-        if (Math2.norm(uX , uY) >= 15 ) mousePositionOnRouteProperty.set(pointRoute.position());
+        if (Math2.norm(uX , uY) <= 15 ) mousePositionOnRouteProperty.set(pointRoute.position());
         else mousePositionOnRouteProperty.set(Double.NaN);
     }
 
