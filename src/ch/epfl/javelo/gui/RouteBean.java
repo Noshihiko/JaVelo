@@ -56,6 +56,7 @@ public final class RouteBean {
             else {
 
                 for (int i = 0; i < waypoints.size() - 1; ++i) {
+                    if (waypoints.get(i).nodeId() == waypoints.get(i+1).nodeId()) continue;
                     key = new Key(waypoints.get(i).nodeId(), waypoints.get(i+1).nodeId());
 
                     if (memoryRoute.containsKey(key) && memoryRoute.get(key)!=null) {

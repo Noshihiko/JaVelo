@@ -64,11 +64,8 @@ public final class RouteManager {
 
 
         routeBean.highlightedPositionProperty().addListener(event -> {
-           if (routeBean.highlightedPositionProperty() != null) {
-               recreateDisklayout();
-            }
+            recreateDisklayout();
             // else reCreateItinerary();
-
             setDiskAndItineraryVisible();
 
         });
@@ -119,10 +116,7 @@ public final class RouteManager {
     private void setDiskAndItineraryVisible() {
         if (routeBean.getRouteProperty().get()!= null) {
             itinerary.setVisible(true);
-            if (Double.isNaN(routeBean.highlightedPosition())) {
-                disk.setVisible(false);
-            }
-            else disk.setVisible(true);
+            disk.setVisible(!Double.isNaN(routeBean.highlightedPosition()));
         }
         else {
             disk.setVisible(false);
@@ -131,7 +125,7 @@ public final class RouteManager {
     }
 
     private void recreateDisklayout() {
-        if (routeBean.highlightedPositionProperty() != null  && routeBean.getRouteProperty().get() != null) {
+        if (!Double.isNaN(routeBean.highlightedPositionProperty().get()) && routeBean.getRouteProperty().get() != null) {
         PointCh p2 = routeBean.getRouteProperty().get().pointAt(routeBean.highlightedPosition());
         PointWebMercator point2 = PointWebMercator.ofPointCh(p2);
         disk.setLayoutX(mapParameters.get().viewX(point2));

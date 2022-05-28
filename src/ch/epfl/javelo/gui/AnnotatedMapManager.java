@@ -5,6 +5,7 @@ import ch.epfl.javelo.Math2;
 import ch.epfl.javelo.data.Graph;
 import ch.epfl.javelo.projection.PointWebMercator;
 import ch.epfl.javelo.routing.RoutePoint;
+import javafx.beans.binding.Bindings;
 import javafx.beans.property.*;
 
 import javafx.geometry.Point2D;
@@ -19,7 +20,6 @@ public final class AnnotatedMapManager {
     private final Consumer<String> error;
     private final RouteBean routeBean;
     private final RouteManager routeManager;
-    private final MapViewParameters mapParameters;
     private final int ZOOM_AT_START = 12;
     private final int X_AT_START = 543200;
     private final int Y_AT_START = 370650;
@@ -37,9 +37,8 @@ public final class AnnotatedMapManager {
         this.gestionnaireTuiles = gestionnaireTuiles;
         this.error = error;
         this.routeBean = routeBean;
-        mapParameters = new MapViewParameters(ZOOM_AT_START, X_AT_START, Y_AT_START);
         //readOnlyMapParameters = new SimpleObjectProperty<>(mapParameters);
-        onlyMapParameters = new SimpleObjectProperty<>(mapParameters);
+        onlyMapParameters = new SimpleObjectProperty<>(new MapViewParameters(ZOOM_AT_START, X_AT_START, Y_AT_START));
 
         //creation d'un waypoint manager
         waypointsManager = new WaypointsManager(reseauRoutier, onlyMapParameters, routeBean.getWaypoint() ,error);
@@ -55,20 +54,19 @@ public final class AnnotatedMapManager {
                 waypointsManager.pane());
         empilementPane.getStylesheets().add("map.css");
 
-
         mousePositionOnRouteProperty = new SimpleDoubleProperty();
         mousePositionProperty = new SimpleObjectProperty<>();
 
-        mapManager.pane().setOnMouseMoved(event -> {
+        empilementPane.setOnMouseMoved(event -> {
             mousePositionProperty.setValue(new Point2D(event.getX(), event.getY()));
-            if (routeBean.getRouteProperty().get() == null) mousePositionOnRouteProperty.set(Double.NaN);
-            else setMousePositionOnRouteProperty();
         });
 
-        mapManager.pane().setOnMouseExited(event -> {
+        empilementPane.setOnMouseExited(event -> {
             mousePositionProperty.setValue(null);
-            mousePositionOnRouteProperty.set(Double.NaN);
         });
+
+        mousePositionOnRouteProperty.bind(Bindings.createDoubleBinding(this::setMousePositionOnRouteProperty,
+                onlyMapParameters, mousePositionProperty, routeBean.getRouteProperty()));
     }
 
     public Pane pane() {
@@ -79,11 +77,18 @@ public final class AnnotatedMapManager {
         return mousePositionOnRouteProperty;
     }
 
-    private void setMousePositionOnRouteProperty() {
+    private Double setMousePositionOnRouteProperty() {
+        if (mousePositionProperty.get() == null || routeBean.getRouteProperty().get() == null)
+            return Double.NaN;
+
         double x = mousePositionProperty.getValue().getX();
         double y = mousePositionProperty.getValue().getY();
 
+        MapViewParameters mapParameters = onlyMapParameters.get();
+
         PointWebMercator mousePos = mapParameters.pointAt(x, y);
+
+        if (mousePos.toPointCh() == null) return Double.NaN;
 
         RoutePoint pointRoute = routeBean.getRouteProperty().get().pointClosestTo(mousePos.toPointCh());
 
@@ -95,8 +100,8 @@ public final class AnnotatedMapManager {
         double uX = xPointRoute - x;
         double uY = yPointRoute - y;
 
-        if (Math2.norm(uX , uY) <= 15 ) mousePositionOnRouteProperty.set(pointRoute.position());
-        else mousePositionOnRouteProperty.set(Double.NaN);
+        if (Math2.norm(uX , uY) <= 15) return pointRoute.position();
+        else return Double.NaN;
     }
 
 

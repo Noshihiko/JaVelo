@@ -8,6 +8,7 @@ import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
 
 import javafx.scene.Group;
+import javafx.scene.Node;
 import javafx.scene.layout.Pane;
 import javafx.scene.shape.SVGPath;
 import java.util.function.Consumer;
@@ -85,10 +86,6 @@ public final class WaypointsManager {
         Group newGroup = new Group();
         pane().getChildren().add(newGroup);
 
-        PointWebMercator point = PointWebMercator.ofPointCh(w.pointCh());
-        double x = parameters.get().viewX(point);
-        double y = parameters.get().viewY(point);
-
         newGroup.setOnMouseDragged(event -> {
             newGroup.setLayoutX(event.getSceneX());
             newGroup.setLayoutY(event.getSceneY());
@@ -104,14 +101,16 @@ public final class WaypointsManager {
             if(!event.isStillSincePress()){
 
                 Waypoint waypointChanged = createNewWaypoint(event.getSceneX(), event.getSceneY());
-                listWaypoints.set(index, waypointChanged);
-                pane().getChildren().clear();
-                createNewListWaypoints();
+
+                if (waypointChanged != null) {
+                    listWaypoints.set(index, waypointChanged);
+                    pane().getChildren().clear();
+                    createNewListWaypoints();
+                } else {
+                    layoutWaypoints();
+                }
             }
         });
-
-        newGroup.setLayoutX(x);
-        newGroup.setLayoutY(y);
 
         newGroup.getStyleClass().add("pin");
 
@@ -138,11 +137,27 @@ public final class WaypointsManager {
         newGroup.getStyleClass().add(position);
     }
 
+    private void layoutWaypoints() {
+        for (int i = 0; i < listWaypoints.size(); ++i) {
+            Waypoint w = listWaypoints.get(i);
+            Node marker = pane.getChildren().get(i);
+
+            PointWebMercator point = PointWebMercator.ofPointCh(w.pointCh());
+            double x = parameters.get().viewX(point);
+            double y = parameters.get().viewY(point);
+
+            marker.setLayoutX(x);
+            marker.setLayoutY(y);
+        }
+    }
+
 
     private void createNewListWaypoints() {
         for (int i=0; i < listWaypoints.size(); ++i) {
             drawWaypoint(listWaypoints.get(i), i);
         }
+
+        layoutWaypoints();
     }
 
     private enum Position {
