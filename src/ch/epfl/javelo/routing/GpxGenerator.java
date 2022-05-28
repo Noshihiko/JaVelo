@@ -75,15 +75,18 @@ public class GpxGenerator {
         name.appendChild(rte);
 
         for (Edge edge : route.edges()){
+            String lon = "";
+            String lat = "";
+            String elevation = "";
             PointCh point = edge.fromPoint();
 
             Element routePoint = doc.createElement("point");
-            routePoint.setAttribute("longitude", Double.toString(point.lon()));
-            routePoint.setAttribute("latitude", Double.toString(point.lat()));
+            routePoint.setAttribute("longitude", String.format(lon, point.lon()));
+            routePoint.setAttribute("latitude", String.format(lat, point.lat()));
             rte.appendChild(routePoint);
 
             Element elevationPoint = doc.createElement("elevation");
-            elevationPoint.setAttribute("elevation", Double.toString(elevationProfile.elevationAt(edge.length())));
+            elevationPoint.setAttribute("elevation", String.format(elevation, elevationProfile.elevationAt(edge.length())));
             routePoint.appendChild(elevationPoint);
         }
 

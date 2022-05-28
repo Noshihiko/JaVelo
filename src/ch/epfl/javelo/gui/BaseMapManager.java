@@ -12,56 +12,137 @@ import javafx.geometry.Point2D;
 
 import java.io.IOException;
 
+/**
+ * Gère l'affichage et l'interaction avec le fond de carte.
+ *
+ * @author Camille Espieux (324248)
+ * @author Chiara Freneix (329552)
+ */
 public final class BaseMapManager {
-    public TileManager tiles;
-    public WaypointsManager  points;
-    public ObjectProperty<MapViewParameters> parameters;
+    public final TileManager tiles;
+    public final WaypointsManager points;
+    public final ObjectProperty<MapViewParameters> mapViewParameters;
 
-    public Pane pane;
-    public Canvas canvas;
-    public TileManager.TileId tilesId;
+    private final Pane pane;
+    private final Canvas canvas;
+    private TileManager.TileId tilesId;
     private Point2D draggedPoint;
 
-    public boolean redrawNeeded;
+    private boolean redrawNeeded;
     private final int MAP_PIXEL = 256;
 
-    public BaseMapManager(TileManager tiles, WaypointsManager points, ObjectProperty<MapViewParameters> parameters){
+    /**
+     * Constructeur public de la classe.
+     *
+     * @param tiles le gestionnaire de tuiles à utiliser pour obtenir les tuiles de la carte
+     * @param points le gestionnaire des points de passage
+     * @param mapViewParameters une propriété JavaFX contenant les paramètres de la carte affichée
+     */
+    public BaseMapManager(TileManager tiles, WaypointsManager points, ObjectProperty<MapViewParameters> mapViewParameters){
         this.tiles = tiles;
         this.points = points;
-        this.parameters = parameters;
+        this.mapViewParameters = mapViewParameters;
 
-        this.canvas = new Canvas();
+        canvas = new Canvas();
         this.pane = new Pane(canvas);
 
         canvas.widthProperty().bind(pane.widthProperty());
         canvas.heightProperty().bind(pane.heightProperty());
 
+        canvas.sceneProperty().addListener((p, oldS, newS) -> {
+            assert oldS == null;
+            newS.addPreLayoutPulseListener(this::redrawIfNeeded);
+        });
+
+        mapViewParameters.addListener((p, oldS, newS) -> redrawOnNextPulse());
+        canvas.widthProperty().addListener((p, oldS, newS) -> redrawOnNextPulse());
+        canvas.heightProperty().addListener((p, oldS, newS) -> redrawOnNextPulse());
+
+        eventManagement();
+    }
+
+    /**
+     * Retourne le panneau JavaFX affichant le fond de carte.
+     *
+     * @return le panneau JavaFX affichant le fond de carte
+     */
+    public Pane pane(){
+        return pane;
+    }
+
+    /**
+     * Permet de demander un redessin de la carte au prochain battement.
+     */
+    private void redrawOnNextPulse() {
+        redrawNeeded = true;
+        Platform.requestNextPulse();
+    }
+
+    /**
+     * Effectue le redessin si et seulement si l'attribut redrawNeeded est vrai.
+     */
+    private void redrawIfNeeded() {
+
+        if (!redrawNeeded) return;
+        redrawNeeded = false;
+
+        GraphicsContext context = canvas.getGraphicsContext2D();
+        double coorX;
+        double coorY;
+
+        int minX = (int)(mapViewParameters.get().x() / MAP_PIXEL);
+        int minY = (int)(mapViewParameters.get().y() / MAP_PIXEL);
+
+        int maxX = (int)((mapViewParameters.get().x() + pane.getWidth()) / MAP_PIXEL);
+        int maxY = (int)((mapViewParameters.get().y()+ pane.getHeight()) / MAP_PIXEL);
+
+
+        for (int i = minX; i <= maxX; ++i){
+            for (int j = minY; j <= maxY; ++j){
+                coorX = i * MAP_PIXEL - mapViewParameters.get().x();
+                coorY = j * MAP_PIXEL - mapViewParameters.get().y();
+
+                int zoom = mapViewParameters.get().zoom();
+                tilesId = new TileManager.TileId(zoom, i, j);
+
+                if (TileManager.TileId.isValid(zoom, i, j)) {
+                    try {
+                        context.drawImage(tiles.imageForTileAt(tilesId), coorX, coorY);
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+        }
+    }
+
+
+    /**
+     * Méthode qui gère et détecte différents événements.
+     */
+    private void eventManagement(){
         SimpleLongProperty minScrollTime = new SimpleLongProperty();
         pane.setOnScroll(event -> {
-            int ZOOM_MIN = 8;
-            int ZOOM_MAX = 19;
-
             if (event.getDeltaY() == 0d) return;
             long currentTime = System.currentTimeMillis();
             if (currentTime < minScrollTime.get()) return;
             minScrollTime.set(currentTime + 200);
             int zoomDelta = (int) Math.signum(event.getDeltaY());
 
-            int zoomLvl = parameters.get().zoom() + zoomDelta ;
-            zoomLvl = Math2.clamp(ZOOM_MIN, zoomLvl, ZOOM_MAX);
+            int ZOOM_MIN = 8;
+            int ZOOM_MAX = 19;
+            int mapZoom = mapViewParameters.get().zoom();
 
-            PointWebMercator mouseBeforeZoom = PointWebMercator.of(parameters.get().zoom(),
-                    parameters.get().x() + event.getX(), parameters.get().y() + event.getY());
+            int zoomLvl = Math2.clamp(ZOOM_MIN,mapZoom + zoomDelta, ZOOM_MAX);
 
-            double xMAfter = mouseBeforeZoom.xAtZoomLevel(zoomLvl);
-            double yMAfter = mouseBeforeZoom.yAtZoomLevel(zoomLvl);
+            PointWebMercator mouseBeforeZoom = PointWebMercator.of(mapZoom,
+                    mapViewParameters.get().x() + event.getX(),
+                    mapViewParameters.get().y() + event.getY());
 
-            double xTLAfter= xMAfter - event.getX();
-            double yTLAfter = yMAfter - event.getY();
+            double xZoomed = mouseBeforeZoom.xAtZoomLevel(zoomLvl) - event.getX();
+            double yZoomed = mouseBeforeZoom.yAtZoomLevel(zoomLvl) - event.getY();
 
-            System.out.println("zoom : " + zoomLvl);
-            parameters.setValue(new MapViewParameters(zoomLvl, xTLAfter, yTLAfter));
-
+            mapViewParameters.setValue(new MapViewParameters(zoomLvl, xZoomed, yZoomed));
             redrawOnNextPulse();
         });
 
@@ -70,13 +151,12 @@ public final class BaseMapManager {
         pane.setOnMouseDragged(event -> {
             draggedPoint = draggedPoint.subtract(event.getX(), event.getY());
 
-            double x = parameters.get().x() + draggedPoint.getX();
-            double y = parameters.get().y() + draggedPoint.getY();
+            double x = mapViewParameters.get().x() + draggedPoint.getX();
+            double y = mapViewParameters.get().y() + draggedPoint.getY();
 
-            parameters.setValue(parameters.get().withMinXY(x,y));
+            mapViewParameters.setValue(mapViewParameters.get().withMinXY(x,y));
 
             draggedPoint = new Point2D(event.getX(), event.getY());
-
             redrawOnNextPulse();
         });
 
@@ -88,61 +168,5 @@ public final class BaseMapManager {
             }
             redrawOnNextPulse();
         });
-
-        canvas.sceneProperty().addListener((p, oldS, newS) -> {
-            assert oldS == null;
-            newS.addPreLayoutPulseListener(this::redrawIfNeeded);
-        });
-
-        parameters.addListener(o -> redrawOnNextPulse());
-        canvas.widthProperty().addListener(o -> redrawOnNextPulse());
-        canvas.heightProperty().addListener(o -> redrawOnNextPulse());
-
-    }
-
-    public Pane pane(){
-        return pane;
-    }
-
-    private void redrawIfNeeded() {
-
-        if (!redrawNeeded) return;
-        redrawNeeded = false;
-        //System.out.println("Redrawifneeded : "+parameters.get().zoom());
-
-        GraphicsContext context = canvas.getGraphicsContext2D();
-        double coorX;
-        double coorY;
-
-        int minX = (int)(parameters.get().x() / MAP_PIXEL);
-        int minY = (int)(parameters.get().y() / MAP_PIXEL);
-
-        int maxX = (int)((parameters.get().x() + pane.getWidth()) / MAP_PIXEL);
-        int maxY = (int)((parameters.get().y()+ pane.getHeight()) / MAP_PIXEL);
-
-
-        for (int i = minX; i <= maxX; ++i){
-            for (int j = minY; j <= maxY; ++j){
-                coorX = i * MAP_PIXEL - parameters.get().x();
-                coorY = j * MAP_PIXEL - parameters.get().y();
-
-                tilesId = new TileManager.TileId(parameters.get().zoom(), i, j);
-
-                //System.out.println(TileManager.TileId.isValid(parameters.get().zoom(), i, j));
-
-                if (TileManager.TileId.isValid(parameters.get().zoom(), i, j)) {
-                    try {
-                        context.drawImage(tiles.imageForTileAt(tilesId), coorX, coorY);
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
-                }
-            }
-        }
-    }
-
-    private void redrawOnNextPulse() {
-        redrawNeeded = true;
-        Platform.requestNextPulse();
     }
 }

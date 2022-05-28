@@ -28,8 +28,8 @@ public final class JaVelo extends Application {
     private final String TITLE = "JaVelo";
     private final String TITLE_ITINERAIRE = "javelo.gpx";
 
-    public static void main(String[] v02) { launch(v02);
-
+    public static void main(String[] args) {
+        launch(args);
     }
 
 
@@ -60,7 +60,7 @@ public final class JaVelo extends Application {
 
         BorderPane mainPane = new BorderPane(carteProfilAndError, menuBar,null, null, null);
         //mainPane.setId(TITLE);
-        //mainPane.setMinSize(800, 600);
+        mainPane.setMinSize(800, 600);
 
         carteAndProfil.getItems().add(map.pane());
 
@@ -91,10 +91,11 @@ public final class JaVelo extends Application {
             }
         });
         mainPane.getStylesheets().add("map.css");
+
         primaryStage.setMinWidth(600);
         primaryStage.setMinHeight(300);
         primaryStage.setScene(new Scene(mainPane));
-        primaryStage.setTitle("JaVelo");
+        primaryStage.setTitle(TITLE);
         primaryStage.show();
 
     }
