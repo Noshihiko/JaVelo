@@ -22,7 +22,8 @@ public class GpxGenerator {
     /**
      * Constructeur privé de la classe, car elle est immuable.
      */
-    private GpxGenerator(){}
+    private GpxGenerator() {
+    }
 
     /**
      * Crée un nouveau document.
@@ -43,12 +44,11 @@ public class GpxGenerator {
     /**
      * Retourne le document GPX (de type Document) correspondant.
      *
-     * @param route l'itinéraire
+     * @param route            l'itinéraire
      * @param elevationProfile le profil de cet itinéraire
-     *
      * @return le document GPX (de type Document) correspondant
      */
-    public static Document createGpx(Route route, ElevationProfile elevationProfile){
+    public static Document createGpx(Route route, ElevationProfile elevationProfile) {
         Document doc = newDocument();
 
         Element root = doc
@@ -74,7 +74,7 @@ public class GpxGenerator {
         Element rte = doc.createElement("route");
         name.appendChild(rte);
 
-        for (Edge edge : route.edges()){
+        for (Edge edge : route.edges()) {
             String lon = "";
             String lat = "";
             String elevation = "";
@@ -96,8 +96,8 @@ public class GpxGenerator {
     /**
      * Ecrit le document GPX correspondant dans le fichier nameFile.
      *
-     * @param nameFile le nom du fichier
-     * @param route l'itinéraire
+     * @param nameFile         le nom du fichier
+     * @param route            l'itinéraire
      * @param elevationProfile le profil de cet itinéraire
      *
      * @throws IOException en cas d'erreur d'entrée/sortie
@@ -113,7 +113,7 @@ public class GpxGenerator {
                     .newTransformer();
             transformer.setOutputProperty(OutputKeys.INDENT, "yes");
             transformer.transform(new DOMSource(doc),
-                                  new StreamResult(w));
+                    new StreamResult(w));
         } catch (TransformerException e) {
             throw new Error(e);
         }
