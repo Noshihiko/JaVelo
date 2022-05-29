@@ -23,28 +23,23 @@ public final class BaseMapManager {
     public final WaypointsManager points;
     public final ObjectProperty<MapViewParameters> mapViewParameters;
 
-    private final Pane pane;
-    private final Canvas canvas;
-    private TileManager.TileId tilesId;
+    private final Canvas canvas = new Canvas();
+    private final Pane pane = new Pane(canvas);
     private Point2D draggedPoint;
 
     private boolean redrawNeeded;
-    private final int MAP_PIXEL = 256;
 
     /**
      * Constructeur public de la classe.
      *
-     * @param tiles le gestionnaire de tuiles à utiliser pour obtenir les tuiles de la carte
-     * @param points le gestionnaire des points de passage
+     * @param tiles             le gestionnaire de tuiles à utiliser pour obtenir les tuiles de la carte
+     * @param points            le gestionnaire des points de passage
      * @param mapViewParameters une propriété JavaFX contenant les paramètres de la carte affichée
      */
-    public BaseMapManager(TileManager tiles, WaypointsManager points, ObjectProperty<MapViewParameters> mapViewParameters){
+    public BaseMapManager(TileManager tiles, WaypointsManager points, ObjectProperty<MapViewParameters> mapViewParameters) {
         this.tiles = tiles;
         this.points = points;
         this.mapViewParameters = mapViewParameters;
-
-        canvas = new Canvas();
-        this.pane = new Pane(canvas);
 
         canvas.widthProperty().bind(pane.widthProperty());
         canvas.heightProperty().bind(pane.heightProperty());
@@ -66,7 +61,7 @@ public final class BaseMapManager {
      *
      * @return le panneau JavaFX affichant le fond de carte
      */
-    public Pane pane(){
+    public Pane pane() {
         return pane;
     }
 
@@ -82,7 +77,6 @@ public final class BaseMapManager {
      * Effectue le redessin si et seulement si l'attribut redrawNeeded est vrai.
      */
     private void redrawIfNeeded() {
-
         if (!redrawNeeded) return;
         redrawNeeded = false;
 
@@ -90,20 +84,21 @@ public final class BaseMapManager {
         double coorX;
         double coorY;
 
-        int minX = (int)(mapViewParameters.get().x() / MAP_PIXEL);
-        int minY = (int)(mapViewParameters.get().y() / MAP_PIXEL);
+        int MAP_PIXEL = 256;
+        int minX = (int) (mapViewParameters.get().x() / MAP_PIXEL);
+        int minY = (int) (mapViewParameters.get().y() / MAP_PIXEL);
 
-        int maxX = (int)((mapViewParameters.get().x() + pane.getWidth()) / MAP_PIXEL);
-        int maxY = (int)((mapViewParameters.get().y()+ pane.getHeight()) / MAP_PIXEL);
+        int maxX = (int) ((mapViewParameters.get().x() + pane.getWidth()) / MAP_PIXEL);
+        int maxY = (int) ((mapViewParameters.get().y() + pane.getHeight()) / MAP_PIXEL);
 
 
-        for (int i = minX; i <= maxX; ++i){
-            for (int j = minY; j <= maxY; ++j){
+        for (int i = minX; i <= maxX; ++i) {
+            for (int j = minY; j <= maxY; ++j) {
                 coorX = i * MAP_PIXEL - mapViewParameters.get().x();
                 coorY = j * MAP_PIXEL - mapViewParameters.get().y();
 
                 int zoom = mapViewParameters.get().zoom();
-                tilesId = new TileManager.TileId(zoom, i, j);
+                TileManager.TileId tilesId = new TileManager.TileId(zoom, i, j);
 
                 if (TileManager.TileId.isValid(zoom, i, j)) {
                     try {
@@ -123,12 +118,15 @@ public final class BaseMapManager {
     private void eventManagement(){
         SimpleLongProperty minScrollTime = new SimpleLongProperty();
         pane.setOnScroll(event -> {
-            if (event.getDeltaY() == 0d) return;
+            if (event.getDeltaY() == 0d)
+                return;
             long currentTime = System.currentTimeMillis();
-            if (currentTime < minScrollTime.get()) return;
+            if (currentTime < minScrollTime.get())
+                return;
             minScrollTime.set(currentTime + 200);
-            int zoomDelta = (int) Math.signum(event.getDeltaY());
 
+            //TODO remove zoomDelta?
+            int zoomDelta = (int) Math.signum(event.getDeltaY());
             int ZOOM_MIN = 8;
             int ZOOM_MAX = 19;
             int mapZoom = mapViewParameters.get().zoom();
@@ -163,9 +161,9 @@ public final class BaseMapManager {
         pane.setOnMouseReleased(event -> draggedPoint = null);
 
         pane.setOnMouseClicked(event -> {
-            if (event.isStillSincePress()) {
+            if (event.isStillSincePress())
                 points.addWaypoint(event.getX(), event.getY());
-            }
+
             redrawOnNextPulse();
         });
     }

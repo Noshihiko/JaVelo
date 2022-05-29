@@ -19,55 +19,44 @@ public final class RouteManager {
     private final ReadOnlyObjectProperty<MapViewParameters> mapParameters;
     private final Consumer<String> error;
 
-    private final Pane paneItinerary;
-    private final Polyline itinerary;
-    private final Circle disk;
+    private final static double RADIUS_OF_DISK = 5;
 
-    private final double RADIUS_OF_DISK = 5;
+    private final Pane paneItinerary = new Pane();
+    private final Polyline itinerary = new Polyline();
+    private final Circle disk = new Circle(RADIUS_OF_DISK);
+
 
     public RouteManager(RouteBean routeBean, ReadOnlyObjectProperty<MapViewParameters> mapParameters, Consumer<String> error) {
         this.routeBean = routeBean;
         this.mapParameters = mapParameters;
         this.error = error;
 
-        itinerary = new Polyline();
         itinerary.setId("route");
 
-        disk = new Circle(RADIUS_OF_DISK);
         disk.setId("highlight");
         disk.setVisible(false);
 
-        paneItinerary = new Pane();
         paneItinerary.getChildren().add(itinerary);
         paneItinerary.getChildren().add(disk);
         paneItinerary.setPickOnBounds(false);
 
         mapParameters.addListener((object, old, now) -> {
-            System.out.println("Truc");
-
             if (old.zoom() == now.zoom() && routeBean.getRouteProperty().get()!=null)
                 moveItinerary();
-
-            else {
+            else
                 reCreateItinerary();
-            }
         });
 
         routeBean.getWaypoint().addListener((Observable event) -> {
-
-            if(routeBean.getRouteProperty().get() != null ) {
-                System.out.println("size pointtt : " +routeBean.getWaypoint().size());
+            if(routeBean.getRouteProperty().get() != null )
                 reCreateItinerary();
-            }
-            else setDiskAndItineraryVisible();
+            else
+                setDiskAndItineraryVisible();
         });
 
-
-        routeBean.highlightedPositionProperty().addListener(event -> {
+        routeBean.highlightedPositionProperty().addListener((object, old, now) -> {
             recreateDisklayout();
-            // else reCreateItinerary();
             setDiskAndItineraryVisible();
-
         });
        
         routeBean.getRouteProperty().addListener(event -> {
@@ -84,11 +73,8 @@ public final class RouteManager {
 
             PointCh newPoint = mapParameters.get().pointAt(p.getX(), p.getY()).toPointCh();
 
-            //TODO
-            // SEGMENT AT retourne pas la bonne valeur car ça place un waypoint à la fin et pas au milieu
 
             int index = routeBean.getRouteProperty().get().indexOfSegmentAt(routeBean.highlightedPosition())+1;
-            //System.out.println("INDEX OF WYAYPOINT : " +index);
 
             boolean check=true;
 
@@ -101,12 +87,9 @@ public final class RouteManager {
             }
             if (check) routeBean.getWaypoint().add(index, new Waypoint(newPoint, nodeId));
         });
-        
     }
 
     private void moveItinerary() {
-        System.out.println("Move");
-
         itinerary.setLayoutY(-mapParameters.get().y());
         itinerary.setLayoutX(-mapParameters.get().x());
 
@@ -130,20 +113,14 @@ public final class RouteManager {
         PointWebMercator point2 = PointWebMercator.ofPointCh(p2);
         disk.setLayoutX(mapParameters.get().viewX(point2));
         disk.setLayoutY(mapParameters.get().viewY(point2));
-        //System.out.println(">>> " + point2.xAtZoomLevel(mapParameters.get().zoom()));
     }}
 
     private void reCreateItinerary() {
-        System.out.println("Recree");
-
         if (routeBean.getRouteProperty().get() != null) {
             Double[] listOfCoordinates = conversionCord(routeBean.getRouteProperty().get().points());
 
 
             PointWebMercator point = PointWebMercator.ofPointCh(routeBean.getWaypoint().get(routeBean.getWaypoint().size() - 1).pointCh());
-            //System.out.println("dernier WAYPOINT : " + routeBean.getWaypoint().get(routeBean.getWaypoint().size() - 1).nodeId());
-            //System.out.println("dernier WAYPOINT      : " + point.yAtZoomLevel(mapParameters.get().zoom()));
-            //System.out.println("dernier point de route: " + listOfCoordinates[routeBean.getRouteProperty().get().points().size() * 2 - 1]);
 
             itinerary.getPoints().setAll(listOfCoordinates);
 
@@ -157,8 +134,6 @@ public final class RouteManager {
 
     private Double [] conversionCord (List<PointCh> listPoints) {
         int arraySize = listPoints.size();
-
-
         int count=0;
         Double [] newListCoordinates = new Double[arraySize*2];
 
