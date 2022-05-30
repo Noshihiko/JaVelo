@@ -170,6 +170,8 @@ public final class SingleRoute implements Route {
 
         for (int i = 0; i < edgesClass.size(); ++i) {
             edge = edgesClass.get(i);
+            if(edge.length() <= 0)
+                return new RoutePoint(edge.fromPoint(),0, point.distanceTo(edge.fromPoint()));
             position = clamp(0, edge.positionClosestTo(point), edge.length());
             pointClosest = pointClosest.min(edge.pointAt(position), position + distance[i], point.distanceTo(edge.pointAt(position)));
         }

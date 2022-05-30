@@ -217,7 +217,7 @@ public final class ElevationProfileManager {
         //distance entre les lignes verticales
         int k = 0;
         double distanceInBetweenWidthPixels = 0;
-        while (distanceInBetweenWidthPixels < 25 && k < POS_STEPS.length) {
+        while (distanceInBetweenWidthPixels < 50 && k < POS_STEPS.length) {
             distanceInBetweenWidth = POS_STEPS[k];
             distanceInBetweenWidthPixels = worldToScreen.get().deltaTransform(distanceInBetweenWidth, 0).getX();
             k += 1;
@@ -226,7 +226,7 @@ public final class ElevationProfileManager {
         //distance entre les lignes horizontales
         k = 0;
         double distanceInBetweenHeightPixels = 0;
-        while (distanceInBetweenHeightPixels < 50 && k < ELE_STEPS.length) {
+        while (distanceInBetweenHeightPixels < 25 && k < ELE_STEPS.length) {
             distanceInBetweenHeight = ELE_STEPS[k];
             distanceInBetweenHeightPixels = worldToScreen.get().deltaTransform(0, -distanceInBetweenHeight).getY();
             k += 1;

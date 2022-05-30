@@ -19,7 +19,7 @@ public final class RouteManager {
     private final ReadOnlyObjectProperty<MapViewParameters> mapParameters;
     private final Consumer<String> error;
 
-    private final static double RADIUS_OF_DISK = 5;
+    private final static double RADIUS_OF_DISK = 25;
 
     private final Pane paneItinerary = new Pane();
     private final Polyline itinerary = new Polyline();
