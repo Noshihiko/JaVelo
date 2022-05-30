@@ -1,5 +1,6 @@
 package ch.epfl.javelo.routing;
 
+import ch.epfl.javelo.projection.PointCh;
 import org.w3c.dom.*;
 
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -10,10 +11,25 @@ import javax.xml.transform.stream.StreamResult;
 import java.io.*;
 import java.nio.file.*;
 
-
+/**
+ * Représente un générateur d'itinéraire au format GPX.
+ *
+ * @author Camille Espieux (324248)
+ * @author Chiara Freneix (329552)
+ */
 public class GpxGenerator {
-    private GpxGenerator(){}
 
+    /**
+     * Constructeur privé de la classe, car elle est immuable.
+     */
+    private GpxGenerator() {
+    }
+
+    /**
+     * Crée un nouveau document.
+     *
+     * @return le nouveau document créé
+     */
     private static Document newDocument() {
         try {
             return DocumentBuilderFactory
@@ -21,12 +37,19 @@ public class GpxGenerator {
                     .newDocumentBuilder()
                     .newDocument();
         } catch (ParserConfigurationException e) {
-            throw new Error(e); // Should never happen
+            throw new Error(e);
         }
     }
 
-    public static Document createGpx(Route route, ElevationProfile profile){
-        Document doc = newDocument(); // voir plus bas
+    /**
+     * Retourne le document GPX (de type Document) correspondant.
+     *
+     * @param route            l'itinéraire
+     * @param elevationProfile le profil de cet itinéraire
+     * @return le document GPX (de type Document) correspondant
+     */
+    public static Document createGpx(Route route, ElevationProfile elevationProfile) {
+        Document doc = newDocument();
 
         Element root = doc
                 .createElementNS("https://www.topografix.com/GPX/1/1",
@@ -51,29 +74,38 @@ public class GpxGenerator {
         Element rte = doc.createElement("route");
         name.appendChild(rte);
 
-        for (int i=0; i < route.points().size(); ++i){
-            String a = "";
-            String b = "";
-            String c = "";
+        for (Edge edge : route.edges()) {
+            String lon = "";
+            String lat = "";
+            String elevation = "";
+            PointCh point = edge.fromPoint();
 
-            Element rtept = doc.createElement("point");
-            rtept.setAttribute("longitude", String.format(a, route.points().get(i).lon() ));
-            rtept.setAttribute("latitude", String.format(b, route.points().get(i).lat()));
-            rte.appendChild(rtept);
+            Element routePoint = doc.createElement("point");
+            routePoint.setAttribute("longitude", String.format(lon, point.lon()));
+            routePoint.setAttribute("latitude", String.format(lat, point.lat()));
+            rte.appendChild(routePoint);
 
-            Element ele = doc.createElement("elevation");
-            ele.setAttribute("elevation", String.format(c, profile.elevationAt(route.edges().get(i).length()) ));
-            rtept.appendChild(ele);
+            Element elevationPoint = doc.createElement("elevation");
+            elevationPoint.setAttribute("elevation", String.format(elevation, elevationProfile.elevationAt(edge.length())));
+            routePoint.appendChild(elevationPoint);
         }
 
         return doc;
     }
 
-    public static void writeGpx(String nameFile, Route route, ElevationProfile profile) throws IOException {
+    /**
+     * Ecrit le document GPX correspondant dans le fichier nameFile.
+     *
+     * @param nameFile         le nom du fichier
+     * @param route            l'itinéraire
+     * @param elevationProfile le profil de cet itinéraire
+     *
+     * @throws IOException en cas d'erreur d'entrée/sortie
+     */
+    public static void writeGpx(String nameFile, Route route, ElevationProfile elevationProfile) throws IOException {
 
         try {
-            //pas sure de ça
-            Document doc = createGpx(route, profile);
+            Document doc = createGpx(route, elevationProfile);
             Writer w = Files.newBufferedWriter(Path.of(nameFile));
 
             Transformer transformer = TransformerFactory
@@ -83,7 +115,7 @@ public class GpxGenerator {
             transformer.transform(new DOMSource(doc),
                     new StreamResult(w));
         } catch (TransformerException e) {
-            throw new Error(e); //Should never happen
+            throw new Error(e);
         }
     }
 }

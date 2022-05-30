@@ -182,8 +182,8 @@ public final class MultiRoute implements Route {
             if (checkIf) {
                 pointClosest = route.pointClosestTo(point);
                 position = distance + pointClosest.position();
-                distance += route.length();
             }
+            distance += route.length();
         }
         return new RoutePoint(pointClosest.point(), position, pointClosest.distanceToReference());
     }

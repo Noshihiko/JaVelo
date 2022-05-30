@@ -13,7 +13,6 @@ import javafx.scene.control.MenuBar;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.SplitPane;
 import javafx.scene.layout.BorderPane;
-import javafx.scene.layout.Pane;
 import javafx.scene.layout.StackPane;
 import javafx.stage.Stage;
 
@@ -21,6 +20,13 @@ import java.io.UncheckedIOException;
 import java.nio.file.Path;
 import java.util.function.Consumer;
 
+
+/**
+ * Classe principale de l'application.
+ *
+ * @author Camille Espieux (324248)
+ * @author Chiara Freneix (329552)
+ */
 public final class JaVelo extends Application {
     private final String PATH_GRAPH  = "javelo-data";
     private final String PATH_CACHE_TILES = "osm-cache";
@@ -28,8 +34,8 @@ public final class JaVelo extends Application {
     private final String TITLE = "JaVelo";
     private final String TITLE_ITINERAIRE = "javelo.gpx";
 
-    public static void main(String[] v02) { launch(v02);
-
+    public static void main(String[] args) {
+        launch(args);
     }
 
 
@@ -54,24 +60,24 @@ public final class JaVelo extends Application {
 
         RouteComputer routeComputer = new RouteComputer(graph, costFunction);
         RouteBean bean = new RouteBean(routeComputer);
-        ElevationProfileManager elevationProfile =  new ElevationProfileManager(bean.getElevationProfileProperty(), bean.highlightedPositionProperty());
-
+        ElevationProfileManager elevationProfile  =  new ElevationProfileManager(bean.getElevationProfileProperty(), bean.highlightedPositionProperty());
 
         AnnotatedMapManager map = new AnnotatedMapManager(graph, tileManager, bean, errorConsumer);
 
         BorderPane mainPane = new BorderPane(carteProfilAndError, menuBar,null, null, null);
-        //mainPane.setId(TITLE);
-        mainPane.setMinSize(800, 600);
 
         carteAndProfil.getItems().add(map.pane());
 
-        //System.out.println("route beqn checker : " + bean.getRouteProperty().get().length() + " > length");
-        if (bean.getRouteProperty().get() == null)  {
-           // carteAndProfil.getItems().remove(elevationProfile.pane());
-            carteProfilAndError.getChildren().remove(errorManager.pane());
-        } else {
-            carteAndProfil.getItems().add(elevationProfile.pane());
-        }
+        //System.out.println("route bean checker : " + bean.getRouteProperty().get().length() + " > length");
+        bean.getRouteProperty().addListener((p, o, n) -> {
+            if (n == null)  {
+                carteAndProfil.getItems().remove(elevationProfile.pane());
+                carteProfilAndError.getChildren().remove(errorManager.pane());
+            } else {
+                if (o == null)
+                carteAndProfil.getItems().add(elevationProfile.pane());
+            }
+        });
         SplitPane.setResizableWithParent(elevationProfile.pane(), false);
 
         bean.highlightedPositionProperty().bind(Bindings.when(map.mousePositionOnRouteProperty()
@@ -82,8 +88,6 @@ public final class JaVelo extends Application {
         menu.getItems().add(menuItem);
 
 
-
-
         menu.setOnAction( o -> {
             try {
                 GpxGenerator.writeGpx(TITLE_ITINERAIRE, bean.getRouteProperty().get(), bean.getElevationProfileProperty().get());
@@ -92,11 +96,11 @@ public final class JaVelo extends Application {
             }
         });
         mainPane.getStylesheets().add("map.css");
-        primaryStage.setMinWidth(600);
-        primaryStage.setMinHeight(300);
-        primaryStage.setScene(new Scene(mainPane));
-        primaryStage.setTitle("JaVelo");
-        primaryStage.show();
 
+        primaryStage.setMinWidth(800);
+        primaryStage.setMinHeight(600);
+        primaryStage.setScene(new Scene(mainPane));
+        primaryStage.setTitle(TITLE);
+        primaryStage.show();
     }
 }

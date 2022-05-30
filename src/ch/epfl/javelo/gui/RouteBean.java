@@ -12,70 +12,68 @@ import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 
+/**
+ * Regroupant les propriétés relatives aux points de passage et à l'itinéraire correspondant.
+ *
+ * @author Camille Espieux (324248)
+ * @author Chiara Freneix (329552)
+ */
 public final class RouteBean {
-    private RouteComputer path;
-    //propriétés publiques en lecture seule :
-    private ObjectProperty<Route> route;
-    private ObjectProperty<ElevationProfile> elevationProfile;
+    private final RouteComputer path;
 
-    //seules propriétés modifiables depuis l'extérieur :
-    private ObservableList<Waypoint> waypoints = FXCollections.observableArrayList();
-    private DoubleProperty highlightedPosition = new SimpleDoubleProperty();
+    private final ObjectProperty<Route> route;
+    private final ObjectProperty<ElevationProfile> elevationProfile;
+    private final ObservableList<Waypoint> waypoints;
+    private final DoubleProperty highlightedPosition;
 
     //cache-mémoire des routes
-    //TODO : demander pour le initialCapacity
     private Key key;
-    private LinkedHashMap<Key, Route> memoryRoute = new LinkedHashMap<>(20);
+    private final LinkedHashMap<Key, Route> memoryRoute = new LinkedHashMap<>(20);
 
-    private int MAX_STEP_LENGTH = 5;
+    private final static int MAX_STEP_LENGTH = 5;
 
-    public RouteBean(RouteComputer path){
+    /**
+     * Constructeur public de la classe.
+     *
+     * @param path un calcul d'itinéraire utilisé pour déterminer le meilleur itinéraire reliant deux points de passage
+     */
+    public RouteBean(RouteComputer path) {
         this.path = path;
         this.route = new SimpleObjectProperty<>(null);
         this.elevationProfile = new SimpleObjectProperty<>();
         this.waypoints = FXCollections.observableArrayList(new ArrayList<>());
         this.highlightedPosition = new SimpleDoubleProperty(Double.NaN);
 
-        waypoints.addListener((Observable event)-> {
+        waypoints.addListener((Observable event) -> {
             List<Route> listSingleRoute = new ArrayList<>();
 
-            //*********************** TEST ************************
-            for (int i=0; i<waypoints.size(); ++i){
-                System.out.println(waypoints.get(i).nodeId());
-            }
-            //***************************************************
-
-            if (waypoints.size() < 2) {
-                route.set(null);
-                elevationProfile.set(null);
-                //System.out.println("array size " +waypoints.size());
+            if (waypoints.size() < 2){
+                routeAndElevationProfileNull();
             }
             else {
-
                 for (int i = 0; i < waypoints.size() - 1; ++i) {
-                    key = new Key(waypoints.get(i).nodeId(), waypoints.get(i+1).nodeId());
+                    int firstWaypointNode = waypoints.get(i).nodeId();
+                    int secondWaypointNode = waypoints.get(i + 1).nodeId();
 
-                    if (memoryRoute.containsKey(key) && memoryRoute.get(key)!=null) {
-                        listSingleRoute.add(memoryRoute.get(key));
+                    if (firstWaypointNode == secondWaypointNode) continue;
+                    key = new Key(firstWaypointNode, secondWaypointNode);
 
-                    } else {
-
+                    Route routePath = memoryRoute.get(key);
+                    if (memoryRoute.containsKey(key) && routePath != null)
+                        listSingleRoute.add(routePath);
+                    else {
                         listSingleRoute.add(path.bestRouteBetween(key.NodeId1(), key.NodeId2()));
 
-                        if (memoryRoute.size() > 100) {
+                        if (memoryRoute.size() > 100)
                             memoryRoute.remove(memoryRoute.keySet().iterator().next());
-                        }
 
                         memoryRoute.put(key, listSingleRoute.get(listSingleRoute.size() - 1));
                     }
-
-
                 }
+
                 if (listSingleRoute.contains(null)) {
-                    route.set(null);
-                    elevationProfile.set(null);
+                    routeAndElevationProfileNull();
                 }
-
                 else {
                     route.set(new MultiRoute(listSingleRoute));
                     elevationProfile.setValue(ElevationProfileComputer.elevationProfile(route.get(), MAX_STEP_LENGTH));
@@ -84,40 +82,91 @@ public final class RouteBean {
         });
     }
 
-    private record Key (Integer NodeId1, Integer NodeId2) {}
+    /**
+     * Méthode qui set la route et le profil d'élévation à null.
+     */
+    private void routeAndElevationProfileNull() {
+        route.set(null);
+        elevationProfile.set(null);
+    }
 
-    public DoubleProperty highlightedPositionProperty(){
+    /**
+     * Enregistrement permettant de créer une clé. Clé ensuite utilisée pour la LinkedHashMap memoryRoute
+     */
+    private record Key(Integer NodeId1, Integer NodeId2) {
+    }
+
+    /**
+     * Retourne la propriété elle-même, de type DoubleProperty.
+     *
+     * @return la propriété elle-même, de type DoubleProperty
+     */
+    public DoubleProperty highlightedPositionProperty() {
         return this.highlightedPosition;
     }
 
-    public double highlightedPosition(){
+    /**
+     * Retourne le contenu de la propriété, de type double.
+     *
+     * @return le contenu de la propriété, de type double
+     */
+    public double highlightedPosition() {
         return highlightedPosition.doubleValue();
     }
 
-    public void setHighlightedPosition(double newValue){
-        if (newValue < 0) newValue = Double.NaN;
+    /**
+     * Stocke la valeur donnée en argument dans la propriété.
+     *
+     * @param newValue la potentielle nouvelle valeur de la propriété
+     */
+    public void setHighlightedPosition(double newValue) {
+        if (newValue < 0)
+            newValue = Double.NaN;
         highlightedPosition.setValue(newValue);
     }
 
-    public ReadOnlyObjectProperty<Route> getRouteProperty(){
+    /**
+     * Retourne la propriété route sous la forme d'une valeur de type ObjectProperty<Route>.
+     *
+     * @return la propriété route sous la forme d'une valeur de type ObjectProperty<Route>
+     */
+    public ReadOnlyObjectProperty<Route> getRouteProperty() {
         return route;
     }
 
-
-    public ReadOnlyObjectProperty<ElevationProfile> getElevationProfileProperty(){
+    /**
+     * Retourne la propriété elevationProfile sous la forme d'une valeur de type ObjectProperty<ElevationProfile>.
+     *
+     * @return la propriété elevationProfile sous la forme d'une valeur de type ObjectProperty<ElevationProfile>
+     */
+    public ReadOnlyObjectProperty<ElevationProfile> getElevationProfileProperty() {
         return elevationProfile;
     }
 
-    public ObservableList<Waypoint> getWaypoint(){
+    /**
+     * Retourne la liste de waypoint(s).
+     *
+     * @return la liste de waypoint(s)
+     */
+    public ObservableList<Waypoint> getWaypoint() {
         return waypoints;
     }
 
-    public void setWaypoint(Waypoint waypoint){
+    /**
+     * Stocke un waypoint dans la liste de waypoint(s).
+     *
+     * @param waypoint un waypoint qui va être rajouté à la liste observable de waypoint(s)
+     */
+    public void setWaypoint(Waypoint waypoint) {
         waypoints.add(waypoint);
     }
 
-    public RouteComputer getPath(){
+    /**
+     * Retourne l'itinéraire.
+     *
+     * @return l'itinéraire
+     */
+    public RouteComputer getPath() {
         return path;
     }
-
-    }
+}
