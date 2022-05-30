@@ -10,7 +10,15 @@ import javafx.collections.ObservableList;
 import javafx.scene.Group;
 import javafx.scene.layout.Pane;
 import javafx.scene.shape.SVGPath;
+
 import java.util.function.Consumer;
+
+/**
+ * Gère l'ajout de points intermediaires le long de l'itineraire
+ *
+ * @author Camille Espieux (324248)
+ * @author Chiara Freneix (329552)
+ */
 
 
 public final class WaypointsManager {
@@ -18,11 +26,12 @@ public final class WaypointsManager {
     public final ObjectProperty<MapViewParameters> parameters;
     public final ObservableList<Waypoint> listWaypoints;
     public final Consumer<String> error;
-
     private Pane pane;
+    private final int SEARCH_DISTANCE = 500;
+    private final String ERROR_MESSAGE = "Aucune route à proximité !";
 
 
-    public WaypointsManager(Graph reseauRoutier, ObjectProperty<MapViewParameters> parameters, ObservableList<Waypoint> listWaypoints, Consumer<String> error){
+    public WaypointsManager(Graph reseauRoutier, ObjectProperty<MapViewParameters> parameters, ObservableList<Waypoint> listWaypoints, Consumer<String> error) {
         this.reseauRoutier = reseauRoutier;
         this.parameters = parameters;
         this.listWaypoints = listWaypoints;
@@ -46,7 +55,7 @@ public final class WaypointsManager {
 
     }
 
-    public Pane pane(){
+    public Pane pane() {
         return pane;
     }
 
@@ -70,16 +79,15 @@ public final class WaypointsManager {
 
         PointCh newPoint = parameters.get().pointAt(x, y).toPointCh();
 
-        int nodeClosestId = reseauRoutier.nodeClosestTo(newPoint, 500);
+        int nodeClosestId = reseauRoutier.nodeClosestTo(newPoint, SEARCH_DISTANCE);
 
         if (nodeClosestId == -1) {
-            error.accept("Aucune route à proximité !");
-        }
-        else return new Waypoint(newPoint, nodeClosestId);
+            error.accept(ERROR_MESSAGE);
+        } else return new Waypoint(newPoint, nodeClosestId);
         return null;
     }
 
-    private void drawWaypoint(Waypoint w, int index){
+    private void drawWaypoint(Waypoint w, int index) {
         //creer un ensemble des groupes correspondants aux waypoints ?
 
         Group newGroup = new Group();
@@ -95,13 +103,13 @@ public final class WaypointsManager {
 
         });
 
-        newGroup.setOnMouseReleased(event-> {
-            if(event.isStillSincePress()) {
+        newGroup.setOnMouseReleased(event -> {
+            if (event.isStillSincePress()) {
                 listWaypoints.remove(index);
                 pane().getChildren().remove(newGroup);
             }
 
-            if(!event.isStillSincePress()){
+            if (!event.isStillSincePress()) {
 
                 Waypoint waypointChanged = createNewWaypoint(event.getSceneX(), event.getSceneY());
                 listWaypoints.set(index, waypointChanged);
@@ -130,9 +138,9 @@ public final class WaypointsManager {
         String position;
 
         //Mettre des costes/variables a la place de 0 et du dernier element ?
-        if(index == 0) position = String.valueOf(Position.first);
+        if (index == 0) position = String.valueOf(Position.first);
         else {
-            position = (index==listWaypoints.size() -1) ? String.valueOf(Position.last) :
+            position = (index == listWaypoints.size() - 1) ? String.valueOf(Position.last) :
                     String.valueOf(Position.middle);
         }
         newGroup.getStyleClass().add(position);
@@ -140,7 +148,7 @@ public final class WaypointsManager {
 
 
     private void createNewListWaypoints() {
-        for (int i=0; i < listWaypoints.size(); ++i) {
+        for (int i = 0; i < listWaypoints.size(); ++i) {
             drawWaypoint(listWaypoints.get(i), i);
         }
     }
