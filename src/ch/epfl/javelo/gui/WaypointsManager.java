@@ -105,10 +105,6 @@ public final class WaypointsManager {
             if(!event.isStillSincePress()){
 
                 Waypoint waypointChanged = createNewWaypoint(event.getSceneX(), event.getSceneY());
-                listWaypoints.set(index, waypointChanged);
-                pane().getChildren().clear();
-                createNewListWaypoints();
-                /*
                 if (waypointChanged != null) {
                     listWaypoints.set(index, waypointChanged);
                     pane().getChildren().clear();
@@ -116,8 +112,6 @@ public final class WaypointsManager {
                 } else {
                     layoutWaypoints();
                 }
-
-                 */
             }
         });
 
@@ -169,7 +163,7 @@ public final class WaypointsManager {
             drawWaypoint(listWaypoints.get(i), i);
         }
 
-        //layoutWaypoints();
+        layoutWaypoints();
     }
 
     private enum Position {
