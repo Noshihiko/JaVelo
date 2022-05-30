@@ -47,19 +47,20 @@ public final class RouteBean {
         waypoints.addListener((Observable event) -> {
             List<Route> listSingleRoute = new ArrayList<>();
 
-            if (waypoints.size() < 2)
+            if (waypoints.size() < 2){
                 routeAndElevationProfileNull();
+            }
             else {
                 for (int i = 0; i < waypoints.size() - 1; ++i) {
                     int firstWaypointNode = waypoints.get(i).nodeId();
                     int secondWaypointNode = waypoints.get(i + 1).nodeId();
-                    Route route = memoryRoute.get(key);
 
                     if (firstWaypointNode == secondWaypointNode) continue;
                     key = new Key(firstWaypointNode, secondWaypointNode);
 
-                    if (memoryRoute.containsKey(key) && route != null)
-                        listSingleRoute.add(route);
+                    Route routePath = memoryRoute.get(key);
+                    if (memoryRoute.containsKey(key) && routePath != null)
+                        listSingleRoute.add(routePath);
                     else {
                         listSingleRoute.add(path.bestRouteBetween(key.NodeId1(), key.NodeId2()));
 
@@ -70,8 +71,9 @@ public final class RouteBean {
                     }
                 }
 
-                if (listSingleRoute.contains(null))
+                if (listSingleRoute.contains(null)) {
                     routeAndElevationProfileNull();
+                }
                 else {
                     route.set(new MultiRoute(listSingleRoute));
                     elevationProfile.setValue(ElevationProfileComputer.elevationProfile(route.get(), MAX_STEP_LENGTH));

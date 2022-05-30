@@ -23,8 +23,9 @@ public final class BaseMapManager {
     public final WaypointsManager points;
     public final ObjectProperty<MapViewParameters> mapViewParameters;
 
-    private final Canvas canvas = new Canvas();
-    private final Pane pane = new Pane(canvas);
+    private final Pane pane;
+    private final Canvas canvas;
+    private TileManager.TileId tilesId;
     private Point2D draggedPoint;
 
     private boolean redrawNeeded;
@@ -40,6 +41,9 @@ public final class BaseMapManager {
         this.tiles = tiles;
         this.points = points;
         this.mapViewParameters = mapViewParameters;
+
+        canvas = new Canvas();
+        this.pane = new Pane(canvas);
 
         canvas.widthProperty().bind(pane.widthProperty());
         canvas.heightProperty().bind(pane.heightProperty());
@@ -98,7 +102,7 @@ public final class BaseMapManager {
                 coorY = j * MAP_PIXEL - mapViewParameters.get().y();
 
                 int zoom = mapViewParameters.get().zoom();
-                TileManager.TileId tilesId = new TileManager.TileId(zoom, i, j);
+                tilesId = new TileManager.TileId(zoom, i, j);
 
                 if (TileManager.TileId.isValid(zoom, i, j)) {
                     try {

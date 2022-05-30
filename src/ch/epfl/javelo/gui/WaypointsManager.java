@@ -86,6 +86,10 @@ public final class WaypointsManager {
         Group newGroup = new Group();
         pane().getChildren().add(newGroup);
 
+        PointWebMercator point = PointWebMercator.ofPointCh(w.pointCh());
+        double x = parameters.get().viewX(point);
+        double y = parameters.get().viewY(point);
+
         newGroup.setOnMouseDragged(event -> {
             newGroup.setLayoutX(event.getSceneX());
             newGroup.setLayoutY(event.getSceneY());
@@ -101,7 +105,10 @@ public final class WaypointsManager {
             if(!event.isStillSincePress()){
 
                 Waypoint waypointChanged = createNewWaypoint(event.getSceneX(), event.getSceneY());
-
+                listWaypoints.set(index, waypointChanged);
+                pane().getChildren().clear();
+                createNewListWaypoints();
+                /*
                 if (waypointChanged != null) {
                     listWaypoints.set(index, waypointChanged);
                     pane().getChildren().clear();
@@ -109,8 +116,13 @@ public final class WaypointsManager {
                 } else {
                     layoutWaypoints();
                 }
+
+                 */
             }
         });
+
+        newGroup.setLayoutX(x);
+        newGroup.setLayoutY(y);
 
         newGroup.getStyleClass().add("pin");
 
@@ -157,7 +169,7 @@ public final class WaypointsManager {
             drawWaypoint(listWaypoints.get(i), i);
         }
 
-        layoutWaypoints();
+        //layoutWaypoints();
     }
 
     private enum Position {
