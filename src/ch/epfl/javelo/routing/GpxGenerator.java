@@ -86,7 +86,8 @@ public class GpxGenerator {
             rte.appendChild(routePoint);
 
             Element elevationPoint = doc.createElement("ele");
-            elevationPoint.setTextContent(String.format(elevation, elevationProfile.elevationAt(edge.length())));
+            elevationPoint.setTextContent(String.format(elevation, edge.elevationAt(edge.positionClosestTo(point))));
+            //elevationPoint.setTextContent(String.format(elevation, elevationProfile.elevationAt(edge.positionClosestTo(point))));
             routePoint.appendChild(elevationPoint);
         }
 
