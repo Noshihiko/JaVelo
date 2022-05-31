@@ -28,9 +28,11 @@ public final class RouteBean {
 
     //cache-mémoire des routes
     private Key key;
-    private final LinkedHashMap<Key, Route> memoryRoute = new LinkedHashMap<>(20);
+    private final LinkedHashMap<Key, Route> memoryRoute = new LinkedHashMap<>(INITIAL_CAPACITY);
 
     private final static int MAX_STEP_LENGTH = 5;
+    private final static int MAX_CAPACITY = 100;
+    private final static int INITIAL_CAPACITY = 20;
 
     /**
      * Constructeur public de la classe.
@@ -64,7 +66,7 @@ public final class RouteBean {
                     else {
                         listSingleRoute.add(path.bestRouteBetween(key.NodeId1(), key.NodeId2()));
 
-                        if (memoryRoute.size() > 100)
+                        if (memoryRoute.size() > MAX_CAPACITY)
                             memoryRoute.remove(memoryRoute.keySet().iterator().next());
 
                         memoryRoute.put(key, listSingleRoute.get(listSingleRoute.size() - 1));

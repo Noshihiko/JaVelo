@@ -60,6 +60,8 @@ public final class ElevationProfileManager {
 
     private Point2D p1, p2, p1prime, p2prime;
 
+    private final static int METERS_TO_KM_CONVERSION = 1000;
+
     public ElevationProfileManager(ReadOnlyObjectProperty<ElevationProfile> profilePrinted, ReadOnlyDoubleProperty position) {
         this.profilePrinted = profilePrinted;
         this.position = position;
@@ -189,7 +191,7 @@ public final class ElevationProfileManager {
                         "     Descente : %.0f m" +
                         "     Altitude : de %.0f m à %.0f m",
 
-                profilePrinted.get().length() / 1000, profilePrinted.get().totalAscent(), profilePrinted.get().totalDescent(), profilePrinted.get().minElevation(),
+                profilePrinted.get().length() / METERS_TO_KM_CONVERSION, profilePrinted.get().totalAscent(), profilePrinted.get().totalDescent(), profilePrinted.get().minElevation(),
                 profilePrinted.get().maxElevation()
         );
 

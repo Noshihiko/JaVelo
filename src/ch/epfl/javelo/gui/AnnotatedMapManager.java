@@ -29,7 +29,7 @@ public final class AnnotatedMapManager {
     private final static int ZOOM_AT_START = 12;
     private final static int X_AT_START = 543200;
     private final static int Y_AT_START = 370650;
-    private final int MAXIMUM_DISTANCE_MOUSE_FROM_ITINERARY = 15;
+    private final static int MAXIMUM_DISTANCE_MOUSE_FROM_ITINERARY = 15;
 
     private final ObjectProperty<MapViewParameters> mapViewParameters;
     private final BaseMapManager baseMapManager;

@@ -28,11 +28,11 @@ public final class WaypointsManager {
     public final Consumer<String> error;
     private final Pane pane;
 
-    private final int SEARCH_DISTANCE = 500;
-    private final int OFFSET_NODE_CLOSEST = -1;
-    private final String ERROR_MESSAGE = "Aucune route à proximité !";
-    private final String EXTERIOR_BORDER_WAYPOINT_LAYOUT_SVG_PATH = "M-8-20C-5-14-2-7 0 0 2-7 5-14 8-20 20-40-20-40-8-20";
-    private final String INTERIOR_BORDER_WAYPOINT_LAYOUT_SVG_PATH = "M0-23A1 1 0 000-29 1 1 0 000-23";
+    private final static int SEARCH_DISTANCE = 500;
+    private final static int OFFSET_NODE_CLOSEST = -1;
+    private final static String ERROR_MESSAGE = "Aucune route à proximité !";
+    private final static String EXTERIOR_BORDER_WAYPOINT_LAYOUT_SVG_PATH = "M-8-20C-5-14-2-7 0 0 2-7 5-14 8-20 20-40-20-40-8-20";
+    private final static String INTERIOR_BORDER_WAYPOINT_LAYOUT_SVG_PATH = "M0-23A1 1 0 000-29 1 1 0 000-23";
 
     /**
      * Constructeur public de la classe.
@@ -102,11 +102,15 @@ public final class WaypointsManager {
     private Waypoint createNewWaypoint(double x, double y) {
         PointCh newPoint = parameters.get().pointAt(x, y).toPointCh();
 
-        int nodeClosestId = roadNetworkGraph.nodeClosestTo(newPoint, SEARCH_DISTANCE);
+        if(newPoint != null) {
 
-        if (nodeClosestId == OFFSET_NODE_CLOSEST) {
-            error.accept(ERROR_MESSAGE);
-        } else return new Waypoint(newPoint, nodeClosestId);
+            int nodeClosestId = roadNetworkGraph.nodeClosestTo(newPoint, SEARCH_DISTANCE);
+
+            if (nodeClosestId != OFFSET_NODE_CLOSEST) {
+                return new Waypoint(newPoint, nodeClosestId);
+            }
+
+        }
         return null;
     }
 
@@ -174,6 +178,7 @@ public final class WaypointsManager {
                     pane().getChildren().clear();
                     createNewListWaypoints();
                 } else {
+                    error.accept(ERROR_MESSAGE);
                     layoutWaypointsList();
                 }
             }
