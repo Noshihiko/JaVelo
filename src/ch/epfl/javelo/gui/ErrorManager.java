@@ -8,11 +8,23 @@ import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
 import javafx.util.Duration;
 
+/**
+ * Gère l'affichage de messages d'erreur.
+ *
+ * @author Camille Espieux (324248)
+ * @author Chiara Freneix (329552)
+ */
 
 public final class ErrorManager {
     private final VBox errorMessage;
     private final Text text;
     private final SequentialTransition seqTransition;
+
+    private final static int APPEAR_MESSAGE_DURATION = 200;
+    private final static int PAUSE_MESSAGE_DURATION = 2000;
+    private final static int FADE_MESSAGE_DURATION = 500;
+    private final static float OPACITY_OFF = 0f;
+    private final static float OPACITY_ON = 0.8f;
 
     public ErrorManager() {
         errorMessage = new VBox();
@@ -20,26 +32,41 @@ public final class ErrorManager {
         errorMessage.getStylesheets().add("error.css");
         errorMessage.getChildren().add(text);
 
-        FadeTransition appearTransition = new FadeTransition(Duration.millis(200), errorMessage);
-        appearTransition.setFromValue(0);
-        appearTransition.setToValue(0.8);
-        PauseTransition pauseTransition = new PauseTransition(Duration.millis(2000));
-        FadeTransition disappearTransition = new FadeTransition(Duration.millis(500), errorMessage);
-        disappearTransition.setFromValue(0.8);
-        disappearTransition.setToValue(0);
+        FadeTransition appearTransition = new FadeTransition(Duration.millis(APPEAR_MESSAGE_DURATION), errorMessage);
+        PauseTransition pauseTransition = new PauseTransition(Duration.millis(PAUSE_MESSAGE_DURATION));
+        FadeTransition disappearTransition = new FadeTransition(Duration.millis(FADE_MESSAGE_DURATION), errorMessage);
+        appearTransition.setFromValue(OPACITY_OFF);
+        appearTransition.setToValue(OPACITY_ON);
+        disappearTransition.setFromValue(OPACITY_ON);
+        disappearTransition.setToValue(OPACITY_OFF);
+
         seqTransition = new SequentialTransition(appearTransition, pauseTransition, disappearTransition);
 
         errorMessage.setMouseTransparent(true);
     }
 
+    /**
+     * Methode retournant le panneau contenant les points de passage.
+     *
+     * @return le panneau contenant les points de passage
+     */
+
     public Pane pane() {
         return this.errorMessage;
     }
 
+    /**
+     * Fait apparaitre temporairement à l'écran un message d'erreur
+     *
+     * @param message le message d'erreur à afficher
+     */
+
     public void displayError(String message) {
         java.awt.Toolkit.getDefaultToolkit().beep();
-        text.setText(message);
         seqTransition.stop();
+        text.setText(message);
         seqTransition.play();
+        //seqTransition.setOnFinished(event -> seqTransition = null);
+
     }
 }

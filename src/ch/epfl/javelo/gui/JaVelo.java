@@ -27,6 +27,7 @@ import java.util.function.Consumer;
  * @author Camille Espieux (324248)
  * @author Chiara Freneix (329552)
  */
+
 public final class JaVelo extends Application {
     private final String PATH_GRAPH  = "javelo-data";
     private final String PATH_CACHE_TILES = "osm-cache";
@@ -68,7 +69,6 @@ public final class JaVelo extends Application {
 
         carteAndProfil.getItems().add(map.pane());
 
-        //System.out.println("route bean checker : " + bean.getRouteProperty().get().length() + " > length");
         bean.getRouteProperty().addListener((p, o, n) -> {
             if (n == null)  {
                 carteAndProfil.getItems().remove(elevationProfile.pane());

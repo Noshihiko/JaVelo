@@ -27,8 +27,12 @@ public final class BaseMapManager {
     private final Canvas canvas;
     private TileManager.TileId tilesId;
     private Point2D draggedPoint;
-
     private boolean redrawNeeded;
+
+    private final static int ZOOM_MIN = 8;
+    private final static int ZOOM_MAX = 19;
+    private final static int MAP_PIXEL = 256;
+    private final static int ZOOM_TIME_MS = 200;
 
     /**
      * Constructeur public de la classe.
@@ -80,15 +84,15 @@ public final class BaseMapManager {
     /**
      * Effectue le redessin si et seulement si l'attribut redrawNeeded est vrai.
      */
+
     private void redrawIfNeeded() {
         if (!redrawNeeded) return;
         redrawNeeded = false;
 
         GraphicsContext context = canvas.getGraphicsContext2D();
-        double coorX;
-        double coorY;
+        double xCoordinate;
+        double yCoordinate;
 
-        int MAP_PIXEL = 256;
         int minX = (int) (mapViewParameters.get().x() / MAP_PIXEL);
         int minY = (int) (mapViewParameters.get().y() / MAP_PIXEL);
 
@@ -98,15 +102,15 @@ public final class BaseMapManager {
 
         for (int i = minX; i <= maxX; ++i) {
             for (int j = minY; j <= maxY; ++j) {
-                coorX = i * MAP_PIXEL - mapViewParameters.get().x();
-                coorY = j * MAP_PIXEL - mapViewParameters.get().y();
+                xCoordinate = i * MAP_PIXEL - mapViewParameters.get().x();
+                yCoordinate = j * MAP_PIXEL - mapViewParameters.get().y();
 
                 int zoom = mapViewParameters.get().zoom();
                 tilesId = new TileManager.TileId(zoom, i, j);
 
                 if (TileManager.TileId.isValid(zoom, i, j)) {
                     try {
-                        context.drawImage(tiles.imageForTileAt(tilesId), coorX, coorY);
+                        context.drawImage(tiles.imageForTileAt(tilesId), xCoordinate, yCoordinate);
                     } catch (IOException e) {
                         e.printStackTrace();
                     }
@@ -119,6 +123,7 @@ public final class BaseMapManager {
     /**
      * Méthode qui gère et détecte différents événements.
      */
+
     private void eventManagement(){
         SimpleLongProperty minScrollTime = new SimpleLongProperty();
         pane.setOnScroll(event -> {
@@ -127,12 +132,11 @@ public final class BaseMapManager {
             long currentTime = System.currentTimeMillis();
             if (currentTime < minScrollTime.get())
                 return;
-            minScrollTime.set(currentTime + 200);
+            minScrollTime.set(currentTime + ZOOM_TIME_MS);
 
             //TODO remove zoomDelta?
             int zoomDelta = (int) Math.signum(event.getDeltaY());
-            int ZOOM_MIN = 8;
-            int ZOOM_MAX = 19;
+
             int mapZoom = mapViewParameters.get().zoom();
 
             int zoomLvl = Math2.clamp(ZOOM_MIN,mapZoom + zoomDelta, ZOOM_MAX);

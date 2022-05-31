@@ -23,7 +23,6 @@ import javafx.scene.transform.*;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.StringJoiner;
 
 /**
  * Gère l'affichage et l'interaction avec le profil en long d'un itinéraire.
@@ -60,6 +59,8 @@ public final class ElevationProfileManager {
     private final ObjectProperty<Transform> worldToScreen = new SimpleObjectProperty<>(new Affine());
 
     private Point2D p1, p2, p1prime, p2prime;
+
+    private final static int METERS_TO_KM_CONVERSION = 1000;
 
     public ElevationProfileManager(ReadOnlyObjectProperty<ElevationProfile> profilePrinted, ReadOnlyDoubleProperty position) {
         this.profilePrinted = profilePrinted;
@@ -190,7 +191,7 @@ public final class ElevationProfileManager {
                         "     Descente : %.0f m" +
                         "     Altitude : de %.0f m à %.0f m",
 
-                profilePrinted.get().length() / 1000, profilePrinted.get().totalAscent(), profilePrinted.get().totalDescent(), profilePrinted.get().minElevation(),
+                profilePrinted.get().length() / METERS_TO_KM_CONVERSION, profilePrinted.get().totalAscent(), profilePrinted.get().totalDescent(), profilePrinted.get().minElevation(),
                 profilePrinted.get().maxElevation()
         );
 
