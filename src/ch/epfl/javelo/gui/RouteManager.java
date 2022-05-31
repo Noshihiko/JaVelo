@@ -3,7 +3,6 @@ package ch.epfl.javelo.gui;
 import ch.epfl.javelo.projection.PointCh;
 import ch.epfl.javelo.projection.PointWebMercator;
 
-import javafx.beans.InvalidationListener;
 import javafx.beans.Observable;
 import javafx.beans.property.ReadOnlyObjectProperty;
 import javafx.geometry.Point2D;
@@ -24,6 +23,12 @@ public final class RouteManager {
     private final Pane paneItinerary = new Pane();
     private final Polyline itinerary = new Polyline();
     private final Circle disk = new Circle(RADIUS_OF_DISK);
+
+    /**
+     * Constructeur public de la classe.
+     *
+     * @param routeBean
+     */
 
 
     public RouteManager(RouteBean routeBean, ReadOnlyObjectProperty<MapViewParameters> mapParameters, Consumer<String> error) {

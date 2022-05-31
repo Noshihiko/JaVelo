@@ -23,7 +23,6 @@ import javafx.scene.transform.*;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.StringJoiner;
 
 /**
  * Gère l'affichage et l'interaction avec le profil en long d'un itinéraire.

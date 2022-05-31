@@ -1,4 +1,3 @@
-
 package ch.epfl.javelo.gui;
 
 import ch.epfl.javelo.Math2;
@@ -14,8 +13,15 @@ import javafx.scene.layout.StackPane;
 
 import java.util.function.Consumer;
 
+/**
+ * Gère l'affichage de la carte annotée où sont superposés l'itinéraire et les points de passage
+ *
+ * @author Camille Espieux (324248)
+ * @author Chiara Freneix (329552)
+ */
+
 public final class AnnotatedMapManager {
-    private final Graph reseauRoutier;
+    private final Graph roadNetworkGraph;
     private final TileManager tileManager;
     private final Consumer<String> error;
     private final RouteBean routeBean;
@@ -23,6 +29,7 @@ public final class AnnotatedMapManager {
     private final static int ZOOM_AT_START = 12;
     private final static int X_AT_START = 543200;
     private final static int Y_AT_START = 370650;
+    private final int MAXIMUM_DISTANCE_MOUSE_FROM_ITINERARY = 15;
 
     private final ObjectProperty<MapViewParameters> mapViewParameters;
     private final BaseMapManager baseMapManager;
@@ -31,24 +38,33 @@ public final class AnnotatedMapManager {
     private final DoubleProperty mousePositionOnRouteProperty;
     private final ObjectProperty<Point2D> mousePositionProperty;
 
+    /**
+     * Constructeur publique de la classe.
+     *
+     * @param roadNetworkGraph le graph du réseau routier
+     * @param tileManager le gestionnaire de tuiles OpenStreetMap
+     * @param routeBean le bean de l'itinéraire
+     * @param error un consommateur d'erreurs permettant de signaler une erreur
+     */
 
-    public AnnotatedMapManager(Graph reseauRoutier, TileManager tileManager, RouteBean routeBean, Consumer<String> error) {
-        this.reseauRoutier = reseauRoutier;
+    public AnnotatedMapManager(Graph roadNetworkGraph, TileManager tileManager, RouteBean routeBean, Consumer<String> error) {
+        this.roadNetworkGraph = roadNetworkGraph;
         this.tileManager = tileManager;
         this.error = error;
         this.routeBean = routeBean;
 
         mapViewParameters = new SimpleObjectProperty<>(new MapViewParameters(ZOOM_AT_START, X_AT_START, Y_AT_START));
 
-        //creation d'un waypoint manager
-        waypointsManager = new WaypointsManager(reseauRoutier, mapViewParameters, routeBean.getWaypoint() ,error);
+        //creation d'un Waypoint manager
+        waypointsManager = new WaypointsManager(roadNetworkGraph, mapViewParameters, routeBean.getWaypoint() ,error);
 
-        // Creation d'une Route manager
+        // Creation d'un Route manager
         routeManager = new RouteManager(routeBean, mapViewParameters, error);
 
         //creation de base map manager
         baseMapManager = new BaseMapManager(tileManager, waypointsManager , mapViewParameters);
 
+        //initialisation du panneau
         pane = new StackPane(baseMapManager.pane(),
                 routeManager.pane(),
                 waypointsManager.pane());
@@ -57,6 +73,7 @@ public final class AnnotatedMapManager {
         mousePositionOnRouteProperty = new SimpleDoubleProperty();
         mousePositionProperty = new SimpleObjectProperty<>();
 
+        //Listeners
         pane.setOnMouseMoved(event -> {
             mousePositionProperty.setValue(new Point2D(event.getX(), event.getY()));
         });
@@ -69,42 +86,57 @@ public final class AnnotatedMapManager {
                 mapViewParameters, mousePositionProperty, routeBean.getRouteProperty()));
     }
 
+    /**
+     * Methode retournant le panneau contenant les points de passage.
+     *
+     * @return le panneau contenant les points de passage
+     */
+
     public Pane pane() {
         return pane;
     }
+
+    /**
+     * Methode retournant la propriété en lecture seule contenant la position de la sourie le long de l'itineraire.
+     *
+     * @return la propriété en lecture seule contenant la position de la sourie le long de l'itineraire
+     */
 
     public ReadOnlyDoubleProperty mousePositionOnRouteProperty() {
         return mousePositionOnRouteProperty;
     }
 
+    /**
+     * Met à jour la position de la sourie le long de l'itineraire
+     *
+     * @return la valeure correspondant au point le plus proche de la sourie sur l'itineraire
+     * lorsque la distance est inferieure à 15 pixels
+     */
+
     private Double setMousePositionOnRouteProperty() {
         if (mousePositionProperty.get() == null || routeBean.getRouteProperty().get() == null)
             return Double.NaN;
 
-        double x = mousePositionProperty.getValue().getX();
-        double y = mousePositionProperty.getValue().getY();
+        double xOfMouse = mousePositionProperty.getValue().getX();
+        double yOfMouse = mousePositionProperty.getValue().getY();
 
         MapViewParameters mapParameters = mapViewParameters.get();
 
-        PointWebMercator mousePos = mapParameters.pointAt(x, y);
+        PointWebMercator mousePosition = mapParameters.pointAt(xOfMouse, yOfMouse);
 
-        if (mousePos.toPointCh() == null) return Double.NaN;
+        if (mousePosition.toPointCh() == null) return Double.NaN;
 
-        RoutePoint pointRoute = routeBean.getRouteProperty().get().pointClosestTo(mousePos.toPointCh());
+        RoutePoint closestPointRoute = routeBean.getRouteProperty().get().pointClosestTo(mousePosition.toPointCh());
 
-        PointWebMercator pointRouteWeb = PointWebMercator.ofPointCh(pointRoute.point());
+        PointWebMercator closestPointWM = PointWebMercator.ofPointCh(closestPointRoute.point());
 
-        double xPointRoute = mapParameters.viewX(pointRouteWeb);
-        double yPointRoute = mapParameters.viewY(pointRouteWeb);
+        double xPointRoute = mapParameters.viewX(closestPointWM);
+        double yPointRoute = mapParameters.viewY(closestPointWM);
 
-        double uX = xPointRoute - x;
-        double uY = yPointRoute - y;
+        double uX = xPointRoute - xOfMouse;
+        double uY = yPointRoute - yOfMouse;
 
-        if (Math2.norm(uX , uY) <= 15) return pointRoute.position();
+        if (Math2.norm(uX , uY) <= MAXIMUM_DISTANCE_MOUSE_FROM_ITINERARY) return closestPointRoute.position();
         else return Double.NaN;
     }
-
-
-
-
 }

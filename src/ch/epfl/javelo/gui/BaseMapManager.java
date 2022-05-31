@@ -80,13 +80,14 @@ public final class BaseMapManager {
     /**
      * Effectue le redessin si et seulement si l'attribut redrawNeeded est vrai.
      */
+
     private void redrawIfNeeded() {
         if (!redrawNeeded) return;
         redrawNeeded = false;
 
         GraphicsContext context = canvas.getGraphicsContext2D();
-        double coorX;
-        double coorY;
+        double xCoordinate;
+        double yCoordinate;
 
         int MAP_PIXEL = 256;
         int minX = (int) (mapViewParameters.get().x() / MAP_PIXEL);
@@ -98,15 +99,15 @@ public final class BaseMapManager {
 
         for (int i = minX; i <= maxX; ++i) {
             for (int j = minY; j <= maxY; ++j) {
-                coorX = i * MAP_PIXEL - mapViewParameters.get().x();
-                coorY = j * MAP_PIXEL - mapViewParameters.get().y();
+                xCoordinate = i * MAP_PIXEL - mapViewParameters.get().x();
+                yCoordinate = j * MAP_PIXEL - mapViewParameters.get().y();
 
                 int zoom = mapViewParameters.get().zoom();
                 tilesId = new TileManager.TileId(zoom, i, j);
 
                 if (TileManager.TileId.isValid(zoom, i, j)) {
                     try {
-                        context.drawImage(tiles.imageForTileAt(tilesId), coorX, coorY);
+                        context.drawImage(tiles.imageForTileAt(tilesId), xCoordinate, yCoordinate);
                     } catch (IOException e) {
                         e.printStackTrace();
                     }
@@ -119,6 +120,7 @@ public final class BaseMapManager {
     /**
      * Méthode qui gère et détecte différents événements.
      */
+
     private void eventManagement(){
         SimpleLongProperty minScrollTime = new SimpleLongProperty();
         pane.setOnScroll(event -> {

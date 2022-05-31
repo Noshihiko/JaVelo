@@ -8,6 +8,12 @@ import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
 import javafx.util.Duration;
 
+/**
+ * Gère l'affichage de messages d'erreur.
+ *
+ * @author Camille Espieux (324248)
+ * @author Chiara Freneix (329552)
+ */
 
 public final class ErrorManager {
     private final VBox errorMessage;
@@ -32,9 +38,21 @@ public final class ErrorManager {
         errorMessage.setMouseTransparent(true);
     }
 
+    /**
+     * Methode retournant le panneau contenant les points de passage.
+     *
+     * @return le panneau contenant les points de passage
+     */
+
     public Pane pane() {
         return this.errorMessage;
     }
+
+    /**
+     * Fait apparaitre temporairement à l'écran un message d'erreur
+     *
+     * @param message le message d'erreur à afficher
+     */
 
     public void displayError(String message) {
         java.awt.Toolkit.getDefaultToolkit().beep();
