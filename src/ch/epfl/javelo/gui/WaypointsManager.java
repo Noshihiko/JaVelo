@@ -188,7 +188,6 @@ public final class WaypointsManager {
     /**
      * Met à jour l'affichage de tous les waypoints de la liste.
      */
-
     private void layoutWaypointsList() {
         for (int i = 0; i < listWaypoints.size(); ++i) {
             Waypoint waypoint = listWaypoints.get(i);

@@ -23,9 +23,11 @@ public final class BaseMapManager {
     public final WaypointsManager points;
     public final ObjectProperty<MapViewParameters> mapViewParameters;
 
-    private final Pane pane;
-    private final Canvas canvas;
-    private TileManager.TileId tilesId;
+    //TODO isok comme ça ou mettre le new dans constructeur ?
+    private final Canvas canvas = new Canvas();
+    private final Pane pane = new Pane(canvas);
+
+    //TODO faut il les mettre en final?
     private Point2D draggedPoint;
     private boolean redrawNeeded;
 
@@ -46,9 +48,6 @@ public final class BaseMapManager {
         this.points = points;
         this.mapViewParameters = mapViewParameters;
 
-        canvas = new Canvas();
-        this.pane = new Pane(canvas);
-
         canvas.widthProperty().bind(pane.widthProperty());
         canvas.heightProperty().bind(pane.heightProperty());
 
@@ -57,9 +56,9 @@ public final class BaseMapManager {
             newS.addPreLayoutPulseListener(this::redrawIfNeeded);
         });
 
-        mapViewParameters.addListener((p, oldS, newS) -> redrawOnNextPulse());
         canvas.widthProperty().addListener((p, oldS, newS) -> redrawOnNextPulse());
         canvas.heightProperty().addListener((p, oldS, newS) -> redrawOnNextPulse());
+        mapViewParameters.addListener((p, oldS, newS) -> redrawOnNextPulse());
 
         eventManagement();
     }
@@ -90,20 +89,24 @@ public final class BaseMapManager {
         redrawNeeded = false;
 
         GraphicsContext context = canvas.getGraphicsContext2D();
+        //TODO demander si créer avant ou pendant la boucle;
         double xCoordinate;
         double yCoordinate;
+        TileManager.TileId tilesId;
+        double mapX = mapViewParameters.get().x();
+        double mapY = mapViewParameters.get().y();
 
-        int minX = (int) (mapViewParameters.get().x() / MAP_PIXEL);
-        int minY = (int) (mapViewParameters.get().y() / MAP_PIXEL);
+        int minX = (int) (mapX / MAP_PIXEL);
+        int minY = (int) (mapY / MAP_PIXEL);
 
-        int maxX = (int) ((mapViewParameters.get().x() + pane.getWidth()) / MAP_PIXEL);
-        int maxY = (int) ((mapViewParameters.get().y() + pane.getHeight()) / MAP_PIXEL);
+        int maxX = (int) ((mapX + pane.getWidth()) / MAP_PIXEL);
+        int maxY = (int) ((mapY + pane.getHeight()) / MAP_PIXEL);
 
 
         for (int i = minX; i <= maxX; ++i) {
             for (int j = minY; j <= maxY; ++j) {
-                xCoordinate = i * MAP_PIXEL - mapViewParameters.get().x();
-                yCoordinate = j * MAP_PIXEL - mapViewParameters.get().y();
+                xCoordinate = i * MAP_PIXEL - mapX;
+                yCoordinate = j * MAP_PIXEL - mapY;
 
                 int zoom = mapViewParameters.get().zoom();
                 tilesId = new TileManager.TileId(zoom, i, j);
@@ -169,8 +172,7 @@ public final class BaseMapManager {
         pane.setOnMouseReleased(event -> draggedPoint = null);
 
         pane.setOnMouseClicked(event -> {
-            if (event.isStillSincePress())
-                points.addWaypoint(event.getX(), event.getY());
+            if (event.isStillSincePress()) points.addWaypoint(event.getX(), event.getY());
 
             redrawOnNextPulse();
         });

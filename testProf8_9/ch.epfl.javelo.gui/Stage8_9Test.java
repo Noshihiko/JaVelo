@@ -52,7 +52,7 @@ créer une instance de RouteManager,
                 new BaseMapManager(tileManager, waypointsManager,
                         mapViewParametersP);
 
-        RouteManager route = new RouteManager(trajet, mapViewParametersP, errorConsumer);
+        RouteManager route = new RouteManager(trajet, mapViewParametersP);
 
         StackPane mainPane =
                 new StackPane(baseMapManager.pane(),

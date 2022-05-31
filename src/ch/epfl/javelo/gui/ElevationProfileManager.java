@@ -1,6 +1,5 @@
 package ch.epfl.javelo.gui;
 
-import ch.epfl.javelo.Math2;
 import ch.epfl.javelo.routing.ElevationProfile;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.*;
@@ -41,7 +40,7 @@ public final class ElevationProfileManager {
     private final Text etiquette3 = new Text();
     private final Line annotationLine = new Line();
 
-    private DoubleProperty mousePosition = new SimpleDoubleProperty(Double.NaN);
+    private final DoubleProperty mousePosition = new SimpleDoubleProperty(Double.NaN);
 
     private final Group newGroupEtiquettes = new Group();
     private final Group group = new Group(etiquette1, etiquette2);
@@ -53,8 +52,8 @@ public final class ElevationProfileManager {
     private final Insets distanceRectangle = new Insets(10, 10, 20, 40);
 
     private final ObservableList<PathElement> gridUpdate = FXCollections.observableArrayList();
-    private List<Object> pointPolygone = new ArrayList<>();
-    private ObjectProperty<Rectangle2D> rectangle = new SimpleObjectProperty<>(Rectangle2D.EMPTY);
+    private final List<Object> pointPolygone = new ArrayList<>();
+    private final ObjectProperty<Rectangle2D> rectangle = new SimpleObjectProperty<>(Rectangle2D.EMPTY);
     private final ObjectProperty<Transform> screenToWorld = new SimpleObjectProperty<>(new Affine());
     private final ObjectProperty<Transform> worldToScreen = new SimpleObjectProperty<>(new Affine());
 
@@ -74,9 +73,6 @@ public final class ElevationProfileManager {
 
         etiquette1.getStyleClass().addAll("grid_label", "horizontal");
         etiquette2.getStyleClass().addAll("grid_label", "vertical");
-        //gridAndEtiquetteCreation();
-        //statisticsText();
-        //profileCreation();
 
 
         //********************************* Listener **********************************
@@ -185,18 +181,18 @@ public final class ElevationProfileManager {
      */
     private void statisticsText() {
         if (profilePrinted == null) return;
-        //if (profilePrinted.isNotNull().get()) {
         String statistic = String.format("Longueur : %.1f km" +
                         "     Montée : %.0f m" +
                         "     Descente : %.0f m" +
                         "     Altitude : de %.0f m à %.0f m",
 
-                profilePrinted.get().length() / METERS_TO_KM_CONVERSION, profilePrinted.get().totalAscent(), profilePrinted.get().totalDescent(), profilePrinted.get().minElevation(),
+                profilePrinted.get().length() / METERS_TO_KM_CONVERSION,
+                profilePrinted.get().totalAscent(),
+                profilePrinted.get().totalDescent(),
+                profilePrinted.get().minElevation(),
                 profilePrinted.get().maxElevation()
         );
-
         etiquette3.setText(statistic);
-        //}
     }
 
     /**

@@ -21,12 +21,14 @@ import java.util.List;
 public final class RouteBean {
     private final RouteComputer path;
 
-    private final ObjectProperty<Route> route;
-    private final ObjectProperty<ElevationProfile> elevationProfile;
-    private final ObservableList<Waypoint> waypoints;
-    private final DoubleProperty highlightedPosition;
+    //todo certains doivent ils etre en public
+    private final ObjectProperty<Route> route = new SimpleObjectProperty<>(null);
+    private final ObjectProperty<ElevationProfile> elevationProfile = new SimpleObjectProperty<>();
+    private final ObservableList<Waypoint> waypoints = FXCollections.observableArrayList(new ArrayList<>());
+    private final DoubleProperty highlightedPosition = new SimpleDoubleProperty(Double.NaN);
 
     //cache-mémoire des routes
+    //TODO faut il creer cela dans le constructeur?
     private Key key;
     private final LinkedHashMap<Key, Route> memoryRoute = new LinkedHashMap<>(INITIAL_CAPACITY);
 
@@ -41,41 +43,33 @@ public final class RouteBean {
      */
     public RouteBean(RouteComputer path) {
         this.path = path;
-        this.route = new SimpleObjectProperty<>(null);
-        this.elevationProfile = new SimpleObjectProperty<>();
-        this.waypoints = FXCollections.observableArrayList(new ArrayList<>());
-        this.highlightedPosition = new SimpleDoubleProperty(Double.NaN);
 
         waypoints.addListener((Observable event) -> {
             List<Route> listSingleRoute = new ArrayList<>();
 
-            if (waypoints.size() < 2){
-                routeAndElevationProfileNull();
-            }
+            //todo faut il creer une constante ?
+            if (waypoints.size() < 2) routeAndElevationProfileNull();
             else {
                 for (int i = 0; i < waypoints.size() - 1; ++i) {
                     int firstWaypointNode = waypoints.get(i).nodeId();
                     int secondWaypointNode = waypoints.get(i + 1).nodeId();
 
+                    //TODO le if est utile maintenant qu'on a la méthode dans routebean?
                     if (firstWaypointNode == secondWaypointNode) continue;
                     key = new Key(firstWaypointNode, secondWaypointNode);
 
                     Route routePath = memoryRoute.get(key);
-                    if (memoryRoute.containsKey(key) && routePath != null)
-                        listSingleRoute.add(routePath);
+                    if (memoryRoute.containsKey(key) && routePath != null) listSingleRoute.add(routePath);
                     else {
                         listSingleRoute.add(path.bestRouteBetween(key.NodeId1(), key.NodeId2()));
 
-                        if (memoryRoute.size() > MAX_CAPACITY)
-                            memoryRoute.remove(memoryRoute.keySet().iterator().next());
+                        if (memoryRoute.size() > MAX_CAPACITY) memoryRoute.remove(memoryRoute.keySet().iterator().next());
 
                         memoryRoute.put(key, listSingleRoute.get(listSingleRoute.size() - 1));
                     }
                 }
 
-                if (listSingleRoute.contains(null)) {
-                    routeAndElevationProfileNull();
-                }
+                if (listSingleRoute.contains(null)) routeAndElevationProfileNull();
                 else {
                     route.set(new MultiRoute(listSingleRoute));
                     elevationProfile.setValue(ElevationProfileComputer.elevationProfile(route.get(), MAX_STEP_LENGTH));
@@ -122,8 +116,7 @@ public final class RouteBean {
      * @param newValue la potentielle nouvelle valeur de la propriété
      */
     public void setHighlightedPosition(double newValue) {
-        if (newValue < 0)
-            newValue = Double.NaN;
+        if (newValue < 0) newValue = Double.NaN;
         highlightedPosition.setValue(newValue);
     }
 
@@ -170,5 +163,21 @@ public final class RouteBean {
      */
     public RouteComputer getPath() {
         return path;
+    }
+
+    /**
+     * Retourne l'index du segment contenant la position, en ignorant les segments vides.
+     * @param position la position du segment
+     *
+     * @return l'index du segment contenant la position, en ignorant les segments vides.
+     */
+    public int indexOfNonEmptySegmentAt(double position) {
+        int index = route.get().indexOfSegmentAt(position);
+        for (int i = 0; i <= index; i += 1) {
+            int n1 = waypoints.get(i).nodeId();
+            int n2 = waypoints.get(i + 1).nodeId();
+            if (n1 == n2) index += 1;
+        }
+        return index;
     }
 }

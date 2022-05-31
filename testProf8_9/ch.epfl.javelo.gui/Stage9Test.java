@@ -50,7 +50,7 @@ public class Stage9Test extends Application {
 
 
         Consumer<String> errorConsumer = new ErrorConsumer();
-        RouteManager routeManager = new RouteManager(routeBean, mapViewParametersP, errorConsumer);//route
+        RouteManager routeManager = new RouteManager(routeBean, mapViewParametersP);//route
         WaypointsManager waypointsManager;
         waypointsManager = new WaypointsManager(graph, mapViewParametersP, waypoints, errorConsumer);
         System.out.println("% "+waypoints);

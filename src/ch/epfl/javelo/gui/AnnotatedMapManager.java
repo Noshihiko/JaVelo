@@ -59,7 +59,7 @@ public final class AnnotatedMapManager {
         waypointsManager = new WaypointsManager(roadNetworkGraph, mapViewParameters, routeBean.getWaypoint() ,error);
 
         // Creation d'un Route manager
-        routeManager = new RouteManager(routeBean, mapViewParameters, error);
+        routeManager = new RouteManager(routeBean, mapViewParameters);
 
         //creation de base map manager
         baseMapManager = new BaseMapManager(tileManager, waypointsManager , mapViewParameters);
