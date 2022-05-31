@@ -71,22 +71,22 @@ public class GpxGenerator {
         metadata.appendChild(name);
         name.setTextContent("Route JaVelo");
 
-        Element rte = doc.createElement("route");
-        name.appendChild(rte);
+        Element rte = doc.createElement("rte");
+        root.appendChild(rte);
 
         for (Edge edge : route.edges()) {
-            String lon = "";
-            String lat = "";
-            String elevation = "";
+            String lon = "%.5f";
+            String lat = "%.5f";
+            String elevation = "%.2f";
             PointCh point = edge.fromPoint();
 
-            Element routePoint = doc.createElement("point");
-            routePoint.setAttribute("longitude", String.format(lon, point.lon()));
-            routePoint.setAttribute("latitude", String.format(lat, point.lat()));
+            Element routePoint = doc.createElement("rtept");
+            routePoint.setAttribute("lat", String.format(lat, Math.toDegrees(point.lat())));
+            routePoint.setAttribute("lon", String.format(lon, Math.toDegrees(point.lon())));
             rte.appendChild(routePoint);
 
-            Element elevationPoint = doc.createElement("elevation");
-            elevationPoint.setAttribute("elevation", String.format(elevation, elevationProfile.elevationAt(edge.length())));
+            Element elevationPoint = doc.createElement("ele");
+            elevationPoint.setTextContent(String.format(elevation, elevationProfile.elevationAt(edge.length())));
             routePoint.appendChild(elevationPoint);
         }
 
