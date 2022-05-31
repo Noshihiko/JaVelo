@@ -26,11 +26,13 @@ public final class WaypointsManager {
     public final ObjectProperty<MapViewParameters> parameters;
     public final ObservableList<Waypoint> listWaypoints;
     public final Consumer<String> error;
-    private Pane pane;
+    private final Pane pane;
 
     private final int SEARCH_DISTANCE = 500;
     private final int OFFSET_NODE_CLOSEST = -1;
     private final String ERROR_MESSAGE = "Aucune route à proximité !";
+    private final String EXTERIOR_BORDER_WAYPOINT_LAYOUT_SVG_PATH = "M-8-20C-5-14-2-7 0 0 2-7 5-14 8-20 20-40-20-40-8-20";
+    private final String INTERIOR_BORDER_WAYPOINT_LAYOUT_SVG_PATH = "M0-23A1 1 0 000-29 1 1 0 000-23";
 
     /**
      * Constructeur public de la classe.
@@ -84,7 +86,7 @@ public final class WaypointsManager {
 
         if (NewWaypoint != null) {
             listWaypoints.add(NewWaypoint);
-        }
+        } else error.accept(ERROR_MESSAGE);
     }
 
     /**
@@ -98,7 +100,6 @@ public final class WaypointsManager {
      */
 
     private Waypoint createNewWaypoint(double x, double y) {
-        //check if x et y valides
         PointCh newPoint = parameters.get().pointAt(x, y).toPointCh();
 
         int nodeClosestId = roadNetworkGraph.nodeClosestTo(newPoint, SEARCH_DISTANCE);
@@ -121,11 +122,12 @@ public final class WaypointsManager {
         pane().getChildren().add(newGroup);
 
         PointWebMercator point = PointWebMercator.ofPointCh(waypoint.pointCh());
-        double x = parameters.get().viewX(point);
+        layoutPoint(point, newGroup);
+        /*double x = parameters.get().viewX(point);
         double y = parameters.get().viewY(point);
 
         newGroup.setLayoutX(x);
-        newGroup.setLayoutY(y);
+        newGroup.setLayoutY(y);*/
 
         newGroup.getStyleClass().add("pin");
 
@@ -135,8 +137,8 @@ public final class WaypointsManager {
         outline.getStyleClass().add("pin_outside");
         interior.getStyleClass().add("pin_inside");
 
-        outline.setContent("M-8-20C-5-14-2-7 0 0 2-7 5-14 8-20 20-40-20-40-8-20");
-        interior.setContent("M0-23A1 1 0 000-29 1 1 0 000-23");
+        outline.setContent(EXTERIOR_BORDER_WAYPOINT_LAYOUT_SVG_PATH);
+        interior.setContent(INTERIOR_BORDER_WAYPOINT_LAYOUT_SVG_PATH);
 
         newGroup.getChildren().add(outline);
         newGroup.getChildren().add(interior);
@@ -172,7 +174,7 @@ public final class WaypointsManager {
                     pane().getChildren().clear();
                     createNewListWaypoints();
                 } else {
-                    layoutWaypoints();
+                    layoutWaypointsList();
                 }
             }
         });
@@ -182,18 +184,34 @@ public final class WaypointsManager {
      * Met à jour l'affichage de tous les waypoints de la liste.
      */
 
-    private void layoutWaypoints() {
+    private void layoutWaypointsList() {
         for (int i = 0; i < listWaypoints.size(); ++i) {
             Waypoint waypoint = listWaypoints.get(i);
-            Node marker = pane.getChildren().get(i);
+            Node node = pane.getChildren().get(i);
 
             PointWebMercator point = PointWebMercator.ofPointCh(waypoint.pointCh());
-            double x = parameters.get().viewX(point);
+            /*double x = parameters.get().viewX(point);
             double y = parameters.get().viewY(point);
 
             marker.setLayoutX(x);
-            marker.setLayoutY(y);
+            marker.setLayoutY(y);*/
+            layoutPoint(point, node);
         }
+    }
+
+    /**
+     * Methode s'occupant de géré les detail de l'affichage d'un point
+     *
+     * @param point le point web mercator à affiché correspondant à la position du waypoint
+     * @param node le noeud servant à l'afficher
+     */
+
+    private void layoutPoint( PointWebMercator point, Node node) {
+        double x = parameters.get().viewX(point);
+        double y = parameters.get().viewY(point);
+
+        node.setLayoutX(x);
+        node.setLayoutY(y);
     }
 
     /**
@@ -205,7 +223,7 @@ public final class WaypointsManager {
         for (int i = 0; i < listWaypoints.size(); ++i) {
             drawWaypoint(listWaypoints.get(i), i);
         }
-        layoutWaypoints();
+        layoutWaypointsList();
     }
 
     /**

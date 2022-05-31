@@ -46,7 +46,7 @@ public record GraphEdges(ByteBuffer edgesBuffer, IntBuffer profileIds, ShortBuff
     private float[] decompression(int compressionRate, int numberSamples, int index) {
         int bitsPerValue = Short.SIZE / compressionRate;
         float[] profileSamples = new float[numberSamples];
-        profileSamples[0] = asFloat((elevations.get(index)));
+        profileSamples[0] = asFloat(Short.toUnsignedInt(elevations.get(index)));
 
         for (int i = 0; i < numberSamples - 1; ++i) {
             profileSamples[i + 1] = profileSamples[i] + asFloat(extractSigned(elevations.get(index + 1 + (i / compressionRate)), (16 - bitsPerValue) - (i % compressionRate) * bitsPerValue, bitsPerValue));
