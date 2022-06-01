@@ -9,68 +9,102 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.LinkedHashMap;
 
-import static java.lang.Math.pow;
+/**
+ * Gestionnaire de tuiles OSM: obtient les tuiles depuis un serveur et les stocke dans un cache memoire
+ * et un cache disque
+ *
+ * @author Camille Espieux (324248)
+ * @author Chiara Freneix (329552)
+ */
 
 public final class TileManager {
-    public final static int OFFSET_TILES_ZOOM_LEVEL = 4;
-    public final static int INITIAL_CAPACITY = 100;
-    public final static float LOAD_FACTOR = (float) 0.75;
-    public final static boolean ACCESS_ORDER = true;
-    public final int TILE_SIZE = 256;
     private final Path path;
+    private final String serverName;
 
-    LinkedHashMap<TileId, Image> cacheMemoire = new LinkedHashMap<TileId, Image>(INITIAL_CAPACITY, LOAD_FACTOR, ACCESS_ORDER);
+    private final static int MAXIMUM_CAPACITY = 100;
+    private final static float LOAD_FACTOR = (float) 0.75;
+    private final static boolean ACCESS_ORDER = true;
+    private final static String USER_NAME_REQUESTING = "User-Agent";
+    private final static String PROJECT_NAME = "JaVelo";
+
+    LinkedHashMap<TileId, Image> memoryCache = new LinkedHashMap<>(MAXIMUM_CAPACITY, LOAD_FACTOR, ACCESS_ORDER);
 
     public TileManager(Path path, String serverName) {
         this.path = path;
+        this.serverName = serverName;
     }
 
+    /**
+     * prend en argument l'identité d'une tuile et retourne son image
+     *
+     * @param tileId l'identité de la tuile
+     * @return l'image correspondante
+     * @throws IOException si une erreure survient lors de la creation des input streams
+     */
+
     public Image imageForTileAt(TileId tileId) throws IOException {
-        //si l'image se trouve dans le cache memoire alors il la retourne directement
-        if(cacheMemoire.containsKey(tileId)) {
-            return cacheMemoire.get(tileId);
+        //** si l'image se trouve dans le cache memoire alors il la retourne directement **
+        if(memoryCache.containsKey(tileId)) {
+            return memoryCache.get(tileId);
         }
         else {
-            //Si la taille du cache-memoire est depassé on enlève l'element le moins utilisé
-            while (cacheMemoire.size() >= 100) {
-                cacheMemoire.remove(cacheMemoire.keySet().iterator().next());
+        //** si la taille du cache-memoire est depassé on enlève l'element le moins utilisé **
+            while (memoryCache.size() >= MAXIMUM_CAPACITY) {
+                memoryCache.remove(memoryCache.keySet().iterator().next());
             }
         }
-        //ecriture du chemin d'accès pour acceder a l'image de la tuile voulue
+        //** ecriture du chemin d'accès pour acceder a l'image de la tuile voulue **
         Path access = path.resolve(String.valueOf(tileId.zoomLevel)).resolve(String.valueOf(tileId.x)).resolve((tileId.y)+".png");
 
         if (Files.exists(access)) {
-            //si l'image est dans l'hard disk alors on la recupère
-            try (FileInputStream i = new FileInputStream(access.toFile())) {
-                Image image = new Image(i);
-                cacheMemoire.put(tileId, image);
-                return image;
+        //** si l'image est dans l'hard disk alors on la recupère **
+            try (FileInputStream inputStream = new FileInputStream(access.toFile())) {
+                return creationImage(tileId, inputStream);
             }
         }
-        //si l'image n'est pas dans l'hard disk on va chercher sur le web
+        //** si l'image n'est pas dans l'hard disk on va chercher sur le web **
         else {
-            URL u = new URL(
-                    "https://tile.openstreetmap.org/"+tileId.zoomLevel + "/" + tileId.x +"/" +tileId.y +".png");
-            URLConnection c = u.openConnection();
-            c.setRequestProperty("User-Agent", "JaVelo");
+            URL url = new URL(
+                    "https://" +serverName + "/" +tileId.zoomLevel + "/" + tileId.x + "/" +tileId.y + ".png");
+            URLConnection urlConnection = url.openConnection();
+            urlConnection.setRequestProperty(USER_NAME_REQUESTING, PROJECT_NAME);
             Files.createDirectories(access.getParent());
-            try (InputStream i = c.getInputStream()) {
-                FileOutputStream a = new FileOutputStream(access.toFile());
-                i.transferTo(a);
+            try (InputStream inputStream = urlConnection.getInputStream()) {
+                FileOutputStream outputStream = new FileOutputStream(access.toFile());
+                inputStream.transferTo(outputStream);
             }
-            try(FileInputStream i = new FileInputStream(access.toFile())){
-                Image image = new Image(i);
-                cacheMemoire.put(tileId, image);
-                return image;
+            try(FileInputStream inputStream = new FileInputStream(access.toFile())){
+                return creationImage(tileId, inputStream);
             }
-            //catch ?
         }
     }
+
+    /**
+     * Enregistrement representant l'identité d'une tuile OSM
+     *
+     * @param zoomLevel niveau de zoom de la tuile
+     * @param x l'index X de la tuile
+     * @param y l'index Y de la tuile
+     */
 
     public record TileId(int zoomLevel, int x, int y) {
 
         public static boolean isValid(int zoomLevel, int x, int y) {
             return (x>= 0 && y>= 0 && zoomLevel>=0);
         }
+    }
+
+    /**
+     * Methode creant une nouvelle tuile OSM et l'enregistrant dans la memoire cache
+     *
+     * @param tileId identité de la tuile OSM
+     * @param inputStream flot d'entrée
+     * @return la tuile correspondant à l'identité de la tuile passée en paramètre
+     */
+
+    private Image creationImage(TileId tileId, InputStream inputStream) {
+        Image image = new Image(inputStream);
+        memoryCache.put(tileId, image);
+        return image;
     }
 }

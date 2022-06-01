@@ -25,11 +25,12 @@ public final class ErrorManager {
     private final static int FADE_MESSAGE_DURATION = 500;
     private final static float OPACITY_OFF = 0f;
     private final static float OPACITY_ON = 0.8f;
+    private final static String STYLE_SHEET_ERROR = "error.css";
 
     public ErrorManager() {
         errorMessage = new VBox();
         text = new Text();
-        errorMessage.getStylesheets().add("error.css");
+        errorMessage.getStylesheets().add(STYLE_SHEET_ERROR);
         errorMessage.getChildren().add(text);
 
         FadeTransition appearTransition = new FadeTransition(Duration.millis(APPEAR_MESSAGE_DURATION), errorMessage);
@@ -63,10 +64,8 @@ public final class ErrorManager {
 
     public void displayError(String message) {
         java.awt.Toolkit.getDefaultToolkit().beep();
-        seqTransition.stop();
         text.setText(message);
+        seqTransition.stop();
         seqTransition.play();
-        //seqTransition.setOnFinished(event -> seqTransition = null);
-
     }
 }

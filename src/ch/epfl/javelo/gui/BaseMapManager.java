@@ -51,14 +51,14 @@ public final class BaseMapManager {
         canvas.widthProperty().bind(pane.widthProperty());
         canvas.heightProperty().bind(pane.heightProperty());
 
-        canvas.sceneProperty().addListener((p, oldS, newS) -> {
-            assert oldS == null;
-            newS.addPreLayoutPulseListener(this::redrawIfNeeded);
+        canvas.sceneProperty().addListener((p, oldScene, newScene) -> {
+            assert oldScene == null;
+            newScene.addPreLayoutPulseListener(this::redrawIfNeeded);
         });
 
-        canvas.widthProperty().addListener((p, oldS, newS) -> redrawOnNextPulse());
-        canvas.heightProperty().addListener((p, oldS, newS) -> redrawOnNextPulse());
-        mapViewParameters.addListener((p, oldS, newS) -> redrawOnNextPulse());
+        canvas.widthProperty().addListener((p, oldScene, newScene) -> redrawOnNextPulse());
+        canvas.heightProperty().addListener((p, oldScene, newScene) -> redrawOnNextPulse());
+        mapViewParameters.addListener((p, oldScene, newScene) -> redrawOnNextPulse());
 
         eventManagement();
     }

@@ -33,6 +33,9 @@ public final class WaypointsManager {
     private final static String ERROR_MESSAGE = "Aucune route à proximité !";
     private final static String EXTERIOR_BORDER_WAYPOINT_LAYOUT_SVG_PATH = "M-8-20C-5-14-2-7 0 0 2-7 5-14 8-20 20-40-20-40-8-20";
     private final static String INTERIOR_BORDER_WAYPOINT_LAYOUT_SVG_PATH = "M0-23A1 1 0 000-29 1 1 0 000-23";
+    private final static String PIN_STYLE = "pin";
+    private final static String PIN_OUTSIDE_STYLE = "pin_outside";
+    private final static String PIN_INSIDE_STYLE = "pin_inside";
 
     /**
      * Constructeur public de la classe.
@@ -111,6 +114,7 @@ public final class WaypointsManager {
             }
 
         }
+        error.accept(ERROR_MESSAGE);
         return null;
     }
 
@@ -127,19 +131,14 @@ public final class WaypointsManager {
 
         PointWebMercator point = PointWebMercator.ofPointCh(waypoint.pointCh());
         layoutPoint(point, newGroup);
-        /*double x = parameters.get().viewX(point);
-        double y = parameters.get().viewY(point);
 
-        newGroup.setLayoutX(x);
-        newGroup.setLayoutY(y);*/
-
-        newGroup.getStyleClass().add("pin");
+        newGroup.getStyleClass().add(PIN_STYLE);
 
         SVGPath outline = new SVGPath();
         SVGPath interior = new SVGPath();
 
-        outline.getStyleClass().add("pin_outside");
-        interior.getStyleClass().add("pin_inside");
+        outline.getStyleClass().add(PIN_OUTSIDE_STYLE);
+        interior.getStyleClass().add(PIN_INSIDE_STYLE);
 
         outline.setContent(EXTERIOR_BORDER_WAYPOINT_LAYOUT_SVG_PATH);
         interior.setContent(INTERIOR_BORDER_WAYPOINT_LAYOUT_SVG_PATH);
@@ -149,7 +148,6 @@ public final class WaypointsManager {
 
         String position;
 
-        //Mettre des costes/variables a la place de 0 et du dernier element ?
         if (index == 0) position = String.valueOf(Position.first);
         else {
             position = (index == listWaypoints.size() - 1) ? String.valueOf(Position.last) :
@@ -188,23 +186,20 @@ public final class WaypointsManager {
     /**
      * Met à jour l'affichage de tous les waypoints de la liste.
      */
+
     private void layoutWaypointsList() {
         for (int i = 0; i < listWaypoints.size(); ++i) {
             Waypoint waypoint = listWaypoints.get(i);
             Node node = pane.getChildren().get(i);
 
             PointWebMercator point = PointWebMercator.ofPointCh(waypoint.pointCh());
-            /*double x = parameters.get().viewX(point);
-            double y = parameters.get().viewY(point);
 
-            marker.setLayoutX(x);
-            marker.setLayoutY(y);*/
             layoutPoint(point, node);
         }
     }
 
     /**
-     * Methode s'occupant de géré les detail de l'affichage d'un point
+     * Methode s'occupant de géré les detail de l'affichage d'un point.
      *
      * @param point le point web mercator à affiché correspondant à la position du waypoint
      * @param node le noeud servant à l'afficher
@@ -231,12 +226,12 @@ public final class WaypointsManager {
     }
 
     /**
-     * Enumeration correspondante aux trois differentes couleures de Waypoint en fonction de leur position
+     * Enumeration correspondante aux trois differentes couleurs de Waypoint en fonction de leur position
      * sur l'itineraire.
      */
 
     private enum Position {
-        first, middle, last;
+        first, middle, last
     }
 }
 

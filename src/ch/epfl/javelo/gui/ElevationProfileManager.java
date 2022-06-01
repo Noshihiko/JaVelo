@@ -95,7 +95,7 @@ public final class ElevationProfileManager {
             }
         });
 
-        profilePrinted.addListener((p, oldS, newS) -> {
+        profilePrinted.addListener((p, oldScene, newScene) -> {
             if (profilePrinted.get() == null) return;
             double minElevation = profilePrinted.get().minElevation();
             double maxElevation = profilePrinted.get().maxElevation();
@@ -162,23 +162,10 @@ public final class ElevationProfileManager {
                 rectangle.get().getMinX(), rectangle.get().getMaxY());
     }
 
-        /*
-        pointPolygone.addAll(List.of(new Point2D(rectangle.get().getMinX(), rectangle.get().getMaxY()),
-                new Point2D(rectangle.get().getMaxX(), rectangle.get().getMaxY())));
-
-        for (int i = 0; i <= rectangle.get().getWidth(); ++i) {
-            double xElevationAt = screenToWorld.get().transform(i,0).getX();
-            pointPolygone.add(new Point2D(i, worldToScreen.get().transform(xElevationAt, profilePrinted.get().elevationAt(xElevationAt)).getY()));
-        }
-
-
-       polygon.getPoints().setAll(pointPolygone);
-
-         */
-
     /**
      * Ajout du texte contenant les statistiques.
      */
+
     private void statisticsText() {
         if (profilePrinted == null) return;
         String statistic = String.format("Longueur : %.1f km" +
@@ -212,25 +199,24 @@ public final class ElevationProfileManager {
         double distanceInBetweenHeight = 0;
 
         //distance entre les lignes verticales
-        int k = 0;
+        int spacing = 0;
         double distanceInBetweenWidthPixels = 0;
-        while (distanceInBetweenWidthPixels < 50 && k < POS_STEPS.length) {
-            distanceInBetweenWidth = POS_STEPS[k];
+        while (distanceInBetweenWidthPixels < 50 && spacing < POS_STEPS.length) {
+            distanceInBetweenWidth = POS_STEPS[spacing];
             distanceInBetweenWidthPixels = worldToScreen.get().deltaTransform(distanceInBetweenWidth, 0).getX();
-            k += 1;
+            spacing += 1;
         }
 
         //distance entre les lignes horizontales
-        k = 0;
+        spacing = 0;
         double distanceInBetweenHeightPixels = 0;
-        while (distanceInBetweenHeightPixels < 25 && k < ELE_STEPS.length) {
-            distanceInBetweenHeight = ELE_STEPS[k];
+        while (distanceInBetweenHeightPixels < 25 && spacing < ELE_STEPS.length) {
+            distanceInBetweenHeight = ELE_STEPS[spacing];
             distanceInBetweenHeightPixels = worldToScreen.get().deltaTransform(0, -distanceInBetweenHeight).getY();
-            k += 1;
+            spacing += 1;
         }
 
-        //Création des lignes de la grille
-        //selon les y
+        //Création des lignes de la grille selon les y
         int firstY = (int) (Math.ceil(profilePrinted.get().minElevation() / distanceInBetweenHeight) * distanceInBetweenHeight);
         for (int i = firstY; i <= profilePrinted.get().maxElevation(); i += distanceInBetweenHeight) {
             double yGrid = worldToScreen.get().transform(0, i).getY();

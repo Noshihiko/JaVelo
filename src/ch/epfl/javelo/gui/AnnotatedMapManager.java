@@ -30,6 +30,7 @@ public final class AnnotatedMapManager {
     private final static int X_AT_START = 543200;
     private final static int Y_AT_START = 370650;
     private final static int MAXIMUM_DISTANCE_MOUSE_FROM_ITINERARY = 15;
+    private final static String MAP_STYLE_SHEET = "map.css";
 
     private final ObjectProperty<MapViewParameters> mapViewParameters;
     private final BaseMapManager baseMapManager;
@@ -68,19 +69,15 @@ public final class AnnotatedMapManager {
         pane = new StackPane(baseMapManager.pane(),
                 routeManager.pane(),
                 waypointsManager.pane());
-        pane.getStylesheets().add("map.css");
+        pane.getStylesheets().add(MAP_STYLE_SHEET);
 
         mousePositionOnRouteProperty = new SimpleDoubleProperty();
         mousePositionProperty = new SimpleObjectProperty<>();
 
         //Listeners
-        pane.setOnMouseMoved(event -> {
-            mousePositionProperty.setValue(new Point2D(event.getX(), event.getY()));
-        });
+        pane.setOnMouseMoved(event -> mousePositionProperty.setValue(new Point2D(event.getX(), event.getY())));
 
-        pane.setOnMouseExited(event -> {
-            mousePositionProperty.setValue(null);
-        });
+        pane.setOnMouseExited(event -> mousePositionProperty.setValue(null));
 
         mousePositionOnRouteProperty.bind(Bindings.createDoubleBinding(this::setMousePositionOnRouteProperty,
                 mapViewParameters, mousePositionProperty, routeBean.getRouteProperty()));
@@ -110,7 +107,7 @@ public final class AnnotatedMapManager {
      * Met à jour la position de la sourie le long de l'itineraire
      *
      * @return la valeure correspondant au point le plus proche de la sourie sur l'itineraire
-     * lorsque la distance est inferieure à 15 pixels
+     *          lorsque la distance est inferieure à 15 pixels
      */
 
     private Double setMousePositionOnRouteProperty() {

@@ -29,11 +29,16 @@ import java.util.function.Consumer;
  */
 
 public final class JaVelo extends Application {
-    private final String PATH_GRAPH  = "javelo-data";
-    private final String PATH_CACHE_TILES = "osm-cache";
-    private final String PATH_HOST_TILES = "tile.openstreetmap.org";
-    private final String TITLE = "JaVelo";
-    private final String TITLE_ITINERAIRE = "javelo.gpx";
+    private final static String PATH_GRAPH = "javelo-data";
+    private final static String PATH_CACHE_TILES = "osm-cache";
+    private final static String PATH_HOST_TILES = "tile.openstreetmap.org";
+    private final static String TITLE = "JaVelo";
+    private final static String TITLE_ITINERARY = "javelo.gpx";
+    private final static String MAP_STYLE_SHEET = "map.css";
+    private final static int MINIMUM_WINDOW_WIDTH = 800;
+    private final static int MINIMUM_WINDOW_HEIGHT = 600;
+    private final static String DOCUMENT_MENU_NAME = "Fichier";
+    private final static String EXPORTATION_MENU_NAME = "Exporter GPX";
 
     public static void main(String[] args) {
         launch(args);
@@ -45,60 +50,59 @@ public final class JaVelo extends Application {
         ErrorManager errorManager = new ErrorManager();
         Consumer<String> errorConsumer = errorManager::displayError;
 
-        SplitPane carteAndProfil =  new SplitPane();
-        carteAndProfil.setOrientation(Orientation.VERTICAL);
+        SplitPane mapAndProfile = new SplitPane();
+        mapAndProfile.setOrientation(Orientation.VERTICAL);
 
-        StackPane carteProfilAndError = new StackPane(carteAndProfil, errorManager.pane());
+        StackPane mapProfileAndError = new StackPane(mapAndProfile, errorManager.pane());
 
-        MenuItem menuItem = new MenuItem("Exporter GPX");
-        Menu menu = new Menu("Fichier");
+        Menu menu = new Menu(DOCUMENT_MENU_NAME);
+        MenuItem menuItem = new MenuItem(EXPORTATION_MENU_NAME);
         MenuBar menuBar = new MenuBar(menu);
 
-        TileManager tileManager = new TileManager(Path.of(PATH_HOST_TILES), PATH_CACHE_TILES);
+        TileManager tileManager = new TileManager(Path.of(PATH_CACHE_TILES), PATH_HOST_TILES);
 
         Graph graph = Graph.loadFrom(Path.of(PATH_GRAPH));
         CityBikeCF costFunction = new CityBikeCF(graph);
 
         RouteComputer routeComputer = new RouteComputer(graph, costFunction);
         RouteBean bean = new RouteBean(routeComputer);
-        ElevationProfileManager elevationProfile  =  new ElevationProfileManager(bean.getElevationProfileProperty(), bean.highlightedPositionProperty());
+        ElevationProfileManager elevationProfile = new ElevationProfileManager(bean.getElevationProfileProperty(), bean.highlightedPositionProperty());
 
-        AnnotatedMapManager map = new AnnotatedMapManager(graph, tileManager, bean, errorConsumer);
+        AnnotatedMapManager mapManager = new AnnotatedMapManager(graph, tileManager, bean, errorConsumer);
 
-        BorderPane mainPane = new BorderPane(carteProfilAndError, menuBar,null, null, null);
+        BorderPane mainPane = new BorderPane(mapProfileAndError, menuBar, null, null, null);
 
-        carteAndProfil.getItems().add(map.pane());
+        mapAndProfile.getItems().add(mapManager.pane());
 
-        bean.getRouteProperty().addListener((p, o, n) -> {
-            if (n == null)  {
-                carteAndProfil.getItems().remove(elevationProfile.pane());
-                carteProfilAndError.getChildren().remove(errorManager.pane());
+        bean.getRouteProperty().addListener((p, oldRoute, newRoute) -> {
+            if (newRoute == null) {
+                mapAndProfile.getItems().remove(elevationProfile.pane());
             } else {
-                if (o == null)
-                carteAndProfil.getItems().add(elevationProfile.pane());
+                if (oldRoute == null)
+                    mapAndProfile.getItems().add(elevationProfile.pane());
             }
         });
         SplitPane.setResizableWithParent(elevationProfile.pane(), false);
 
-        bean.highlightedPositionProperty().bind(Bindings.when(map.mousePositionOnRouteProperty()
-                        .greaterThanOrEqualTo(0)).then(map.mousePositionOnRouteProperty())
+        bean.highlightedPositionProperty().bind(Bindings.when(mapManager.mousePositionOnRouteProperty()
+                        .greaterThanOrEqualTo(0)).then(mapManager.mousePositionOnRouteProperty())
                 .otherwise(elevationProfile.mousePositionOnProfileProperty()));
 
         menuItem.disableProperty().bind(bean.getRouteProperty().isNull());
         menu.getItems().add(menuItem);
 
 
-        menu.setOnAction( o -> {
+        menu.setOnAction(o -> {
             try {
-                GpxGenerator.writeGpx(TITLE_ITINERAIRE, bean.getRouteProperty().get(), bean.getElevationProfileProperty().get());
-            } catch( java.io.IOException e){
+                GpxGenerator.writeGpx(TITLE_ITINERARY, bean.getRouteProperty().get(), bean.getElevationProfileProperty().get());
+            } catch (java.io.IOException e) {
                 throw new UncheckedIOException(e);
             }
         });
-        mainPane.getStylesheets().add("map.css");
+        mainPane.getStylesheets().add(MAP_STYLE_SHEET);
 
-        primaryStage.setMinWidth(800);
-        primaryStage.setMinHeight(600);
+        primaryStage.setMinWidth(MINIMUM_WINDOW_WIDTH);
+        primaryStage.setMinHeight(MINIMUM_WINDOW_HEIGHT);
         primaryStage.setScene(new Scene(mainPane));
         primaryStage.setTitle(TITLE);
         primaryStage.show();

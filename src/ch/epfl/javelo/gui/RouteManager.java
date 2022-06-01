@@ -12,35 +12,47 @@ import javafx.scene.shape.Polyline;
 
 import java.util.List;
 
+/**
+ * Gère l'affichage de la route.
+ *
+ * @author Camille Espieux (324248)
+ * @author Chiara Freneix (329552)
+ */
+
 public final class RouteManager {
     private final RouteBean routeBean;
     private final ReadOnlyObjectProperty<MapViewParameters> mapViewParameters;
 
     private final static double RADIUS_OF_DISK = 5;
+    private final static String POLYLINE_ID_ROUTE = "route";
+    private final static String CIRCLE_ID_HIGHLIGHT = "highlight";
 
-    private final Polyline itinerary = new Polyline();
-    private final Circle disk = new Circle(RADIUS_OF_DISK);
-    //TODO isok ou vaut mieux faire un addAll dans constructeur ?
-    private final Pane pane = new Pane(itinerary, disk);
+    private final Polyline itinerary;
+    private final Circle circle;
+    private final Pane pane;
 
     /**
      * Constructeur public de la classe.
      *
-     * @param routeBean
+     * @param routeBean bean de la route
+     * @param mapViewParameters paramètres du fond de carte
      */
     public RouteManager(RouteBean routeBean, ReadOnlyObjectProperty<MapViewParameters> mapViewParameters) {
         this.routeBean = routeBean;
         this.mapViewParameters = mapViewParameters;
+        this.itinerary = new Polyline();
+        this.circle = new Circle(RADIUS_OF_DISK);
+        this.pane = new Pane(itinerary, circle);
 
-        itinerary.setId("route");
-        disk.setId("highlight");
+        itinerary.setId(POLYLINE_ID_ROUTE);
+        circle.setId(CIRCLE_ID_HIGHLIGHT);
 
-        disk.setVisible(false);
         pane.setPickOnBounds(false);
+        setDiskAndItineraryVisible();
 
-        mapViewParameters.addListener((object, old, now) -> {
-            if ((old.zoom() == now.zoom() && routeBean.getRouteProperty().get() != null))
-                moveItinerary();
+        mapViewParameters.addListener((object, oldMapParameters, newMapParameters) -> {
+            if ((oldMapParameters.zoom() == newMapParameters.zoom() && routeBean.getRouteProperty().get() != null))
+                updateItineraryLayout();
             else recreateItinerary();
 
         });
@@ -51,7 +63,7 @@ public final class RouteManager {
         });
 
         routeBean.highlightedPositionProperty().addListener((object, old, now) -> {
-            recreateDisklayout();
+            updateDiskLayout();
             setDiskAndItineraryVisible();
         });
        
@@ -62,14 +74,14 @@ public final class RouteManager {
         });
 
         
-        disk.setOnMouseClicked(event -> {
+        circle.setOnMouseClicked(event -> {
             var routeProperty = routeBean.getRouteProperty().get();
             var highlightedPosition = routeBean.highlightedPosition();
             var waypoints = routeBean.getWaypoint();
 
 
             int nodeId = routeProperty.nodeClosestTo(highlightedPosition);
-            Point2D p = disk.localToParent(event.getX(), event.getY());
+            Point2D p = circle.localToParent(event.getX(), event.getY());
 
             PointCh newPoint = mapViewParameters.get().pointAt(p.getX(), p.getY()).toPointCh();
 
@@ -80,25 +92,37 @@ public final class RouteManager {
         });
     }
 
-    private void moveItinerary() {
+    /**
+     * Permet de réactualiser l'affichage de l'itinerarire
+     */
+
+    private void updateItineraryLayout() {
         itinerary.setLayoutY(- mapViewParameters.get().y());
         itinerary.setLayoutX(- mapViewParameters.get().x());
 
-        recreateDisklayout();
+        updateDiskLayout();
     }
+
+    /**
+     * Permet de rendre visible ou invisible le disque et l'itineraire
+     */
 
     private void setDiskAndItineraryVisible() {
         if (routeBean.getRouteProperty().get()!= null) {
             itinerary.setVisible(true);
-            disk.setVisible(!Double.isNaN(routeBean.highlightedPosition()));
+            circle.setVisible(!Double.isNaN(routeBean.highlightedPosition()));
         }
         else {
-            disk.setVisible(false);
+            circle.setVisible(false);
             itinerary.setVisible(false);
         }
     }
 
-    private void recreateDisklayout() {
+    /**
+     * Permet de ré-actualiser l'affichage du disque
+     */
+
+    private void updateDiskLayout() {
         var highlightedPosition = routeBean.highlightedPosition();
         var routeProperty = routeBean.getRouteProperty().get();
 
@@ -106,27 +130,33 @@ public final class RouteManager {
         PointCh p2 = routeProperty.pointAt(highlightedPosition);
         PointWebMercator point2 = PointWebMercator.ofPointCh(p2);
 
-        disk.setLayoutX(mapViewParameters.get().viewX(point2));
-        disk.setLayoutY(mapViewParameters.get().viewY(point2));
+        circle.setLayoutX(mapViewParameters.get().viewX(point2));
+        circle.setLayoutY(mapViewParameters.get().viewY(point2));
         }
     }
+
+    /**
+     * Permet de recréer l'itineraire
+     */
 
     private void recreateItinerary() {
         if (routeBean.getRouteProperty().get() != null) {
             Double[] listOfCoordinates = conversionCord(routeBean.getRouteProperty().get().points());
 
-
-            PointWebMercator point = PointWebMercator.ofPointCh(routeBean.getWaypoint().get(routeBean.getWaypoint().size() - 1).pointCh());
-
             itinerary.getPoints().setAll(listOfCoordinates);
 
-            recreateDisklayout();
-
-            itinerary.setLayoutX(-mapViewParameters.get().x());
-            itinerary.setLayoutY(-mapViewParameters.get().y());
+            updateItineraryLayout();
         }
         setDiskAndItineraryVisible();
     }
+
+    /**
+     * Retourne un tableau listant les coordonnèes des points constituants les aretes constituant la route
+     *
+     * @param listPoints liste des points constituants la route
+     *
+     * @return un tableau listant les coordonnèes des points constituants les aretes constituant la route
+     */
 
     private Double [] conversionCord (List<PointCh> listPoints) {
         int count = 0;
@@ -147,6 +177,12 @@ public final class RouteManager {
         }
         return newListCoordinates;
     }
+
+    /**
+     * Retourne le panneau JavaFX affichant le fond de carte.
+     *
+     * @return le panneau JavaFX affichant le fond de carte
+     */
 
     public Pane pane(){
         return pane;
