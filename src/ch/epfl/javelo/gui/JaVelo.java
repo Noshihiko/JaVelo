@@ -27,7 +27,6 @@ import java.util.function.Consumer;
  * @author Camille Espieux (324248)
  * @author Chiara Freneix (329552)
  */
-
 public final class JaVelo extends Application {
     private final static String PATH_GRAPH = "javelo-data";
     private final static String PATH_CACHE_TILES = "osm-cache";
@@ -40,11 +39,23 @@ public final class JaVelo extends Application {
     private final static String DOCUMENT_MENU_NAME = "Fichier";
     private final static String EXPORTATION_MENU_NAME = "Exporter GPX";
 
+    /**
+     * Méthode exécutant JaVelo.
+     *
+     * @param args le fil de lancement du programme
+     */
     public static void main(String[] args) {
         launch(args);
     }
 
 
+    /**
+     * Crée l'interface graphique du programme.
+     *
+     * @param primaryStage scène qui sera affichée à l'écran
+     *
+     * @throws Exception si le programme lance une erreur
+     */
     @Override
     public void start(Stage primaryStage) throws Exception {
         ErrorManager errorManager = new ErrorManager();
