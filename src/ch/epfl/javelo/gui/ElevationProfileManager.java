@@ -71,7 +71,8 @@ public final class ElevationProfileManager {
             {5, 10, 20, 25, 50, 100, 200, 250, 500, 1_000};
 
 
-    public ElevationProfileManager(ReadOnlyObjectProperty<ElevationProfile> profilePrinted, ReadOnlyDoubleProperty position) {
+    public ElevationProfileManager(ReadOnlyObjectProperty<ElevationProfile> profilePrinted,
+                                   ReadOnlyDoubleProperty position) {
         this.profilePrinted = profilePrinted;
         this.position = position;
 
@@ -99,7 +100,8 @@ public final class ElevationProfileManager {
 
         //********************************** Binding **********************************
         //de la ligne en gras
-        annotationLine.layoutXProperty().bind(Bindings.createDoubleBinding(() -> worldToScreen.get().transform(position.get(), 0).getX(), worldToScreen, position));
+        annotationLine.layoutXProperty().bind(Bindings.createDoubleBinding(() ->
+                worldToScreen.get().transform(position.get(), 0).getX(), worldToScreen, position));
         annotationLine.startYProperty().bind(Bindings.select(rectangle, "minY"));
         annotationLine.endYProperty().bind(Bindings.select(rectangle, "maxY"));
         annotationLine.visibleProperty().bind(position.greaterThanOrEqualTo(0));
@@ -138,7 +140,9 @@ public final class ElevationProfileManager {
         for (int i = (int) rectangle.get().getMinX(); i < rectangle.get().getMaxX(); ++i) {
             double xElevationAt = screenToWorld.get().transform(i, 0).getX();
             polygon.getPoints().add((double) i);
-            polygon.getPoints().add(worldToScreen.get().transform(0, profilePrinted.get().elevationAt(xElevationAt)).getY());
+            polygon.getPoints().add(worldToScreen.get().transform(
+                    0,
+                    profilePrinted.get().elevationAt(xElevationAt)).getY());
         }
 
         polygon.getPoints().addAll(rectangle.get().getMaxX(), rectangle.get().getMaxY(),
@@ -218,7 +222,10 @@ public final class ElevationProfileManager {
             gridUpdate.add(new MoveTo(xGrid, rectangle.get().getMinY()));
             gridUpdate.add(new LineTo(xGrid, rectangle.get().getMaxY()));
 
-            Text text = new Text(xGrid, rectangle.get().getMaxY() + TEXT_GRID_SIZE, Integer.toString(i / METERS_TO_KM_CONVERSION));
+            Text text = new Text(
+                    xGrid,
+                    rectangle.get().getMaxY() + TEXT_GRID_SIZE,
+                    Integer.toString(i / METERS_TO_KM_CONVERSION));
 
             text.setTextOrigin(VPos.CENTER);
             text.prefWidth(TEXT_GRID_HEIGHT_X);
@@ -240,7 +247,9 @@ public final class ElevationProfileManager {
         double scaleX = (point2Prime.getX() - point1Prime.getX()) / (point2.getX() - point1.getX());
         double scaleY = (point1Prime.getY() - point2Prime.getY()) / (point2.getY() - point1.getY());
 
-        transformationAffine.prependTranslation(-distanceRectangle.getLeft(), -point1.getY() - rectangle.get().getMinY());
+        transformationAffine.prependTranslation(
+                - distanceRectangle.getLeft(),
+                - point1.getY() - rectangle.get().getMinY());
         transformationAffine.prependScale(scaleX, scaleY);
         transformationAffine.prependTranslation(0, point2Prime.getY());
 
