@@ -15,18 +15,17 @@ import javafx.scene.shape.SVGPath;
 import java.util.function.Consumer;
 
 /**
- * Gère l'ajout de points intermediaires le long de l'itineraire.
+ * Gère l'ajout de points intermédiaires le long de l'itinéraire.
  *
  * @author Camille Espieux (324248)
  * @author Chiara Freneix (329552)
  */
-
 public final class WaypointsManager {
     public final Graph roadNetworkGraph;
     public final ObjectProperty<MapViewParameters> parameters;
     public final ObservableList<Waypoint> listWaypoints;
     public final Consumer<String> error;
-    private final Pane pane;
+    private final Pane pane = new Pane();
 
     private final static int SEARCH_DISTANCE = 500;
     private final static int OFFSET_NODE_CLOSEST = -1;
@@ -45,20 +44,17 @@ public final class WaypointsManager {
      * @param listWaypoints la liste observable de tous les points de passage
      * @param error un objet permettant de signaler les erreurs
      */
-
     public WaypointsManager(Graph roadNetworkGraph, ObjectProperty<MapViewParameters> parameters, ObservableList<Waypoint> listWaypoints, Consumer<String> error) {
         this.roadNetworkGraph = roadNetworkGraph;
         this.parameters = parameters;
         this.listWaypoints = listWaypoints;
         this.error = error;
 
-        pane = new Pane();
         pane.setPickOnBounds(false);
 
         listWaypoints.addListener((ListChangeListener<? super Waypoint>) Observable -> {
             pane().getChildren().clear();
             createNewListWaypoints();
-
         });
 
         parameters.addListener(Observable -> {
@@ -72,7 +68,6 @@ public final class WaypointsManager {
      *
      * @return le panneau contenant les points de passage
      */
-
     public Pane pane() {
         return pane;
     }
@@ -83,36 +78,32 @@ public final class WaypointsManager {
      * @param x abscisse lorsque la sourie clique pour ajouter un point
      * @param y ordonnée lorsque la sourie clique pour ajouter un point
      */
-
     public void addWaypoint(double x, double y) {
         Waypoint NewWaypoint = createNewWaypoint(x, y);
 
-        if (NewWaypoint != null) {
+        if (NewWaypoint != null)
             listWaypoints.add(NewWaypoint);
-        } else error.accept(ERROR_MESSAGE);
+        else
+            error.accept(ERROR_MESSAGE);
     }
 
     /**
-     * Methode servant à créer un nouveau Waypoint à partir d'un noeud se trouvant dans un cercle de 1000 m
+     * Methode servant à créer un nouveau Waypoint à partir d'un nœud se trouvant dans un cercle de 1000 m
      * de diamètre centré sur le point donné, lance un message d'erreur sinon.
      *
      * @param x abscisse lorsque la sourie clique pour ajouter un point
      * @param y ordonnée lorsque la sourie clique pour ajouter un point
      *
-     * @return le Waypoint créer à partir du noeud le plus proche trouvé
+     * @return le Waypoint créer à partir du nœud le plus proche trouvé
      */
-
     private Waypoint createNewWaypoint(double x, double y) {
         PointCh newPoint = parameters.get().pointAt(x, y).toPointCh();
 
-        if(newPoint != null) {
-
+        if (newPoint != null) {
             int nodeClosestId = roadNetworkGraph.nodeClosestTo(newPoint, SEARCH_DISTANCE);
 
-            if (nodeClosestId != OFFSET_NODE_CLOSEST) {
+            if (nodeClosestId != OFFSET_NODE_CLOSEST)
                 return new Waypoint(newPoint, nodeClosestId);
-            }
-
         }
         error.accept(ERROR_MESSAGE);
         return null;
@@ -124,7 +115,6 @@ public final class WaypointsManager {
      * @param waypoint Waypoint à afficher
      * @param index index dans la liste des Waypoints du Waypoint à afficher
      */
-
     private void drawWaypoint(Waypoint waypoint, int index) {
         Group newGroup = new Group();
         pane().getChildren().add(newGroup);
@@ -147,11 +137,11 @@ public final class WaypointsManager {
         newGroup.getChildren().add(interior);
 
         String position;
-
-        if (index == 0) position = String.valueOf(Position.first);
+        if (index == 0)
+            position = String.valueOf(Position.first);
         else {
-            position = (index == listWaypoints.size() - 1) ? String.valueOf(Position.last) :
-                    String.valueOf(Position.middle);
+            position = (index == listWaypoints.size() - 1) ?
+                    String.valueOf(Position.last) : String.valueOf(Position.middle);
         }
         newGroup.getStyleClass().add(position);
 
@@ -159,7 +149,6 @@ public final class WaypointsManager {
         newGroup.setOnMouseDragged(event -> {
             newGroup.setLayoutX(event.getSceneX());
             newGroup.setLayoutY(event.getSceneY());
-
         });
 
         newGroup.setOnMouseClicked( event -> {
@@ -188,12 +177,10 @@ public final class WaypointsManager {
     /**
      * Met à jour l'affichage de tous les waypoints de la liste.
      */
-
     private void layoutWaypointsList() {
         for (int i = 0; i < listWaypoints.size(); ++i) {
             Waypoint waypoint = listWaypoints.get(i);
             Node node = pane.getChildren().get(i);
-
             PointWebMercator point = PointWebMercator.ofPointCh(waypoint.pointCh());
 
             layoutPoint(point, node);
@@ -201,12 +188,11 @@ public final class WaypointsManager {
     }
 
     /**
-     * Methode s'occupant de géré les detail de l'affichage d'un point.
+     * Méthode s'occupant de géré les detail de l'affichage d'un point.
      *
      * @param point le point web mercator à affiché correspondant à la position du waypoint
-     * @param node le noeud servant à l'afficher
+     * @param node le nœud servant à l'afficher
      */
-
     private void layoutPoint( PointWebMercator point, Node node) {
         double x = parameters.get().viewX(point);
         double y = parameters.get().viewY(point);
@@ -216,10 +202,9 @@ public final class WaypointsManager {
     }
 
     /**
-     * Methode créant une nouvelle liste de Waypoint et qui remet à jour leur affichage en
-     * appelant la methode layoutWaypoints.
+     * Méthode créant une nouvelle liste de Waypoint et qui remet à jour leur affichage en
+     * appelant la méthode layoutWaypoints.
      */
-
     private void createNewListWaypoints() {
         for (int i = 0; i < listWaypoints.size(); ++i) {
             drawWaypoint(listWaypoints.get(i), i);
@@ -228,10 +213,9 @@ public final class WaypointsManager {
     }
 
     /**
-     * Enumeration correspondante aux trois differentes couleurs de Waypoint en fonction de leur position
-     * sur l'itineraire.
+     * Enumeration correspondante aux trois différentes couleurs de Waypoint en fonction de leur position
+     * sur l'itinéraire.
      */
-
     private enum Position {
         first, middle, last
     }
