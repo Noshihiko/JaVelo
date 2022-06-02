@@ -7,6 +7,10 @@ import javafx.geometry.Point2D;
 /**
  * Enregistrement qui représente les paramètres du fond de carte présenté dans l'interface graphique.
  *
+ * @param zoom le niveau de zoom
+ * @param x la coordonnée x du coin haut-gauche de la portion de carte affichée
+ * @param y la coordonnée y du coin haut-gauche de la portion de carte affichée
+ *
  * @author Camille Espieux (324248)
  * @author Chiara Freneix (329552)
  */
@@ -42,7 +46,7 @@ public record MapViewParameters(int zoom, double x, double y) {
      * @return ce point sous la forme d'une instance de PointWebMercator
      */
     public PointWebMercator pointAt(double x, double y) {
-        return PointWebMercator.of(this.zoom, x + this.x, y + this.y);
+        return PointWebMercator.of(this.zoom, x + topLeft().getX(), y + topLeft().getY());
     }
 
     /**

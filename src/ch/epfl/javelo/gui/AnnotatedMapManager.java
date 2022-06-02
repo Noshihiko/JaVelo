@@ -56,16 +56,16 @@ public final class AnnotatedMapManager {
 
         mapViewParameters = new SimpleObjectProperty<>(new MapViewParameters(ZOOM_AT_START, X_AT_START, Y_AT_START));
 
-        //creation d'un Waypoint manager
+        //Création d'un Waypoint manager
         waypointsManager = new WaypointsManager(roadNetworkGraph, mapViewParameters, routeBean.getWaypoint() ,error);
 
-        // Creation d'un Route manager
+        //Création d'un Route manager
         routeManager = new RouteManager(routeBean, mapViewParameters);
 
-        //creation de base map manager
+        //Création de base map manager
         baseMapManager = new BaseMapManager(tileManager, waypointsManager , mapViewParameters);
 
-        //initialisation du panneau
+        //Initialisation du panneau
         pane = new StackPane(baseMapManager.pane(),
                 routeManager.pane(),
                 waypointsManager.pane());
@@ -88,7 +88,6 @@ public final class AnnotatedMapManager {
      *
      * @return le panneau contenant les points de passage
      */
-
     public Pane pane() {
         return pane;
     }
@@ -98,7 +97,6 @@ public final class AnnotatedMapManager {
      *
      * @return la propriété en lecture seule contenant la position de la sourie le long de l'itineraire
      */
-
     public ReadOnlyDoubleProperty mousePositionOnRouteProperty() {
         return mousePositionOnRouteProperty;
     }
@@ -109,7 +107,6 @@ public final class AnnotatedMapManager {
      * @return la valeure correspondant au point le plus proche de la sourie sur l'itineraire
      *          lorsque la distance est inferieure à 15 pixels
      */
-
     private Double setMousePositionOnRouteProperty() {
         if (mousePositionProperty.get() == null || routeBean.getRouteProperty().get() == null)
             return Double.NaN;
@@ -118,13 +115,12 @@ public final class AnnotatedMapManager {
         double yOfMouse = mousePositionProperty.getValue().getY();
 
         MapViewParameters mapParameters = mapViewParameters.get();
-
         PointWebMercator mousePosition = mapParameters.pointAt(xOfMouse, yOfMouse);
 
-        if (mousePosition.toPointCh() == null) return Double.NaN;
+        if (mousePosition.toPointCh() == null)
+            return Double.NaN;
 
         RoutePoint closestPointRoute = routeBean.getRouteProperty().get().pointClosestTo(mousePosition.toPointCh());
-
         PointWebMercator closestPointWM = PointWebMercator.ofPointCh(closestPointRoute.point());
 
         double xPointRoute = mapParameters.viewX(closestPointWM);

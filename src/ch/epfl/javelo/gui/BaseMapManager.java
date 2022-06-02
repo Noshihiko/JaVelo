@@ -23,11 +23,9 @@ public final class BaseMapManager {
     public final WaypointsManager points;
     public final ObjectProperty<MapViewParameters> mapViewParameters;
 
-    //TODO isok comme ça ou mettre le new dans constructeur ?
     private final Canvas canvas = new Canvas();
     private final Pane pane = new Pane(canvas);
 
-    //TODO faut il les mettre en final?
     private Point2D draggedPoint;
     private boolean redrawNeeded;
 
@@ -83,13 +81,12 @@ public final class BaseMapManager {
     /**
      * Effectue le redessin si et seulement si l'attribut redrawNeeded est vrai.
      */
-
     private void redrawIfNeeded() {
         if (!redrawNeeded) return;
         redrawNeeded = false;
 
         GraphicsContext context = canvas.getGraphicsContext2D();
-        //TODO demander si créer avant ou pendant la boucle;
+        int zoom;
         double xCoordinate;
         double yCoordinate;
         TileManager.TileId tilesId;
@@ -108,7 +105,7 @@ public final class BaseMapManager {
                 xCoordinate = i * MAP_PIXEL - mapX;
                 yCoordinate = j * MAP_PIXEL - mapY;
 
-                int zoom = mapViewParameters.get().zoom();
+                zoom = mapViewParameters.get().zoom();
                 tilesId = new TileManager.TileId(zoom, i, j);
 
                 if (TileManager.TileId.isValid(zoom, i, j)) {
@@ -126,7 +123,6 @@ public final class BaseMapManager {
     /**
      * Méthode qui gère et détecte différents événements.
      */
-
     private void eventManagement(){
         SimpleLongProperty minScrollTime = new SimpleLongProperty();
         pane.setOnScroll(event -> {
@@ -137,9 +133,7 @@ public final class BaseMapManager {
                 return;
             minScrollTime.set(currentTime + ZOOM_TIME_MS);
 
-            //TODO remove zoomDelta?
             int zoomDelta = (int) Math.signum(event.getDeltaY());
-
             int mapZoom = mapViewParameters.get().zoom();
 
             int zoomLvl = Math2.clamp(ZOOM_MIN,mapZoom + zoomDelta, ZOOM_MAX);
@@ -172,7 +166,8 @@ public final class BaseMapManager {
         pane.setOnMouseReleased(event -> draggedPoint = null);
 
         pane.setOnMouseClicked(event -> {
-            if (event.isStillSincePress()) points.addWaypoint(event.getX(), event.getY());
+            if (event.isStillSincePress())
+                points.addWaypoint(event.getX(), event.getY());
 
             redrawOnNextPulse();
         });

@@ -10,6 +10,7 @@ import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 import java.io.*;
 import java.nio.file.*;
+import java.util.Locale;
 
 /**
  * Représente un générateur d'itinéraire au format GPX.
@@ -17,10 +18,14 @@ import java.nio.file.*;
  * @author Camille Espieux (324248)
  * @author Chiara Freneix (329552)
  */
-public class GpxGenerator {
+public final class GpxGenerator {
+    private final static String longitude = "%.5f";
+    private final static String latitude = "%.5f";
+    private final static String elevation = "%.2f";
+
 
     /**
-     * Constructeur privé de la classe, car elle est immuable.
+     * Constructeur privé de la classe, car elle est non instanciable.
      */
     private GpxGenerator() {
     }
@@ -46,21 +51,23 @@ public class GpxGenerator {
      *
      * @param route            l'itinéraire
      * @param elevationProfile le profil de cet itinéraire
+
      * @return le document GPX (de type Document) correspondant
      */
     public static Document createGpx(Route route, ElevationProfile elevationProfile) {
+        Double position = 0d;
         Document doc = newDocument();
 
         Element root = doc
-                .createElementNS("https://www.topografix.com/GPX/1/1",
+                .createElementNS("http://www.topografix.com/GPX/1/1",
                         "gpx");
         doc.appendChild(root);
 
         root.setAttributeNS(
                 "http://www.w3.org/2001/XMLSchema-instance",
                 "xsi:schemaLocation",
-                "https://www.topografix.com/GPX/1/1 "
-                        + "https://www.topografix.com/GPX/1/1/gpx.xsd");
+                "http://www.topografix.com/GPX/1/1 "
+                        + "http://www.topografix.com/GPX/1/1/gpx.xsd");
         root.setAttribute("version", "1.1");
         root.setAttribute("creator", "JaVelo");
 
@@ -74,24 +81,45 @@ public class GpxGenerator {
         Element rte = doc.createElement("rte");
         root.appendChild(rte);
 
+        //**Récupère le premier point de chaque edge et rajoute ses données au doc**
         for (Edge edge : route.edges()) {
-            String lon = "%.5f";
-            String lat = "%.5f";
-            String elevation = "%.2f";
-            PointCh point = edge.fromPoint();
-
-            Element routePoint = doc.createElement("rtept");
-            routePoint.setAttribute("lat", String.format(lat, Math.toDegrees(point.lat())));
-            routePoint.setAttribute("lon", String.format(lon, Math.toDegrees(point.lon())));
-            rte.appendChild(routePoint);
-
-            Element elevationPoint = doc.createElement("ele");
-            elevationPoint.setTextContent(String.format(elevation, edge.elevationAt(edge.positionClosestTo(point))));
-            //elevationPoint.setTextContent(String.format(elevation, elevationProfile.elevationAt(edge.positionClosestTo(point))));
-            routePoint.appendChild(elevationPoint);
+            position += edge.length();
+            addPoints(elevationProfile, doc, rte, position, edge.fromPoint());
         }
+        //**Récupère le dernier point de la dernière edge et rajoute ses données au doc**
+        Edge edge = route.edges().get(route.edges().size() - 1);
+        addPoints(elevationProfile, doc, rte, position, edge.toPoint());
 
         return doc;
+    }
+
+    /**
+     * Rajoute les points de l'itinéraire au document.
+     *
+     * @param elevationProfile le profil de cet itinéraire
+     * @param doc le document que l'on modifie
+     * @param rte la route de l'itinéraire
+     * @param position la distance sur l'itinéraire
+     * @param point le point qu'on cherche à rajouter au document
+     */
+    private static void addPoints(ElevationProfile elevationProfile, Document doc, Element rte, Double position, PointCh point) {
+        Element routePoint = doc.createElement("rtept");
+        routePoint.setAttribute("lat", String.format(
+                        Locale.ROOT,
+                        latitude,
+                        Math.toDegrees(point.lat())));
+        routePoint.setAttribute("lon", String.format(
+                        Locale.ROOT,
+                        longitude,
+                        Math.toDegrees(point.lon())));
+        rte.appendChild(routePoint);
+
+        Element elevationPoint = doc.createElement("ele");
+        elevationPoint.setTextContent(String.format(
+                Locale.ROOT,
+                elevation,
+                elevationProfile.elevationAt(position)));
+        routePoint.appendChild(elevationPoint);
     }
 
     /**

@@ -162,15 +162,17 @@ public final class WaypointsManager {
 
         });
 
-        newGroup.setOnMouseReleased(event -> {
+        newGroup.setOnMouseClicked( event -> {
             if (event.isStillSincePress()) {
                 listWaypoints.remove(index);
                 pane().getChildren().remove(newGroup);
             }
+        });
 
+        newGroup.setOnMouseReleased(event -> {
             if (!event.isStillSincePress()) {
-
                 Waypoint waypointChanged = createNewWaypoint(event.getSceneX(), event.getSceneY());
+
                 if (waypointChanged != null) {
                     listWaypoints.set(index, waypointChanged);
                     pane().getChildren().clear();
@@ -179,7 +181,7 @@ public final class WaypointsManager {
                     error.accept(ERROR_MESSAGE);
                     layoutWaypointsList();
                 }
-            }
+           }
         });
     }
 
